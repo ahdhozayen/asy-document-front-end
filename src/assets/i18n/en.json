@@ -1,0 +1,270 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "download": "Download",
+    "upload": "Upload",
+    "search": "Search",
+    "filter": "Filter",
+    "clear": "Clear",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "reset": "Reset",
+    "refresh": "Refresh",
+    "all": "All"
+  },
+  "departments": {
+    "finance": "Finance",
+    "hr": "Human Resources",
+    "it": "Information Technology",
+    "legal": "Legal",
+    "operations": "Operations",
+    "marketing": "Marketing"
+  },
+  "priorities": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High"
+  },
+  "statuses": {
+    "pending": "Pending",
+    "inProgress": "In Progress",
+    "completed": "Completed",
+    "signed": "Signed"
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "subtitle": "Sign in to your account",
+      "username": "Username",
+      "usernamePlaceholder": "Enter your username",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "togglePassword": "Show/Hide password",
+      "submit": "Sign In",
+      "signingIn": "Signing in...",
+      "error": "Login failed"
+    },
+    "logout": "Logout",
+    "email": "Email",
+    "session_expired": "Your session has expired. Please log in again.",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "welcomeBack": "Welcome Back",
+    "loginToAccount": "Sign in to your account",
+    "invalidCredentials": "Invalid credentials",
+    "loginFailed": "Login failed",
+    "loginSuccess": "Login successful"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome",
+    "logout": "Logout",
+    "stats": {
+      "total": "Total",
+      "pending": "Pending",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "signed": "Signed"
+    },
+
+    "documentsTable": {
+      "title": "Documents",
+      "department": "Department",
+      "priority": "Priority",
+      "status": "Status",
+      "createdAt": "Created Date",
+      "actions": "Actions"
+    },
+    "filters": {
+      "search": "Search documents...",
+      "searchPlaceholder": "Search documents...",
+      "department": "Department",
+      "priority": "Priority",
+      "status": "Status",
+      "allDepartments": "All Departments",
+      "allPriorities": "All Priorities",
+      "allStatuses": "All Statuses"
+    },
+    "actions": {
+      "view": "View",
+      "edit": "Edit",
+      "delete": "Delete",
+      "download": "Download"
+    }
+  },
+
+  "documents": {
+    "title": "Documents",
+    "noDocuments": "No documents found",
+    "documentName": "Document Name",
+    "department": "Department",
+    "priority": "Priority",
+    "status": "Status",
+    "uploadedBy": "Uploaded By",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "actions": "Actions",
+    "fileSize": "File Size",
+    "description": "Description",
+    "comments": "Comments",
+    "reviewedAt": "Reviewed At",
+    "attachments": "Attachments",
+    "fileName": "File Name",
+    "view": {
+      "title": "View Document",
+      "details": "Document Details",
+      "attachments": "Attachments",
+      "addComment": "Add Comment",
+      "commentPlaceholder": "Enter your comment here",
+      "redirectDepartment": "Redirect Department",
+      "selectDepartment": "Select department",
+      "submitComment": "Submit Comment",
+      "signDocument": "Sign Document"
+    },
+    "signature": {
+      "title": "Sign Document",
+      "instructions": "Draw your signature below using mouse or touch",
+      "clear": "Clear",
+      "save": "Save Signature"
+    },
+    "sign": {
+      "success": "Document signed successfully",
+      "error": "Failed to sign document"
+    },
+    "comment": {
+      "success": "Comment added successfully",
+      "error": "Failed to add comment"
+    },
+    "upload": {
+      "title": "Upload Document",
+      "selectFile": "Select File",
+      "dragDrop": "Drag and drop a file here, or click to select",
+      "fileSelected": "File selected:",
+      "submit": "Upload Document",
+      "uploading": "Uploading...",
+      "success": "Document uploaded successfully",
+      "error": "Failed to upload document"
+    },
+    "create": {
+      "title": "Create New Document",
+      "modalTitle": "Create New Document",
+      "button": "Create New Document",
+      "selectFile": "Select PDF File",
+      "dragDrop": "Drag and drop a PDF file here, or click to select",
+      "fileSelected": "File selected:",
+      "submit": "Create Document",
+      "creating": "Creating...",
+      "success": "Document created successfully",
+      "error": "Failed to create document",
+      "validation": {
+        "pdfOnly": "Only PDF files are allowed",
+        "required": "This field is required",
+        "maxLength": "Maximum length exceeded"
+      }
+    },
+    "edit": {
+      "title": "Edit Document",
+      "success": "Document updated successfully",
+      "error": "Failed to update document"
+    },
+    "form": {
+      "title": "Title",
+      "titlePlaceholder": "Enter document title",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter document description (optional)",
+      "department": "Department",
+      "priority": "Priority",
+      "status": "Status",
+      "attachment": "Document Attachment",
+      "attachmentNote": "Upload a new file to replace the current attachment (optional)",
+      "selectFile": "Select File",
+      "changeFile": "Change File"
+    },
+    "delete": {
+      "title": "Delete Document",
+      "message": "Are you sure you want to delete this document?",
+      "success": "Document deleted successfully",
+      "error": "Failed to delete document"
+    },
+    "review": {
+      "title": "Review Document",
+      "approve": "Approve",
+      "reject": "Reject",
+      "success": "Document status updated successfully",
+      "error": "Failed to update document status"
+    },
+    "statuses": {
+      "pending": "Pending",
+      "in_review": "In Review",
+      "signed": "Signed",
+      "rejected": "Rejected"
+    },
+    "priorities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "departments": {
+      "Finance": "Finance",
+      "HR": "Human Resources",
+      "IT": "Information Technology",
+      "Legal": "Legal",
+      "Operations": "Operations",
+      "Marketing": "Marketing",
+      "Sales": "Sales"
+    }
+  },
+  "errors": {
+    "generic": "An unexpected error occurred",
+    "network": "Network error",
+    "unauthorized": "Unauthorized access",
+    "forbidden": "Access forbidden",
+    "notFound": "Not found",
+    "serverError": "Server error",
+    "validationError": "Validation error",
+    "fileUploadError": "File upload failed",
+    "fileSizeError": "File size too large",
+    "fileTypeError": "File type not supported"
+  },
+  "dialogs": {
+    "confirmation": {
+      "deleteDocument": {
+        "title": "Delete Document",
+        "message": "Are you sure you want to delete this document? This action cannot be undone.",
+        "confirm": "Delete",
+        "cancel": "Cancel"
+      },
+      "documentTitle": "Document Title"
+    }
+  },
+  "messages": {
+    "success": {
+      "documentDeleted": "Document deleted successfully",
+      "documentUpdated": "Document updated successfully"
+    },
+    "error": {
+      "documentDeleteFailed": "Failed to delete document. Please try again.",
+      "documentUpdateFailed": "Failed to update document. Please try again.",
+      "genericError": "An error occurred. Please try again."
+    }
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email",
+    "minLength": "Must be more than {min} characters",
+    "maxLength": "Must be less than {max} characters",
+    "pattern": "Please enter a valid format"
+  }
+}

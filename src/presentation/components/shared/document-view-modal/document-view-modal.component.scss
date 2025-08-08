@@ -1,0 +1,152 @@
+.document-view-modal {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  
+  &.rtl {
+    text-align: right;
+    
+    .modal-header {
+      flex-direction: row-reverse;
+    }
+    
+    .detail-row {
+      flex-direction: row-reverse;
+    }
+    
+    .attachment-info {
+      flex-direction: row-reverse;
+    }
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e0e0e0;
+  
+  h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 500;
+  }
+}
+
+.modal-content {
+  padding: 16px 24px;
+  overflow-y: auto;
+  max-height: 70vh;
+}
+
+.document-details-section,
+.document-attachment-section,
+.document-comment-section {
+  margin-bottom: 24px;
+  
+  h3 {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    color: #333;
+  }
+}
+
+.detail-row {
+  display: flex;
+  margin-bottom: 12px;
+  
+  .detail-label {
+    min-width: 120px;
+    font-weight: 500;
+    color: #555;
+  }
+  
+  .detail-value {
+    flex: 1;
+  }
+}
+
+.status-chip {
+  padding: 4px 8px;
+  border-radius: 16px;
+  font-size: 12px;
+  display: inline-block;
+}
+
+.attachment-info {
+  display: flex;
+  align-items: center;
+  background-color: #f5f5f5;
+  padding: 12px;
+  border-radius: 8px;
+  
+  mat-icon {
+    margin-right: 8px;
+    color: #666;
+  }
+  
+  .file-name {
+    font-weight: 500;
+    margin-right: 8px;
+  }
+  
+  .file-size {
+    color: #666;
+    font-size: 12px;
+  }
+  
+  a {
+    margin-left: auto;
+  }
+  
+  .rtl & {
+    mat-icon {
+      margin-right: 0;
+      margin-left: 8px;
+    }
+    
+    .file-name {
+      margin-right: 0;
+      margin-left: 8px;
+    }
+    
+    a {
+      margin-left: 0;
+      margin-right: auto;
+    }
+  }
+}
+
+.comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  gap: 8px;
+}
+
+mat-divider {
+  margin: 24px 0;
+}
+
+// RTL specific styles
+.rtl {
+  .status-chip {
+    direction: rtl;
+  }
+  
+  mat-dialog-actions {
+    flex-direction: row-reverse;
+  }
+}

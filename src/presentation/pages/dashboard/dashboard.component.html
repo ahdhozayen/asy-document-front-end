@@ -1,0 +1,259 @@
+<div class="min-h-screen bg-gray-50" [class.rtl]="isRTL" [attr.dir]="isRTL ? 'rtl' : 'ltr'">
+  <!-- Header Toolbar -->
+  <mat-toolbar color="primary" class="navbar-custom">
+    <div class="navbar-container">
+      <!-- Left Section: Logo and Title -->
+      <div class="navbar-left">
+        <img src="assets/images/logo/company-logo.png" alt="Company Logo" class="navbar-logo">
+        <h1 class="navbar-title" [class.arabic-font]="isRTL">
+          {{ 'dashboard.title' | translate }}
+        </h1>
+      </div>
+
+      <!-- Center Section: Welcome Message -->
+      <div class="navbar-center" *ngIf="currentUser">
+        <span class="welcome-text" [class.arabic-font]="isRTL">
+          {{ 'dashboard.welcome' | translate }}, {{ currentUser.displayName }}
+        </span>
+      </div>
+
+      <!-- Right Section: Language Switcher and Logout -->
+      <div class="navbar-right">
+        <!-- Language Switcher -->
+        <app-language-switcher></app-language-switcher>
+
+        <!-- Logout Button -->
+        <button mat-icon-button [matMenuTriggerFor]="userMenu" class="logout-button">
+          <mat-icon>account_circle</mat-icon>
+        </button>
+        <mat-menu #userMenu="matMenu" class="user-menu">
+          <button mat-menu-item (click)="onLogout()" [class.arabic-font]="isRTL" class="logout-menu-item">
+            <mat-icon>logout</mat-icon>
+            <span>{{ 'dashboard.logout' | translate }}</span>
+          </button>
+        </mat-menu>
+      </div>
+    </div>
+  </mat-toolbar>
+
+  <!-- Main Content -->
+  <div class="dashboard-content">
+    <!-- Stats Cards -->
+    <div style="scrollbar-width: thin;">
+      <!-- Total Documents -->
+      <mat-card class="stat-card stat-card-total inline-flex min-w-[280px] w-[280px] flex-shrink-0 bg-white rounded-xl shadow-md flex-col items-center py-6 px-4 mb-0">
+        <div class="stat-icon-box bg-[#001BB7] flex items-center justify-center rounded-full mb-3" style="width:56px;height:56px;">
+          <mat-icon style="color: #fff; font-size: 2rem;">description</mat-icon>
+        </div>
+        <div class="stat-number text-3xl font-bold text-[#001BB7]">{{ documentStats.total }}</div>
+        <div class="stat-label text-gray-500 mt-1 text-base" [class.arabic-font]="isRTL">{{ 'dashboard.stats.total' | translate }}</div>
+      </mat-card>
+      <!-- Signed Documents -->
+      <mat-card class="stat-card stat-card-signed inline-flex min-w-[280px] w-[280px] flex-shrink-0 bg-white rounded-xl shadow-md flex-col items-center py-6 px-4 mb-0">
+        <div class="stat-icon-box bg-[#0046FF] flex items-center justify-center rounded-full mb-3" style="width:56px;height:56px;">
+          <mat-icon style="color: #fff; font-size: 2rem;">task_alt</mat-icon>
+        </div>
+        <div class="stat-number text-3xl font-bold text-[#0046FF]">{{ documentStats.signed }}</div>
+        <div class="stat-label text-gray-500 mt-1 text-base" [class.arabic-font]="isRTL">{{ 'dashboard.stats.signed' | translate }}</div>
+      </mat-card>
+      <!-- Pending Documents -->
+      <mat-card class="stat-card stat-card-pending inline-flex min-w-[280px] w-[280px] flex-shrink-0 bg-white rounded-xl shadow-md flex-col items-center py-6 px-4">
+        <div class="stat-icon-box bg-[#FF8040] flex items-center justify-center rounded-full mb-3" style="width:56px;height:56px;">
+          <mat-icon style="color: #fff; font-size: 2rem;">pending</mat-icon>
+        </div>
+        <div class="stat-number text-3xl font-bold text-[#FF8040]">{{ documentStats.pending }}</div>
+        <div class="stat-label text-gray-500 mt-1 text-base" [class.arabic-font]="isRTL">{{ 'dashboard.stats.pending' | translate }}</div>
+      </mat-card>
+    </div>
+
+    <!-- Filters Section -->
+    <mat-card class="filters-card">
+      <mat-card-content>
+        <form [formGroup]="filterForm" class="filters-form">
+          <!-- Search -->
+          <mat-form-field>
+            <mat-label>{{ 'dashboard.filters.search' | translate }}</mat-label>
+            <input 
+              matInput 
+              formControlName="query"
+              placeholder="{{ 'dashboard.filters.search_placeholder' | translate }}"
+            />
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+
+          <!-- Department Filter -->
+          <mat-form-field>
+            <mat-label>{{ 'dashboard.filters.department' | translate }}</mat-label>
+            <mat-select formControlName="department">
+              <mat-option>HR</mat-option>
+              <mat-option>IT</mat-option>
+              <mat-option>Marketing</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Priority Filter -->
+          <mat-form-field>
+            <mat-label>{{ 'dashboard.filters.priority' | translate }}</mat-label>
+            <mat-select formControlName="priority">
+              <mat-option>High</mat-option>
+              <mat-option>Medium</mat-option>
+              <mat-option>Low</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Status Filter -->
+          <mat-form-field>
+            <mat-label>{{ 'dashboard.filters.status' | translate }}</mat-label>
+            <mat-select formControlName="status">
+              <mat-option>Pending</mat-option>
+              <mat-option>In Review</mat-option>
+              <mat-option>Signed</mat-option>
+              <mat-option>Rejected</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Documents Table -->
+    <mat-card class="table-card">
+      <mat-card-header class="document-header-with-actions">
+        <mat-card-title [class.arabic-font]="isRTL">
+          {{ 'dashboard.documentsTable.title' | translate }}
+        </mat-card-title>
+        <div class="document-header-actions">
+          <button mat-raised-button color="primary" (click)="onCreateDocument()" class="create-document-btn">
+            <mat-icon>add</mat-icon>
+            <span [class.arabic-font]="isRTL">{{ 'documents.create.button' | translate }}</span>
+          </button>
+        </div>
+      </mat-card-header>
+      
+      <mat-card-content class="stat-card-content">
+        <div class="table-container" *ngIf="!isLoading; else loadingTemplate">
+          <table mat-table [dataSource]="documents" class="documents-table" [class.rtl]="isRTL">
+            <!-- Title Column -->
+            <ng-container matColumnDef="title">
+              <th mat-header-cell *matHeaderCellDef [class.arabic-font]="isRTL">
+                {{ 'dashboard.documentsTable.title' | translate }}
+              </th>
+              <td mat-cell *matCellDef="let document" [class.arabic-font]="isRTL">
+                {{ document.title }}
+              </td>
+            </ng-container>
+
+            <!-- Department Column -->
+            <ng-container matColumnDef="department">
+              <th mat-header-cell *matHeaderCellDef [class.arabic-font]="isRTL">
+                {{ 'dashboard.documentsTable.department' | translate }}
+              </th>
+              <td mat-cell *matCellDef="let document" [class.arabic-font]="isRTL">
+                {{ 'departments.' + document.department | translate }}
+              </td>
+            </ng-container>
+
+            <!-- Priority Column -->
+            <ng-container matColumnDef="priority">
+              <th mat-header-cell *matHeaderCellDef [class.arabic-font]="isRTL">
+                {{ 'dashboard.documentsTable.priority' | translate }}
+              </th>
+              <td mat-cell *matCellDef="let document">
+                <mat-chip [color]="getPriorityColor(document.priority)" selected>
+                  {{ 'priorities.' + document.priority | translate }}
+                </mat-chip>
+              </td>
+            </ng-container>
+
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef [class.arabic-font]="isRTL">
+                {{ 'dashboard.documentsTable.status' | translate }}
+              </th>
+              <td mat-cell *matCellDef="let document">
+                <mat-chip [color]="getStatusColor(document.status)" selected>
+                  {{ 'statuses.' + document.status | translate }}
+                </mat-chip>
+              </td>
+            </ng-container>
+
+            <!-- Created At Column -->
+            <ng-container matColumnDef="createdAt">
+              <th mat-header-cell *matHeaderCellDef [class.arabic-font]="isRTL">
+                {{ 'dashboard.documentsTable.createdAt' | translate }}
+              </th>
+              <td mat-cell *matCellDef="let document" [class.arabic-font]="isRTL">
+                {{ formatDate(document.createdAt) }}
+              </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef [class.arabic-font]="isRTL">
+                {{ 'dashboard.documentsTable.actions' | translate }}
+              </th>
+              <td mat-cell *matCellDef="let document">
+                <div class="actions-container" [class.rtl]="isRTL">
+                  <!-- View Button -->
+                  <button 
+                    mat-icon-button 
+                    color="primary"
+                    *ngIf="canViewDocument()"
+                    (click)="onViewDocument(document)"
+                    [matTooltip]="'dashboard.actions.view' | translate">
+                    <mat-icon>visibility</mat-icon>
+                  </button>
+
+                  <!-- Edit Button -->
+                  <button 
+                    mat-icon-button 
+                    color="accent"
+                    *ngIf="canEditDocument(document)"
+                    (click)="onEditDocument(document)"
+                    [matTooltip]="'dashboard.actions.edit' | translate">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+
+                  <!-- Download Button -->
+                  <button 
+                    mat-icon-button 
+                    color="primary"
+                    (click)="onDownloadDocument(document)"
+                    [matTooltip]="'dashboard.actions.download' | translate">
+                    <mat-icon>download</mat-icon>
+                  </button>
+
+                  <!-- Delete Button -->
+                  <button 
+                    mat-icon-button 
+                    color="warn"
+                    *ngIf="canDeleteDocument()"
+                    (click)="onDeleteDocument(document)"
+                    [matTooltip]="'dashboard.actions.delete' | translate">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+
+          <!-- No Data Message -->
+          <div *ngIf="documents.length === 0" class="no-data" [class.arabic-font]="isRTL">
+            <mat-icon>description</mat-icon>
+            <p>{{ 'dashboard.noDocuments' | translate }}</p>
+          </div>
+        </div>
+
+        <!-- Loading Template -->
+        <ng-template #loadingTemplate>
+          <div class="loading-container">
+            <mat-spinner diameter="50"></mat-spinner>
+            <p [class.arabic-font]="isRTL">{{ 'common.loading' | translate }}</p>
+          </div>
+        </ng-template>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

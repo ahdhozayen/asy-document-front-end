@@ -1,0 +1,225 @@
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  padding: 1rem;
+  position: relative;
+}
+
+.logo-container {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #ffffff 0%, #e3f2fd 50%, #1e3a5f 100%);
+  // border-radius: 12px;
+  // width: 240px;
+  // height: 180px;
+  align-items: center;
+  // box-shadow: 0 4px 20px rgba(30, 58, 95, 0.15);
+
+  .company-logo {
+    width: 140px;
+    height: auto;
+    max-height: 140px;
+    object-fit: contain;
+  }
+}
+
+.language-switcher-container {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+
+  [dir="rtl"] & {
+    right: auto;
+    left: 1rem;
+  }
+
+  ::ng-deep .language-switcher-button {
+    background: white;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+    .mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      line-height: 20px;
+    }
+  }
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  background: white;
+  border-top: 4px solid #f9d71c; // Gold accent at top
+}
+
+.login-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1rem 2rem 0.5rem;
+
+  mat-card-subtitle {
+    color: #666;
+    font-size: 1rem;
+    margin: 0;
+  }
+}
+
+mat-card-content {
+  padding: 2rem;
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background-color: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 4px;
+  color: #c62828;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+
+  .error-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: #d32f2f;
+  }
+}
+
+.login-button {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: 500;
+  background: linear-gradient(135deg, #1e3a5f 0%, #2c4a70 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #162b4d 0%, #1e3a5f 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(30, 58, 95, 0.4);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.submit-button {
+  margin-top: 1rem;
+  height: 48px;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 8px;
+  margin-top: 1rem;
+  position: relative;
+
+  &.arabic-font {
+    font-family: 'Cairo', 'Noto Sans Arabic', sans-serif;
+  }
+
+  .button-spinner {
+    margin-right: 0.5rem;
+  }
+
+  &:disabled {
+    opacity: 0.7;
+  }
+}
+
+// RTL-specific adjustments
+.rtl {
+  .language-switcher {
+    right: auto;
+    left: 1rem;
+  }
+
+  .error-message {
+    flex-direction: row-reverse;
+  }
+
+  .login-button .button-spinner {
+    margin-right: 0;
+    margin-left: 0.5rem;
+  }
+}
+
+// Responsive design
+@media (max-width: 480px) {
+  .login-container {
+    padding: 0.5rem;
+  }
+
+  .login-card {
+    padding: 1.5rem;
+  }
+
+  .language-switcher {
+    top: 0.5rem;
+    right: 0.5rem;
+
+    &.rtl {
+      right: auto;
+      left: 0.5rem;
+    }
+  }
+}
+
+// Angular Material theme overrides
+::ng-deep {
+  .language-panel .mat-mdc-option {
+    font-family: inherit;
+  }
+
+  .mat-mdc-form-field-error {
+    font-size: 0.75rem;
+  }
+
+  .mat-form-field {
+    width: 100%;
+    margin-bottom: 1rem;
+
+    .mat-mdc-form-field-focus-overlay {
+      background-color: rgba(30, 58, 95, 0.1);
+    }
+
+    &.mat-focused .mat-mdc-form-field-focus-overlay {
+      opacity: 1;
+    }
+  
+    // Navy blue for focused state
+    &.mat-focused .mat-mdc-text-field-wrapper {
+      border-color: #1e3a5f;
+    }
+  }
+}

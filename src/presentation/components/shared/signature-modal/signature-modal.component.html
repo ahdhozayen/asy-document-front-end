@@ -1,0 +1,34 @@
+<div class="signature-modal" [class.rtl]="isRTL" [attr.dir]="isRTL ? 'rtl' : 'ltr'">
+  <div class="modal-header">
+    <h2 mat-dialog-title [class.arabic-font]="isRTL">
+      {{ 'documents.signature.title' | translate }}
+    </h2>
+    <button mat-icon-button (click)="onCancel()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="modal-content">
+    <div class="signature-instructions" [class.arabic-font]="isRTL">
+      {{ 'documents.signature.instructions' | translate }}
+    </div>
+    
+    <div class="signature-canvas-container">
+      <canvas #signatureCanvas class="signature-canvas"></canvas>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="clearSignature()">
+      <mat-icon>delete</mat-icon>
+      {{ 'documents.signature.clear' | translate }}
+    </button>
+    <button mat-button (click)="onCancel()">
+      {{ 'common.cancel' | translate }}
+    </button>
+    <button mat-raised-button color="primary" (click)="saveSignature()">
+      <mat-icon>check</mat-icon>
+      {{ 'documents.signature.save' | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

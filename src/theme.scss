@@ -1,0 +1,93 @@
+@use '@angular/material' as mat;
+@use '@angular/material/theming' as *;
+
+// Include the common styles for Angular Material
+@include mat.core();
+
+// Define color palettes
+
+// Create the theme using the standard Material theming approach
+$primary-palette: (
+  50: #e3e6f0,
+  100: #b9c1da,
+  200: #8b98c1,
+  300: #5c6fa8,
+  400: #395096,
+  500: #1e3a5f, // Main navy blue
+  600: #1a3357,
+  700: #162b4d,
+  800: #122343,
+  900: #0a1632,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: white,
+    400: white,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+  )
+);
+
+$accent-palette: (
+  50: #fffbf0,
+  100: #fef5da,
+  200: #fdefc1,
+  300: #fce8a8,
+  400: #fbe396,
+  500: #f9d71c, // Main gold
+  600: #f6d419,
+  700: #f2ce14,
+  800: #efc811,
+  900: #e9bf09,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: rgba(black, 0.87),
+    500: rgba(black, 0.87),
+    600: rgba(black, 0.87),
+    700: rgba(black, 0.87),
+    800: rgba(black, 0.87),
+    900: rgba(black, 0.87),
+  )
+);
+
+$primary: mat.define-palette($primary-palette, 500);
+$accent: mat.define-palette($accent-palette, 500);
+$warn: mat.define-palette(mat.$red-palette);
+
+$theme: mat.define-light-theme((
+  color: (
+    primary: $primary,
+    accent: $accent,
+    warn: $warn,
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+// Include theme styles for Angular Material components
+@include mat.all-component-themes($theme);
+
+// Custom CSS variables for easy access
+:root {
+  --primary-color: #1e3a5f;
+  --primary-light: #5c6fa8;
+  --primary-dark: #0a1632;
+  --secondary-color: #f9d71c;
+  --secondary-light: #fce8a8;
+  --secondary-dark: #e9bf09;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --background: #ffffff;
+  --surface: #f5f5f5;
+  --error: #f44336;
+  --success: #4caf50;
+  --warning: #ff9800;
+  --info: #2196f3;
+}

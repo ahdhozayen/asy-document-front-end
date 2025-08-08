@@ -1,0 +1,269 @@
+{
+  "common": {
+    "loading": "جاري التحميل...",
+    "save": "حفظ",
+    "saving": "جاري الحفظ...",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "view": "عرض",
+    "download": "تحميل",
+    "upload": "رفع",
+    "search": "بحث",
+    "filter": "تصفية",
+    "clear": "مسح",
+    "confirm": "تأكيد",
+    "yes": "نعم",
+    "no": "لا",
+    "close": "إغلاق",
+    "back": "رجوع",
+    "next": "التالي",
+    "previous": "السابق",
+    "submit": "إرسال",
+    "reset": "إعادة تعيين",
+    "refresh": "تحديث",
+    "all": "الكل"
+  },
+  "departments": {
+    "finance": "المالية",
+    "hr": "الموارد البشرية",
+    "it": "تكنولوجيا المعلومات",
+    "legal": "القانونية",
+    "operations": "العمليات",
+    "marketing": "التسويق"
+  },
+  "priorities": {
+    "low": "منخفضة",
+    "medium": "متوسطة",
+    "high": "عالية"
+  },
+  "statuses": {
+    "pending": "معلقة",
+    "inProgress": "قيد التنفيذ",
+    "completed": "مكتملة",
+    "signed": "موقعة"
+  },
+  "auth": {
+    "login": {
+      "title": "تسجيل الدخول",
+      "subtitle": "سجل دخولك إلى حسابك",
+      "username": "اسم المستخدم",
+      "usernamePlaceholder": "أدخل اسم المستخدم",
+      "password": "كلمة المرور",
+      "passwordPlaceholder": "أدخل كلمة المرور",
+      "togglePassword": "إظهار/إخفاء كلمة المرور",
+      "submit": "تسجيل الدخول",
+      "signingIn": "جاري تسجيل الدخول...",
+      "error": "فشل تسجيل الدخول"
+    },
+    "logout": "تسجيل الخروج",
+    "email": "البريد الإلكتروني",
+    "session_expired": "انتهت جلستك. يرجى تسجيل الدخول مرة أخرى.",
+    "firstName": "الاسم الأول",
+    "lastName": "الاسم الأخير",
+    "welcomeBack": "مرحباً بعودتك",
+    "loginToAccount": "سجل دخولك إلى حسابك",
+    "invalidCredentials": "بيانات الدخول غير صحيحة",
+    "loginFailed": "فشل تسجيل الدخول",
+    "loginSuccess": "تم تسجيل الدخول بنجاح"
+  },
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "welcome": "مرحباً",
+    "logout": "تسجيل الخروج",
+    "stats": {
+      "total": "المجموع",
+      "pending": "معلق",
+      "inProgress": "قيد التنفيذ",
+      "completed": "مكتمل",
+      "signed": "موقع"
+    },
+
+    "documentsTable": {
+      "title": "الوثائق",
+      "department": "القسم",
+      "priority": "الأولوية",
+      "status": "الحالة",
+      "createdAt": "تاريخ الإنشاء",
+      "actions": "الإجراءات"
+    },
+    "filters": {
+      "search": "البحث في الوثائق...",
+      "searchPlaceholder": "البحث في الوثائق...",
+      "department": "القسم",
+      "priority": "الأولوية",
+      "status": "الحالة",
+      "allDepartments": "جميع الأقسام",
+      "allPriorities": "جميع الأولويات",
+      "allStatuses": "جميع الحالات"
+    },
+    "actions": {
+      "view": "عرض",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "download": "تحميل"
+    }
+  },
+
+  "documents": {
+    "title": "الوثائق",
+    "noDocuments": "لا توجد وثائق",
+    "documentName": "اسم الوثيقة",
+    "department": "القسم",
+    "priority": "الأولوية",
+    "status": "الحالة",
+    "uploadedBy": "رفع بواسطة",
+    "createdAt": "تاريخ الإنشاء",
+    "updatedAt": "تاريخ التحديث",
+    "actions": "الإجراءات",
+    "fileSize": "حجم الملف",
+    "description": "الوصف",
+    "comments": "التعليقات",
+    "reviewedAt": "تاريخ المراجعة",
+    "attachments": "المرفقات",
+    "fileName": "اسم الملف",
+    "view": {
+      "title": "عرض الوثيقة",
+      "details": "تفاصيل الوثيقة",
+      "attachments": "المرفقات",
+      "addComment": "إضافة تعليق",
+      "commentPlaceholder": "أدخل تعليقك هنا",
+      "redirectDepartment": "إعادة توجيه إلى قسم",
+      "selectDepartment": "اختر القسم",
+      "submitComment": "إرسال التعليق",
+      "signDocument": "توقيع الوثيقة"
+    },
+    "signature": {
+      "title": "توقيع الوثيقة",
+      "instructions": "ارسم توقيعك أدناه باستخدام الماوس أو اللمس",
+      "clear": "مسح",
+      "save": "حفظ التوقيع"
+    },
+    "sign": {
+      "success": "تم توقيع الوثيقة بنجاح",
+      "error": "فشل في توقيع الوثيقة"
+    },
+    "comment": {
+      "success": "تمت إضافة التعليق بنجاح",
+      "error": "فشل في إضافة التعليق"
+    },
+    "upload": {
+      "title": "رفع وثيقة جديدة",
+      "selectFile": "اختر ملف",
+      "dragDrop": "اسحب وأفلت الملف هنا أو انقر للاختيار",
+      "fileSelected": "تم اختيار الملف",
+      "uploading": "جاري الرفع...",
+      "success": "تم رفع الوثيقة بنجاح",
+      "error": "فشل في رفع الوثيقة"
+    },
+    "create": {
+      "title": "إنشاء وثيقة جديدة",
+      "modalTitle": "إنشاء وثيقة جديدة",
+      "button": "إنشاء وثيقة جديدة",
+      "selectFile": "اختر ملف PDF",
+      "dragDrop": "اسحب وأفلت ملف PDF هنا أو انقر للاختيار",
+      "fileSelected": "تم اختيار الملف:",
+      "submit": "إنشاء الوثيقة",
+      "creating": "جاري الإنشاء...",
+      "success": "تم إنشاء الوثيقة بنجاح",
+      "error": "فشل في إنشاء الوثيقة",
+      "validation": {
+        "pdfOnly": "يُسمح فقط بملفات PDF",
+        "required": "هذا الحقل مطلوب",
+        "maxLength": "تم تجاوز الحد الأقصى للطول"
+      }
+    },
+    "edit": {
+      "title": "تعديل الوثيقة",
+      "success": "تم تحديث الوثيقة بنجاح",
+      "error": "فشل في تحديث الوثيقة"
+    },
+    "form": {
+      "title": "العنوان",
+      "titlePlaceholder": "أدخل عنوان الوثيقة",
+      "description": "الوصف",
+      "descriptionPlaceholder": "أدخل وصف الوثيقة (اختياري)",
+      "department": "القسم",
+      "priority": "الأولوية",
+      "status": "الحالة",
+      "attachment": "مرفق الوثيقة",
+      "attachmentNote": "ارفع ملفاً جديداً لاستبدال المرفق الحالي (اختياري)",
+      "selectFile": "اختيار ملف",
+      "changeFile": "تغيير الملف"
+    },
+    "delete": {
+      "title": "حذف الوثيقة",
+      "message": "هل أنت متأكد من حذف هذه الوثيقة؟",
+      "success": "تم حذف الوثيقة بنجاح",
+      "error": "فشل في حذف الوثيقة"
+    },
+    "review": {
+      "title": "مراجعة الوثيقة",
+      "approve": "موافقة",
+      "reject": "رفض",
+      "success": "تم تحديث حالة الوثيقة بنجاح",
+      "error": "فشل في تحديث حالة الوثيقة"
+    },
+    "statuses": {
+      "pending": "معلقة",
+      "in_review": "قيد المراجعة",
+      "signed": "موقعة",
+      "rejected": "مرفوضة"
+    },
+    "priorities": {
+      "low": "منخفضة",
+      "medium": "متوسطة",
+      "high": "عالية"
+    },
+    "departments": {
+      "Finance": "المالية",
+      "HR": "الموارد البشرية",
+      "IT": "تقنية المعلومات",
+      "Legal": "القانونية",
+      "Operations": "العمليات",
+      "Marketing": "التسويق",
+      "Sales": "المبيعات"
+    }
+  },
+  "errors": {
+    "generic": "حدث خطأ غير متوقع",
+    "network": "خطأ في الشبكة",
+    "unauthorized": "غير مخول للوصول",
+    "forbidden": "ممنوع الوصول",
+    "notFound": "غير موجود",
+    "serverError": "خطأ في الخادم",
+    "validationError": "خطأ في التحقق من البيانات",
+    "fileUploadError": "فشل في رفع الملف",
+    "fileSizeError": "حجم الملف كبير جداً",
+    "fileTypeError": "نوع الملف غير مدعوم"
+  },
+  "dialogs": {
+    "confirmation": {
+      "deleteDocument": {
+        "title": "حذف الوثيقة",
+        "message": "هل أنت متأكد من أنك تريد حذف هذه الوثيقة؟ لا يمكن التراجع عن هذا الإجراء.",
+        "confirm": "حذف",
+        "cancel": "إلغاء"
+      },
+      "documentTitle": "عنوان الوثيقة"
+    }
+  },
+  "messages": {
+    "success": {
+      "documentDeleted": "تم حذف الوثيقة بنجاح",
+      "documentUpdated": "تم تحديث الوثيقة بنجاح"
+    },
+    "error": {
+      "documentDeleteFailed": "فشل في حذف الوثيقة. يرجى المحاولة مرة أخرى.",
+      "documentUpdateFailed": "فشل في تحديث الوثيقة. يرجى المحاولة مرة أخرى.",
+      "genericError": "حدث خطأ. يرجى المحاولة مرة أخرى."
+    }
+  },
+  "validation": {
+    "required": "هذا الحقل مطلوب",
+    "email": "يرجى إدخال بريد إلكتروني صحيح",
+    "minLength": "يجب أن يكون الطول أكثر من {min} أحرف",
+    "maxLength": "يجب أن يكون الطول أقل من {max} أحرف",
+    "pattern": "التنسيق غير صحيح"
+  }
+}

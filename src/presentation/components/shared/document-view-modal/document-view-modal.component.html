@@ -1,0 +1,137 @@
+<div class="document-view-modal" [class.rtl]="isRTL" [attr.dir]="isRTL ? 'rtl' : 'ltr'">
+  <div class="modal-header">
+    <h2 mat-dialog-title [class.arabic-font]="isRTL">
+      {{ 'documents.view.title' | translate }}
+    </h2>
+    <button mat-icon-button (click)="onClose()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="modal-content">
+    <!-- Document Details Section -->
+    <div class="document-details-section">
+      <h3 [class.arabic-font]="isRTL">{{ 'documents.view.details' | translate }}</h3>
+      
+      <div class="detail-row">
+        <span class="detail-label" [class.arabic-font]="isRTL">{{ 'documents.fields.title' | translate }}:</span>
+        <span class="detail-value">{{ document.title }}</span>
+      </div>
+      
+      <div class="detail-row">
+        <span class="detail-label" [class.arabic-font]="isRTL">{{ 'documents.fields.description' | translate }}:</span>
+        <span class="detail-value">{{ document.description }}</span>
+      </div>
+      
+      <div class="detail-row">
+        <span class="detail-label" [class.arabic-font]="isRTL">{{ 'documents.fields.department' | translate }}:</span>
+        <span class="detail-value">{{ document.department }}</span>
+      </div>
+      
+      <div class="detail-row">
+        <span class="detail-label" [class.arabic-font]="isRTL">{{ 'documents.fields.priority' | translate }}:</span>
+        <span class="detail-value">
+          <span class="status-chip" [ngClass]="getPriorityColor(document.priority)">
+            {{ 'documents.priority.' + document.priority | translate }}
+          </span>
+        </span>
+      </div>
+      
+      <div class="detail-row">
+        <span class="detail-label" [class.arabic-font]="isRTL">{{ 'documents.fields.status' | translate }}:</span>
+        <span class="detail-value">
+          <span class="status-chip" [ngClass]="getStatusColor(document.status)">
+            {{ 'documents.status.' + document.status | translate }}
+          </span>
+        </span>
+      </div>
+      
+      <div class="detail-row">
+        <span class="detail-label" [class.arabic-font]="isRTL">{{ 'documents.fields.createdAt' | translate }}:</span>
+        <span class="detail-value">{{ formatDate(document.createdAt) }}</span>
+      </div>
+      
+      <div class="detail-row" *ngIf="document.uploadedByName">
+        <span class="detail-label" [class.arabic-font]="isRTL">{{ 'documents.fields.uploadedBy' | translate }}:</span>
+        <span class="detail-value">{{ document.uploadedByName }}</span>
+      </div>
+      
+      <div class="detail-row" *ngIf="document.reviewedAt">
+        <span class="detail-label" [class.arabic-font]="isRTL">{{ 'documents.fields.reviewedAt' | translate }}:</span>
+        <span class="detail-value">{{ formatDate(document.reviewedAt) }}</span>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- Document Attachment Section -->
+    <div class="document-attachment-section">
+      <h3 [class.arabic-font]="isRTL">{{ 'documents.view.attachment' | translate }}</h3>
+      
+      <div class="attachment-info">
+        <mat-icon>attachment</mat-icon>
+        <span class="file-name">{{ document.fileName }}</span>
+        <span class="file-size">({{ document.formattedFileSize }})</span>
+        
+        <a mat-button color="primary" [href]="document.fileUrl" target="_blank" download>
+          <mat-icon>download</mat-icon>
+          {{ 'documents.actions.download' | translate }}
+        </a>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- Comments and Redirect Section -->
+    <div class="document-comment-section">
+      <h3 [class.arabic-font]="isRTL">{{ 'documents.view.addComment' | translate }}</h3>
+      
+      <form [formGroup]="commentForm" class="comment-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'documents.fields.comment' | translate }}</mat-label>
+          <textarea 
+            matInput 
+            formControlName="comment" 
+            rows="4"
+            placeholder="{{ 'documents.view.commentPlaceholder' | translate }}"
+          ></textarea>
+          <mat-error *ngIf="commentForm.get('comment')?.hasError('required')">
+            {{ 'validation.required' | translate }}
+          </mat-error>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'documents.fields.redirectDepartment' | translate }}</mat-label>
+          <mat-select formControlName="redirectDepartment">
+            <mat-option *ngFor="let dept of departments" [value]="dept">
+              {{ dept }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="commentForm.get('redirectDepartment')?.hasError('required')">
+            {{ 'validation.required' | translate }}
+          </mat-error>
+        </mat-form-field>
+      </form>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onClose()">
+      {{ 'common.cancel' | translate }}
+    </button>
+    <button 
+      mat-raised-button 
+      color="accent" 
+      (click)="onSubmitComment()" 
+      [disabled]="commentForm.invalid">
+      {{ 'documents.view.submitComment' | translate }}
+    </button>
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="onSignDocument()">
+      <mat-icon>draw</mat-icon>
+      {{ 'documents.view.signDocument' | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>
