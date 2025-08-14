@@ -13,7 +13,7 @@
       <!-- Center Section: Welcome Message -->
       <div class="navbar-center" *ngIf="currentUser">
         <span class="welcome-text" [class.arabic-font]="isRTL">
-          {{ 'dashboard.welcome' | translate }}, {{ currentUser.displayName }}
+          {{ 'dashboard.welcome' | translate }}, {{ currentUser?.displayName || 'User'}}
         </span>
       </div>
 
@@ -23,15 +23,10 @@
         <app-language-switcher></app-language-switcher>
 
         <!-- Logout Button -->
-        <button mat-icon-button [matMenuTriggerFor]="userMenu" class="logout-button">
-          <mat-icon>account_circle</mat-icon>
-        </button>
-        <mat-menu #userMenu="matMenu" class="user-menu">
-          <button mat-menu-item (click)="onLogout()" [class.arabic-font]="isRTL" class="logout-menu-item">
-            <mat-icon>logout</mat-icon>
-            <span>{{ 'dashboard.logout' | translate }}</span>
-          </button>
-        </mat-menu>
+<button mat-icon-button class="logout-button" (click)="onLogout()">
+  <mat-icon>logout</mat-icon>
+</button>
+
       </div>
     </div>
   </mat-toolbar>
@@ -39,9 +34,9 @@
   <!-- Main Content -->
   <div class="dashboard-content">
     <!-- Stats Cards -->
-    <div style="scrollbar-width: thin;">
+    <div style="display: flex; flex-direction: row; justify-content: space-between; scrollbar-width: thin;">
       <!-- Total Documents -->
-      <mat-card class="stat-card stat-card-total inline-flex min-w-[280px] w-[280px] flex-shrink-0 bg-white rounded-xl shadow-md flex-col items-center py-6 px-4 mb-0">
+      <mat-card class="stat-card stat-card-total inline-flex min-w-[280px] w-[280px] flex-shrink-0 bg-white rounded-xl shadow-md flex-col items-center ">
         <div class="stat-icon-box bg-[#001BB7] flex items-center justify-center rounded-full mb-3" style="width:56px;height:56px;">
           <mat-icon style="color: #fff; font-size: 2rem;">description</mat-icon>
         </div>
@@ -49,7 +44,7 @@
         <div class="stat-label text-gray-500 mt-1 text-base" [class.arabic-font]="isRTL">{{ 'dashboard.stats.total' | translate }}</div>
       </mat-card>
       <!-- Signed Documents -->
-      <mat-card class="stat-card stat-card-signed inline-flex min-w-[280px] w-[280px] flex-shrink-0 bg-white rounded-xl shadow-md flex-col items-center py-6 px-4 mb-0">
+      <mat-card class="stat-card stat-card-signed inline-flex min-w-[280px] w-[280px] flex-shrink-0 bg-white rounded-xl shadow-md flex-col items-center ">
         <div class="stat-icon-box bg-[#0046FF] flex items-center justify-center rounded-full mb-3" style="width:56px;height:56px;">
           <mat-icon style="color: #fff; font-size: 2rem;">task_alt</mat-icon>
         </div>
@@ -57,7 +52,7 @@
         <div class="stat-label text-gray-500 mt-1 text-base" [class.arabic-font]="isRTL">{{ 'dashboard.stats.signed' | translate }}</div>
       </mat-card>
       <!-- Pending Documents -->
-      <mat-card class="stat-card stat-card-pending inline-flex min-w-[280px] w-[280px] flex-shrink-0 bg-white rounded-xl shadow-md flex-col items-center py-6 px-4">
+      <mat-card class="stat-card stat-card-pending inline-flex min-w-[280px] w-[280px] flex-shrink-0 bg-white rounded-xl shadow-md flex-col items-center">
         <div class="stat-icon-box bg-[#FF8040] flex items-center justify-center rounded-full mb-3" style="width:56px;height:56px;">
           <mat-icon style="color: #fff; font-size: 2rem;">pending</mat-icon>
         </div>
@@ -69,12 +64,12 @@
     <!-- Filters Section -->
     <mat-card class="filters-card">
       <mat-card-content>
-        <form [formGroup]="filterForm" class="filters-form">
+       <form [formGroup]="filterForm" class="filters-form" style="display: flex; justify-content: center; gap: 16px;">
           <!-- Search -->
-          <mat-form-field>
+          <mat-form-field appearance="outline">
             <mat-label>{{ 'dashboard.filters.search' | translate }}</mat-label>
-            <input 
-              matInput 
+            <input
+              matInput
               formControlName="query"
               placeholder="{{ 'dashboard.filters.search_placeholder' | translate }}"
             />
@@ -82,35 +77,35 @@
           </mat-form-field>
 
           <!-- Department Filter -->
-          <mat-form-field>
-            <mat-label>{{ 'dashboard.filters.department' | translate }}</mat-label>
-            <mat-select formControlName="department">
-              <mat-option>HR</mat-option>
-              <mat-option>IT</mat-option>
-              <mat-option>Marketing</mat-option>
-            </mat-select>
-          </mat-form-field>
+         <mat-form-field appearance="outline">
+  <mat-label>{{ 'dashboard.filters.department' | translate }}</mat-label>
+  <mat-select formControlName="department" placeholder="{{ 'dashboard.filters.department' | translate }}">
+    <mat-option value="HR">HR</mat-option>
+    <mat-option value="IT">IT</mat-option>
+    <mat-option value="Marketing">Marketing</mat-option>
+  </mat-select>
+</mat-form-field>
 
           <!-- Priority Filter -->
-          <mat-form-field>
-            <mat-label>{{ 'dashboard.filters.priority' | translate }}</mat-label>
-            <mat-select formControlName="priority">
-              <mat-option>High</mat-option>
-              <mat-option>Medium</mat-option>
-              <mat-option>Low</mat-option>
-            </mat-select>
-          </mat-form-field>
+         <mat-form-field appearance="outline">
+  <mat-label>{{ 'dashboard.filters.priority' | translate }}</mat-label>
+  <mat-select formControlName="priority" placeholder="{{ 'dashboard.filters.priority' | translate }}">
+    <mat-option value="High">High</mat-option>
+    <mat-option value="Medium">Medium</mat-option>
+    <mat-option value="Low">Low</mat-option>
+  </mat-select>
+</mat-form-field>
 
           <!-- Status Filter -->
-          <mat-form-field>
-            <mat-label>{{ 'dashboard.filters.status' | translate }}</mat-label>
-            <mat-select formControlName="status">
-              <mat-option>Pending</mat-option>
-              <mat-option>In Review</mat-option>
-              <mat-option>Signed</mat-option>
-              <mat-option>Rejected</mat-option>
-            </mat-select>
-          </mat-form-field>
+     <mat-form-field appearance="outline">
+  <mat-label>{{ 'dashboard.filters.status' | translate }}</mat-label>
+  <mat-select formControlName="status" placeholder="{{ 'dashboard.filters.status' | translate }}">
+    <mat-option value="Pending">Pending</mat-option>
+    <mat-option value="In Review">In Review</mat-option>
+    <mat-option value="Signed">Signed</mat-option>
+    <mat-option value="Rejected">Rejected</mat-option>
+  </mat-select>
+</mat-form-field>
         </form>
       </mat-card-content>
     </mat-card>
@@ -128,7 +123,7 @@
           </button>
         </div>
       </mat-card-header>
-      
+
       <mat-card-content class="stat-card-content">
         <div class="table-container" *ngIf="!isLoading; else loadingTemplate">
           <table mat-table [dataSource]="documents" class="documents-table" [class.rtl]="isRTL">
@@ -194,8 +189,8 @@
               <td mat-cell *matCellDef="let document">
                 <div class="actions-container" [class.rtl]="isRTL">
                   <!-- View Button -->
-                  <button 
-                    mat-icon-button 
+                  <button
+                    mat-icon-button
                     color="primary"
                     *ngIf="canViewDocument()"
                     (click)="onViewDocument(document)"
@@ -204,8 +199,8 @@
                   </button>
 
                   <!-- Edit Button -->
-                  <button 
-                    mat-icon-button 
+                  <button
+                    mat-icon-button
                     color="accent"
                     *ngIf="canEditDocument(document)"
                     (click)="onEditDocument(document)"
@@ -214,8 +209,8 @@
                   </button>
 
                   <!-- Download Button -->
-                  <button 
-                    mat-icon-button 
+                  <button
+                    mat-icon-button
                     color="primary"
                     (click)="onDownloadDocument(document)"
                     [matTooltip]="'dashboard.actions.download' | translate">
@@ -223,8 +218,8 @@
                   </button>
 
                   <!-- Delete Button -->
-                  <button 
-                    mat-icon-button 
+                  <button
+                    mat-icon-button
                     color="warn"
                     *ngIf="canDeleteDocument()"
                     (click)="onDeleteDocument(document)"

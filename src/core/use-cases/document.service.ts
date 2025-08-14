@@ -3,14 +3,14 @@ import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { map, tap, catchError, switchMap } from 'rxjs/operators';
 import { HttpClientService } from '../../infrastructure/http/http-client.service';
 import { ApiConfig } from '../../infrastructure/http/api.config';
-import { 
-  Document, 
-  DocumentStats, 
-  DocumentFilters, 
-  CreateDocumentData, 
-  CreateDocumentMetadata, 
+import {
+  Document,
+  DocumentStats,
+  DocumentFilters,
+  CreateDocumentData,
+  CreateDocumentMetadata,
   UploadDocumentAttachment,
-  ApiResponse 
+  ApiResponse
 } from '../entities';
 
 @Injectable({
@@ -36,14 +36,12 @@ export class DocumentService {
 
   getDocuments(filters?: DocumentFilters): Observable<Document[]> {
     this.isLoadingSubject.next(true);
-    
+
     let url = this.config.endpoints.documents.list;
-    console.log('Fetching documents from URL:', url);
-    
+
     // Check if we have a token before making the request
     const token = localStorage.getItem('access');
-    console.log('Document request - Token available:', token ? 'Yes' : 'No');
-    
+
     const params = new URLSearchParams();
 
     if (filters) {
@@ -69,19 +67,12 @@ export class DocumentService {
         this.isLoadingSubject.next(false);
       }),
       catchError(error => {
-        console.error('Failed to fetch documents:', {
-          status: error.status,
-          message: error.message,
-          url: url,
-          error: error
-        });
-        
+
+
         if (error.status === 401) {
-          console.error('401 Unauthorized - Token might be invalid or missing');
           const currentToken = localStorage.getItem('access');
-          console.error('Current token in localStorage:', currentToken ? 'Present' : 'Missing');
         }
-        
+
         this.isLoadingSubject.next(false);
         return throwError(() => error);
       })
@@ -90,9 +81,8 @@ export class DocumentService {
 
   getDocumentStats(): Observable<DocumentStats> {
     const statsEndpoint = this.config.endpoints.documents.stats;
-    
+
     if (!statsEndpoint) {
-      console.warn('Stats endpoint not configured, returning default stats');
       const defaultStats: DocumentStats = {
         total: 0,
         pending: 0,
@@ -110,7 +100,6 @@ export class DocumentService {
     return this.httpClient.get<DocumentStats>(statsEndpoint).pipe(
       tap(stats => this.statsSubject.next(stats)),
       catchError(error => {
-        console.warn('Failed to fetch document stats:', error);
         const defaultStats: DocumentStats = {
           total: 0,
           pending: 0,

@@ -77,7 +77,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.router.navigate(['/dashboard']);
         }
       });
-      
+
     // Check for session expiration query param
     this.route.queryParams
       .pipe(takeUntil(this.destroy$))
@@ -108,16 +108,13 @@ export class LoginComponent implements OnInit, OnDestroy {
       password: this.loginForm.value.password
     };
 
-    console.log('Login component: Starting login with credentials');
-    
+
     this.authService.login(credentials).subscribe({
       next: () => {
-        console.log('Login component: Login successful, navigating to dashboard');
         this.router.navigate(['/dashboard']);
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Login component: Login failed', error);
         this.errorMessage = error?.message || this.translate.instant('auth.login.error');
         this.isLoading = false;
       }

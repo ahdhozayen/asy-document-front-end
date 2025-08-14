@@ -4,12 +4,11 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class StorageService {
-  
+
   setItem(key: string, value: string): void {
     try {
       localStorage.setItem(key, value);
     } catch (error) {
-      console.error('Error saving to localStorage:', error);
     }
   }
 
@@ -17,7 +16,6 @@ export class StorageService {
     try {
       return localStorage.getItem(key);
     } catch (error) {
-      console.error('Error reading from localStorage:', error);
       return null;
     }
   }
@@ -26,7 +24,6 @@ export class StorageService {
     try {
       localStorage.removeItem(key);
     } catch (error) {
-      console.error('Error removing from localStorage:', error);
     }
   }
 
@@ -34,7 +31,6 @@ export class StorageService {
     try {
       localStorage.clear();
     } catch (error) {
-      console.error('Error clearing localStorage:', error);
     }
   }
 
@@ -43,7 +39,6 @@ export class StorageService {
       const serialized = JSON.stringify(value);
       this.setItem(key, serialized);
     } catch (error) {
-      console.error('Error serializing object to localStorage:', error);
     }
   }
 
@@ -52,7 +47,6 @@ export class StorageService {
       const item = this.getItem(key);
       return item ? JSON.parse(item) : null;
     } catch (error) {
-      console.error('Error deserializing object from localStorage:', error);
       return null;
     }
   }
@@ -76,32 +70,15 @@ export class StorageService {
     this.removeItem('refresh');
   }
 
-  hasValidTokens(): boolean {
-    const accessToken = this.getAccessToken();
-    const refreshToken = this.getRefreshToken();
-    
-    if (!accessToken || !refreshToken) {
-      console.log('Missing tokens - access:', !!accessToken, 'refresh:', !!refreshToken);
-      return false;
-    }
-    
-    // Check if access token is expired (basic check)
-    try {
-      const payload = JSON.parse(atob(accessToken.split('.')[1]));
-      const currentTime = Math.floor(Date.now() / 1000);
-      const isExpired = payload.exp < currentTime;
-      
-      if (isExpired) {
-        console.log('Access token is expired');
-        // Don't return false here - let the refresh token handle it
-      }
-      
-      console.log('Tokens validation - access expired:', isExpired, 'has refresh:', !!refreshToken);
-      return true; // Return true if we have both tokens, even if access is expired
-    } catch (error) {
-      console.error('Error parsing access token:', error);
-      return false;
-    }
+hasValidTokens(): boolean {
+  const accessToken = this.getAccessToken();
+  const refreshToken = this.getRefreshToken();
+
+  if (!accessToken || !refreshToken) {
+    return false;
+  }
+  return true;
+
   }
 
   // Language preference

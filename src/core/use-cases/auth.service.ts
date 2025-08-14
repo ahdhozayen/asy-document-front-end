@@ -51,6 +51,8 @@ export class AuthService {
 
   private httpClient = inject(HttpClientService);
   private storage = inject(StorageService);
+  private router = inject(Router);
+  private toastService = inject(ToastService);
 
   constructor() {
     this.initializeAuth();
@@ -62,52 +64,29 @@ export class AuthService {
   }
 
   private initializeAuth(): void {
-    console.log('Initializing authentication...');
-    
-    // Start with loading state
     this.isLoadingSubject.next(true);
-    
     const hasTokens = this.storage.hasValidTokens();
-    console.log('Has valid tokens:', hasTokens);
-    
+
     if (hasTokens) {
-      console.log('Tokens found, fetching current user...');
-      
-      // Try to get stored user first for faster initialization
-      const storedUser = this.storage.getObject<User>('current-user');
-      if (storedUser) {
-        console.log('Found stored user, using it temporarily:', storedUser);
-        this.currentUserSubject.next(storedUser);
-        this.isAuthenticatedSubject.next(true);
-      }
-      
-      // Then verify with server
+      this.loadStoredUser();
+      if (hasTokens && !this.currentUserSubject.value?.displayName) {
+  const placeholderUser = this.createPlaceholderUser(this.storage.getItem('username') || 'User');
+  this.currentUserSubject.next(placeholderUser);
+  this.storage.setObject('current-user', placeholderUser);
+}
+      this.isAuthenticatedSubject.next(true);
+
       this.getCurrentUser().subscribe({
         next: (user) => {
-          console.log('User verified successfully:', user);
           this.currentUserSubject.next(user);
-          this.isAuthenticatedSubject.next(true);
-          this.isLoadingSubject.next(false);
-          // Store user for faster next initialization
           this.storage.setObject('current-user', user);
-        },
-        error: (error) => {
-          // Only clear tokens if error is 401 (unauthorized/invalid token)
-          if (error && (error.status === 401 || error.status === 403)) {
-            console.error('Token invalid (401/403), clearing tokens:', error);
-            this.storage.clearAuthTokens();
-            this.storage.removeItem('current-user');
-            this.currentUserSubject.next(null);
-            this.isAuthenticatedSubject.next(false);
-          } else {
-            // Network/server error: keep tokens, show warning, set loading false
-            console.warn('User verification failed (NOT auth error), keeping tokens:', error);
-          }
           this.isLoadingSubject.next(false);
-        }
+        },
+    error: (error) => {
+  this.isLoadingSubject.next(false);
+}
       });
     } else {
-      console.log('No tokens found, user not authenticated');
       this.storage.removeItem('current-user');
       this.currentUserSubject.next(null);
       this.isAuthenticatedSubject.next(false);
@@ -116,19 +95,15 @@ export class AuthService {
   }
 
   login(credentials: LoginCredentials): Observable<AuthResult> {
-    console.log('Starting login process for user:', credentials.username);
     return this.httpClient.postLogin<LoginResponse>(this.config.endpoints.auth.login, {
       username: credentials.username,
       password: credentials.password
     }).pipe(
       map(response => {
-        console.log('Raw login API response:', response);
-        console.log('Response keys:', Object.keys(response));
-        console.log('Access token in response:', response.access);
-        console.log('Refresh token in response:', response.refresh);
-        
-        const user = response.user ? 
-          User.fromApiResponse(response.user) : 
+
+
+        const user = response.user ?
+          User.fromApiResponse(response.user) :
           this.createPlaceholderUser(credentials.username);
 
         const result = {
@@ -136,37 +111,28 @@ export class AuthService {
           accessToken: response.access,
           refreshToken: response.refresh
         };
-        
-        console.log('Mapped auth result:', {
-          user: result.user ? 'Present' : 'Missing',
-          accessToken: result.accessToken ? 'Present' : 'Missing',
-          refreshToken: result.refreshToken ? 'Present' : 'Missing'
-        });
-        
+
+
+
         return result;
       }),
       tap(result => {
-        console.log('Login successful, storing tokens:', {
-          accessToken: result.accessToken ? 'Present' : 'Missing',
-          refreshToken: result.refreshToken ? 'Present' : 'Missing'
-        });
-        
+
+
         this.storage.setAuthTokens(result.accessToken, result.refreshToken);
-        
+
         // Store user for faster initialization on refresh
         this.storage.setObject('current-user', result.user);
-        
+        this.storage.setItem('username', credentials.username);
+
         // Verify tokens were stored
         const storedAccess = this.storage.getAccessToken();
         const storedRefresh = this.storage.getRefreshToken();
-        console.log('Tokens stored verification:', {
-          accessStored: storedAccess ? 'Yes' : 'No',
-          refreshStored: storedRefresh ? 'Yes' : 'No'
-        });
-        
+
+
         this.currentUserSubject.next(result.user);
         this.isAuthenticatedSubject.next(true);
-        
+
         // If we have a placeholder user, try to fetch real user data
         if (result.user.email === credentials.username && !result.user.firstName) {
           this.getCurrentUser().subscribe({
@@ -176,7 +142,6 @@ export class AuthService {
         }
       }),
       catchError(error => {
-        console.error('Login failed:', error);
         return throwError(() => error);
       })
     );
@@ -192,21 +157,17 @@ export class AuthService {
     this.clearTokens();
     this.currentUserSubject.next(null);
     this.isAuthenticatedSubject.next(false);
-    
-    // Get router for navigation
-    const router = inject(Router);
-    const toastService = inject(ToastService);
-    
+
     // Handle session expiration notification
     if (reason === 'session_expired') {
       // Show session expired notification
-      toastService.warning('auth.session_expired');
-      
+      this.toastService.warning('auth.session_expired');
+
       // Navigate to login with query param to indicate session expired
-      router.navigate(['/login'], { queryParams: { expired: 'true' } });
+      this.router.navigate(['/login'], { queryParams: { expired: 'true' } });
     } else {
       // Regular logout - just navigate to login
-      router.navigate(['/login']);
+      this.router.navigate(['/login']);
     }
   }
 
@@ -232,9 +193,8 @@ export class AuthService {
 
   getCurrentUser(): Observable<User> {
     const profileEndpoint = this.config.endpoints.auth.profile;
-    
+
     if (!profileEndpoint) {
-      console.warn('Profile endpoint not configured');
       const currentUser = this.currentUserSubject.value;
       if (currentUser) {
         return new Observable(observer => {
@@ -249,7 +209,6 @@ export class AuthService {
       map(response => User.fromApiResponse(response)),
       tap(user => this.currentUserSubject.next(user)),
       catchError(error => {
-        console.error('Failed to get current user:', error);
         return throwError(() => error);
       })
     );
@@ -302,6 +261,14 @@ export class AuthService {
       false,
       new Date()
     );
+  }
+
+  public loadStoredUser(): void {
+    const storedUser = this.storage.getObject<User>('current-user');
+    if (storedUser) {
+      this.currentUserSubject.next(storedUser);
+      this.isAuthenticatedSubject.next(true);
+    }
   }
 
   // Getters for current state

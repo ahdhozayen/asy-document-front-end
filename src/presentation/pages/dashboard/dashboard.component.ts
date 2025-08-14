@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, ViewChildren, QueryList, HostListener, ElementRef, ENVIRONMENT_INITIALIZER } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ViewChildren, QueryList, HostListener, ElementRef, ENVIRONMENT_INITIALIZER, ViewChild } from '@angular/core';
 import { MatSelect } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
@@ -32,7 +32,6 @@ import { DocumentViewModalComponent } from '../../components/shared/document-vie
 import { DocumentEditModalComponent, DocumentEditModalData, DocumentEditData } from '../../components/shared/document-edit-modal/document-edit-modal.component';
 import { ConfirmationDialogComponent, ConfirmationDialogData } from '../../components/shared/confirmation-dialog/confirmation-dialog.component';
 import { DocumentCreateModalComponent, DocumentCreateData } from '../../components/shared/document-create-modal/document-create-modal.component';
-
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -69,21 +68,7 @@ import { DocumentCreateModalComponent, DocumentCreateData } from '../../componen
 export class DashboardComponent implements OnInit, OnDestroy {
   @ViewChildren(MatSelect) matSelects!: QueryList<MatSelect>;
 
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    if (this.matSelects) {
-      this.matSelects.forEach((select: MatSelect) => {
-        // Get the trigger and panel elements
-        const trigger = (select as any)._elementRef.nativeElement;
-        const panel = select.panel?.nativeElement;
 
-        // Check if the click is outside the trigger and the open panel
-        if (select.panelOpen && panel && !trigger.contains(event.target) && !panel.contains(event.target)) {
-          select.close();
-        }
-      });
-    }
-  }
 
   currentUser: User | null = null;
   documents: Document[] = [];
@@ -94,10 +79,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     completed: 0,
     signed: 0
   };
-  
+
   isLoading = false;
   isRTL = false;
-  
+
   filterForm: FormGroup;
   displayedColumns: string[] = ['title', 'department', 'priority', 'status', 'createdAt', 'actions'];
 
@@ -120,20 +105,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit(): void {
-    // Subscribe to language changes
-    this.languageService.isRTL$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(isRTL => {
-        this.isRTL = isRTL;
-      });
+ngOnInit(): void {
+  // Subscribe to language changes
+  this.languageService.isRTL$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(isRTL => {
+      this.isRTL = isRTL;
+    });
 
-    // Subscribe to current user
-    this.authService.currentUser$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(user => {
-        this.currentUser = user;
-      });
+  // Subscribe to current user
+  this.authService.currentUser$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(user => {
+      this.currentUser = user;
+    });
+
+  if (!this.currentUser) {
+    this.authService.loadStoredUser();
+  }
 
     // Subscribe to documents
     this.documentService.documents$
@@ -180,7 +169,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.documentService.getDocuments().subscribe();
       this.documentService.getDocumentStats().subscribe();
     } catch (error) {
-      console.error('Error loading dashboard data:', error);
     }
   }
 
@@ -196,13 +184,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.documentService.getDocuments(filters).subscribe();
   }
 
-  async onLogout(): Promise<void> {
-    try {
-      await this.authService.logout();
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
+async onLogout(): Promise<void> {
+  try {
+    await this.authService.logout();
+  } catch (error) {
   }
+}
 
   onViewDocument(document: Document): void {
     const dialogData = {
@@ -255,7 +242,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
           },
           error: (error) => {
             this.isLoading = false;
-            console.error('Error creating document:', error);
             this.toastService.error(this.translate.instant('documents.create.error'));
           }
         });
@@ -332,7 +318,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.toastService.successTranslated('documents.edit.success');
       },
       error: (error) => {
-        console.error('Error updating document:', error);
         this.toastService.errorTranslated('documents.edit.error');
       }
     });
@@ -359,14 +344,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
               this.toastService.successTranslated('documents.edit.success');
             },
             error: (error) => {
-              console.error('Error uploading new attachment:', error);
               this.toastService.errorTranslated('documents.edit.error');
             }
           });
         }
       },
       error: (error) => {
-        console.error('Error updating document metadata:', error);
         this.toastService.errorTranslated('documents.edit.error');
       }
     });
@@ -378,7 +361,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.toastService.successTranslated('documents.delete.success');
       },
       error: (error) => {
-        console.error('Error deleting document:', error);
         this.toastService.errorTranslated('documents.delete.error');
       }
     });
@@ -396,7 +378,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.loadData();
       },
       error: (error) => {
-        console.error('Error signing document:', error);
         this.toastService.errorTranslated('documents.sign.error');
       }
     });
@@ -413,7 +394,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.loadData();
       },
       error: (error) => {
-        console.error('Error adding document comment:', error);
         this.toastService.errorTranslated('documents.comment.error');
       }
     });
@@ -429,15 +409,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (!this.currentUser) {
       return false;
     }
-    
+
     // Normalize role to lowercase for comparison
     const userRole = this.currentUser.role?.toLowerCase();
     const documentStatus = document.status?.toLowerCase();
-    
+
     // Allow CEO and HELPDESK roles to edit documents that are not signed
     const hasEditPermission = userRole === 'ceo' || userRole === 'helpdesk';
     const isNotSigned = documentStatus !== 'signed';
-    
+
     // return hasEditPermission && isNotSigned;
     return true;
   }
