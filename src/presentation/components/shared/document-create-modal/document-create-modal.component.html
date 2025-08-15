@@ -2,12 +2,12 @@
   <h2 mat-dialog-title [class.arabic-font]="isRTL">
     {{ 'documents.create.modalTitle' | translate }}
   </h2>
-  
+
   <mat-dialog-content>
     <form [formGroup]="documentForm" class="document-form">
       <!-- Document Title -->
       <mat-form-field appearance="outline" class="form-field">
-        <mat-label>{{ 'documents.form.title' | translate }}</mat-label>
+        <mat-label >{{ 'documents.form.title' | translate }}</mat-label>
         <input matInput formControlName="title" [placeholder]="'documents.form.titlePlaceholder' | translate">
         <mat-error *ngIf="documentForm.get('title')?.hasError('required')">
           {{ 'documents.create.validation.required' | translate }}
@@ -20,13 +20,13 @@
       <!-- Document Description -->
       <mat-form-field appearance="outline" class="form-field">
         <mat-label>{{ 'documents.form.description' | translate }}</mat-label>
-        <textarea matInput formControlName="description" rows="3" 
+        <textarea matInput formControlName="description" rows="3"
           [placeholder]="'documents.form.descriptionPlaceholder' | translate"></textarea>
       </mat-form-field>
 
       <!-- From Department -->
       <mat-form-field appearance="outline" class="form-field">
-        <mat-label>{{ 'documents.form.department' | translate }}</mat-label>
+        <mat-label >{{ 'documents.form.department' | translate }}</mat-label>
         <mat-select formControlName="fromDepartment">
           <mat-option *ngFor="let department of departments" [value]="department">
             {{ 'departments.' + department.toLowerCase() | translate }}
@@ -56,17 +56,17 @@
           <span [class.arabic-font]="isRTL">{{ 'documents.form.attachment' | translate }}</span>
           <span class="required-indicator">*</span>
         </div>
-        
-        <div class="file-upload-area" 
-          [class.has-file]="selectedFile" 
+
+        <div class="file-upload-area"
+          [class.has-file]="selectedFile"
           [class.invalid]="documentForm.get('file')?.invalid && documentForm.get('file')?.touched">
-          
-          <input type="file" 
+
+          <input type="file"
             #fileInput
             accept=".pdf"
-            class="file-input" 
+            class="file-input"
             (change)="onFileSelected($event)">
-          
+
           <div class="upload-content">
             <mat-icon>upload_file</mat-icon>
             <span *ngIf="!selectedFile" [class.arabic-font]="isRTL">
@@ -80,14 +80,14 @@
             </button>
           </div>
         </div>
-        
+
         <div *ngIf="documentForm.get('file')?.invalid && documentForm.get('file')?.touched" class="error-message">
           {{ 'documents.create.validation.required' | translate }}
         </div>
       </div>
     </form>
   </mat-dialog-content>
-  
+
   <mat-dialog-actions align="end">
     <button mat-button (click)="onCancel()" [class.arabic-font]="isRTL">
       {{ 'common.cancel' | translate }}

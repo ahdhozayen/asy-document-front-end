@@ -1,6 +1,7 @@
 /* Global styles for Angular Material and RTL/LTR support */
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
+
 /* Fix Material Design button touch targets and focus indicators */
 .mat-mdc-button-touch-target {
   position: absolute;
@@ -11,7 +12,10 @@
   transform: translate(-50%, -50%);
   display: none !important; /* Hide touch targets for better visual appearance */
 }
+    .mat-mdc-floating-label {
+      top: 50% !important;
 
+    }
 .mat-mdc-focus-indicator {
   display: none !important; /* Hide focus indicators for cleaner appearance */
 }
@@ -121,29 +125,18 @@ html, body {
 
 /* Fix for overlay backdrop issues */
 .cdk-overlay-backdrop {
-  opacity: 0 !important;
-  pointer-events: none !important;
+  opacity: 0.5 !important;
+  pointer-events: auto !important;
 }
-
 .cdk-overlay-backdrop-showing {
-  opacity: 0 !important;
+  opacity: 0.5 !important;
 }
-
 .cdk-overlay-transparent-backdrop {
   opacity: 0 !important;
   background: transparent !important;
 }
 
-/* Ensure menus work properly */
-.mat-mdc-menu-panel {
-  min-width: 120px !important;
-  max-width: 280px !important;
-}
 
-.rtl .mat-mdc-menu-item .mat-icon {
-  margin-left: 16px;
-  margin-right: 0;
-}
 
 .rtl .mat-mdc-chip .mat-icon {
   margin-left: 4px;
@@ -322,33 +315,33 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 /* Global Material Form Field Styles - Smaller Inputs */
 .mat-mdc-form-field {
   font-size: 14px !important;
-  
+
   .mat-mdc-text-field-wrapper {
     padding: 0 !important;
   }
-  
+
   .mat-mdc-form-field-flex {
     height: 48px !important;
   }
-  
+
   .mdc-text-field {
     padding: 0 14px !important;
     height: 48px !important;
   }
-  
+
   .mat-mdc-form-field-infix {
     padding: 12px 0 !important;
     min-height: 48px !important;
   }
-  
+
   .mat-mdc-floating-label {
     font-size: 14px !important;
   }
-  
+
   .mdc-floating-label--float-above {
     font-size: 12px !important;
   }
-  
+
   .mat-mdc-form-field-subscript-wrapper {
     font-size: 12px !important;
   }
@@ -357,12 +350,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 /* Smaller Select Dropdowns */
 .mat-mdc-select {
   font-size: 14px !important;
-  
+
   // .mat-mdc-select-trigger {
   //   // height: 12px !important;
   //   align-items: center !important;
   // }
-  
+
   // .mat-mdc-select-value {
   //   padding-top: 14px !important;
   // }
@@ -384,7 +377,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   width: 40px !important;
   height: 40px !important;
   padding: 8px !important;
-  
+
   .mat-icon {
     font-size: 20px !important;
     width: 20px !important;
