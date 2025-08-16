@@ -46,7 +46,7 @@ export class DocumentService {
 
     if (filters) {
       if (filters.search) params.append('search', filters.search);
-      if (filters.department) params.append('department', filters.department);
+      if (filters.department) params.append('department', filters.department.toString());
       if (filters.status) params.append('status', filters.status);
       if (filters.priority) params.append('priority', filters.priority);
       if (filters.uploadedBy) params.append('uploaded_by', filters.uploadedBy.toString());

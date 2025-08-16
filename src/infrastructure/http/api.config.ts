@@ -35,11 +35,11 @@ export class ApiConfig {
         login: `${this.baseUrl}/token`,
         logout: `${this.baseUrl}/auth/logout/`,
         refresh: `${this.baseUrl}/token/refresh/`,
-        profile: `${this.baseUrl}/auth/user/`,
+        profile: `${this.baseUrl}/auth/profile`,
         changePassword: `${this.baseUrl}/auth/change-password/`
       },
       users: {
-        list: `${this.baseUrl}/users/`,
+        list: `${this.baseUrl}/users`,
         detail: (id: number) => `${this.baseUrl}/users/${id}/`,
         create: `${this.baseUrl}/users/`,
         update: (id: number) => `${this.baseUrl}/users/${id}/`,

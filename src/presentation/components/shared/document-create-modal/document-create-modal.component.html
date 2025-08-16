@@ -1,88 +1,132 @@
-<div class="document-create-modal" [class.rtl]="isRTL" [attr.dir]="isRTL ? 'rtl' : 'ltr'">
+<div
+  class="document-create-modal"
+  [class.rtl]="isRTL"
+  [attr.dir]="isRTL ? 'rtl' : 'ltr'"
+>
   <h2 mat-dialog-title [class.arabic-font]="isRTL">
-    {{ 'documents.create.modalTitle' | translate }}
+    {{ "documents.create.modalTitle" | translate }}
   </h2>
 
   <mat-dialog-content>
     <form [formGroup]="documentForm" class="document-form">
       <!-- Document Title -->
       <mat-form-field appearance="outline" class="form-field">
-        <mat-label >{{ 'documents.form.title' | translate }}</mat-label>
-        <input matInput formControlName="title" [placeholder]="'documents.form.titlePlaceholder' | translate">
+        <mat-label>{{ "documents.form.title" | translate }}</mat-label>
+        <input
+          matInput
+          formControlName="title"
+          [placeholder]="'documents.form.titlePlaceholder' | translate"
+        />
         <mat-error *ngIf="documentForm.get('title')?.hasError('required')">
-          {{ 'documents.create.validation.required' | translate }}
+          {{ "documents.create.validation.required" | translate }}
         </mat-error>
         <mat-error *ngIf="documentForm.get('title')?.hasError('maxlength')">
-          {{ 'documents.create.validation.maxLength' | translate }}
+          {{ "documents.create.validation.maxLength" | translate }}
         </mat-error>
-      </mat-form-field>
-
-      <!-- Document Description -->
-      <mat-form-field appearance="outline" class="form-field">
-        <mat-label>{{ 'documents.form.description' | translate }}</mat-label>
-        <textarea matInput formControlName="description" rows="3"
-          [placeholder]="'documents.form.descriptionPlaceholder' | translate"></textarea>
       </mat-form-field>
 
       <!-- From Department -->
-      <mat-form-field appearance="outline" class="form-field">
-        <mat-label >{{ 'documents.form.department' | translate }}</mat-label>
-        <mat-select formControlName="fromDepartment">
-          <mat-option *ngFor="let department of departments" [value]="department">
-            {{ 'departments.' + department.toLowerCase() | translate }}
-          </mat-option>
-        </mat-select>
-        <mat-error *ngIf="documentForm.get('fromDepartment')?.hasError('required')">
-          {{ 'documents.create.validation.required' | translate }}
-        </mat-error>
-      </mat-form-field>
+      <!-- Department and Priority in one row -->
+      <div class="flex-row-container">
+        <mat-form-field appearance="outline" class="form-field mr-2">
+          <mat-label>{{ "documents.form.department" | translate }}</mat-label>
+          <mat-select formControlName="fromDepartment">
+            <mat-option
+              *ngFor="let department of departments"
+              [value]="department.toLowerCase()"
+            >
+              {{ "departments." + department.toLowerCase() | translate }}
+            </mat-option>
+          </mat-select>
+          <mat-error
+            *ngIf="documentForm.get('fromDepartment')?.hasError('required')"
+          >
+            {{ "documents.create.validation.required" | translate }}
+          </mat-error>
+        </mat-form-field>
 
-      <!-- Priority -->
-      <mat-form-field appearance="outline" class="form-field">
-        <mat-label>{{ 'documents.form.priority' | translate }}</mat-label>
-        <mat-select formControlName="priority">
-          <mat-option *ngFor="let priority of priorities" [value]="priority">
-            {{ 'priorities.' + priority.toLowerCase() | translate }}
-          </mat-option>
-        </mat-select>
-        <mat-error *ngIf="documentForm.get('priority')?.hasError('required')">
-          {{ 'documents.create.validation.required' | translate }}
-        </mat-error>
-      </mat-form-field>
+        <!-- Priority -->
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>{{ "documents.form.priority" | translate }}</mat-label>
+          <mat-select formControlName="priority">
+            <mat-option *ngFor="let priority of priorities" [value]="priority.toLowerCase()">
+              {{ priority.toLowerCase() | translate }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="documentForm.get('priority')?.hasError('required')">
+            {{ "documents.create.validation.required" | translate }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Document Description -->
+      <div class="flex-row-container">
+        <textarea
+          class="form-field"
+          matInput
+          formControlName="description"
+          rows="5"
+          [placeholder]="'documents.form.descriptionPlaceholder' | translate"
+          ></textarea>
+      </div>
 
       <!-- File Upload -->
       <div class="file-upload-container">
         <div class="file-upload-label">
-          <span [class.arabic-font]="isRTL">{{ 'documents.form.attachment' | translate }}</span>
+          <span [class.arabic-font]="isRTL">{{
+            "documents.form.attachment" | translate
+          }}</span>
           <span class="required-indicator">*</span>
         </div>
 
-        <div class="file-upload-area"
+        <div
+          class="file-upload-area"
           [class.has-file]="selectedFile"
-          [class.invalid]="documentForm.get('file')?.invalid && documentForm.get('file')?.touched">
-
-          <input type="file"
+          [class.invalid]="
+            documentForm.get('file')?.invalid &&
+            documentForm.get('file')?.touched
+          "
+        >
+          <input
+            type="file"
             #fileInput
             accept=".pdf"
             class="file-input"
-            (change)="onFileSelected($event)">
+            (change)="onFileSelected($event)"
+          />
 
           <div class="upload-content">
             <mat-icon>upload_file</mat-icon>
             <span *ngIf="!selectedFile" [class.arabic-font]="isRTL">
-              {{ 'documents.create.dragDrop' | translate }}
+              {{ "documents.create.dragDrop" | translate }}
             </span>
-            <span *ngIf="selectedFile" class="file-name" [class.arabic-font]="isRTL">
+            <span
+              *ngIf="selectedFile"
+              class="file-name"
+              [class.arabic-font]="isRTL"
+            >
               {{ getFileNameFromPath(selectedFile.name) }}
             </span>
-            <button type="button" mat-stroked-button color="primary" (click)="fileInput.click()" class="browse-btn">
-              {{ 'documents.create.selectFile' | translate }}
+            <button
+              type="button"
+              mat-stroked-button
+              color="primary"
+              (click)="fileInput.click()"
+              class="browse-btn"
+            >
+              {{ "documents.create.selectFile" | translate }}
             </button>
           </div>
         </div>
 
-        <div *ngIf="documentForm.get('file')?.invalid && documentForm.get('file')?.touched" class="error-message">
-          {{ 'documents.create.validation.required' | translate }}
+        <div
+          *ngIf="
+            documentForm.get('file')?.invalid &&
+            documentForm.get('file')?.touched
+          "
+          class="error-message"
+        >
+          {{ "documents.create.validation.required" | translate }}
         </div>
       </div>
     </form>
@@ -90,10 +134,16 @@
 
   <mat-dialog-actions align="end">
     <button mat-button (click)="onCancel()" [class.arabic-font]="isRTL">
-      {{ 'common.cancel' | translate }}
+      {{ "common.cancel" | translate }}
     </button>
-    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="documentForm.invalid" [class.arabic-font]="isRTL">
-      {{ 'common.save' | translate }}
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onSubmit()"
+      [disabled]="documentForm.invalid"
+      [class.arabic-font]="isRTL"
+    >
+      {{ "common.save" | translate }}
     </button>
   </mat-dialog-actions>
 </div>

@@ -25,7 +25,9 @@ import { AuthService } from '../../../core/use-cases/auth.service';
 import { DocumentService } from '../../../core/use-cases/document.service';
 import { ToastService } from '../../../core/use-cases/toast.service';
 import { LanguageService } from '../../../core/use-cases/language.service';
+import { DepartmentService } from '../../../data/services/department.service';
 import { User, Document, DocumentFilters, DocumentStats } from '../../../core/entities';
+import { Department } from '../../../domain/models/department.model';
 import { LanguageSwitcherComponent } from '../../components/shared/language-switcher/language-switcher.component';
 // Import dialog components that will be loaded dynamically
 import { DocumentViewModalComponent } from '../../components/shared/document-view-modal/document-view-modal.component';
@@ -68,8 +70,6 @@ import { DocumentCreateModalComponent, DocumentCreateData } from '../../componen
 export class DashboardComponent implements OnInit, OnDestroy {
   @ViewChildren(MatSelect) matSelects!: QueryList<MatSelect>;
 
-
-
   currentUser: User | null = null;
   documents: Document[] = [];
   documentStats: DocumentStats = {
@@ -95,6 +95,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public languageService = inject(LanguageService);
   private translate = inject(TranslateService);
   private dialog = inject(MatDialog);
+  private departmentService = inject(DepartmentService);
+  
+  departments: Department[] = [];
 
   constructor() {
     this.filterForm = this.fb.group({
@@ -123,6 +126,19 @@ ngOnInit(): void {
   if (!this.currentUser) {
     this.authService.loadStoredUser();
   }
+  
+  // Load departments from the service
+  console.log('Fetching departments...');
+  this.departmentService.getDepartments().subscribe({
+    next: (departments) => {
+      console.log('Departments loaded successfully:', departments);
+      this.departments = departments;
+    },
+    error: (error) => {
+      console.error('Error loading departments:', error);
+      this.toastService.error(this.translate.instant('common.errors.loadingDepartments'));
+    }
+  });
 
     // Subscribe to documents
     this.documentService.documents$
@@ -172,7 +188,7 @@ ngOnInit(): void {
     }
   }
 
-  private applyFilters(formFilters: { search?: string; department?: string; priority?: string; status?: string }): void {
+  private applyFilters(formFilters: { search?: string; department?: string | number; priority?: string; status?: string }): void {
     const filters: DocumentFilters = {
       search: formFilters.search || undefined,
       department: formFilters.department === 'all' ? undefined : formFilters.department,
@@ -220,7 +236,7 @@ async onLogout(): Promise<void> {
 
   onCreateDocument(): void {
     const dialogRef = this.dialog.open(DocumentCreateModalComponent, {
-      width: '600px',
+      width: '800px',
       maxWidth: '90vw',
       disableClose: false
     });
@@ -255,7 +271,7 @@ async onLogout(): Promise<void> {
     };
 
     const dialogRef = this.dialog.open(DocumentEditModalComponent, {
-      width: '600px',
+      width: '800px',
       maxWidth: '90vw',
       data: dialogData,
       disableClose: true
@@ -279,7 +295,7 @@ async onLogout(): Promise<void> {
     };
 
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '500px',
+      width: '800px',
       maxWidth: '90vw',
       data: dialogData,
       disableClose: true

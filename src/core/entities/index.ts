@@ -61,7 +61,7 @@ export interface LoginCredentials {
 
 export interface DocumentFilters {
   search?: string;
-  department?: string;
+  department?: string | number;
   status?: string;
   priority?: string;
   uploadedBy?: number;
