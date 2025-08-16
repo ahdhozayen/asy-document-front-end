@@ -1,0 +1,58 @@
+<div class="comments-modal">
+  <div class="modal-header">
+    <h2 class="modal-title">{{ "documents.comments.addComment" | translate }}</h2>
+    <button mat-icon-button class="close-button" (click)="onCancel()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="modal-content">
+    <form [formGroup]="commentForm" class="comment-form">
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>{{ "documents.comments.comment" | translate }} *</mat-label>
+        <textarea
+          matInput
+          formControlName="comment"
+          rows="5"
+          [placeholder]="'documents.comments.commentPlaceholder' | translate"
+        ></textarea>
+        <mat-error *ngIf="commentForm.get('comment')?.hasError('required')">
+          {{ "validation.required" | translate }}
+        </mat-error>
+        <mat-error *ngIf="commentForm.get('comment')?.hasError('minlength')">
+          {{ "validation.minLength" | translate }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>{{ "documents.comments.redirectDepartment" | translate }} *</mat-label>
+        <mat-select formControlName="redirectDepartment">
+          <mat-option value="finance">{{ 'departments.finance' | translate }}</mat-option>
+          <mat-option value="hr">{{ 'departments.hr' | translate }}</mat-option>
+          <mat-option value="it">{{ 'departments.it' | translate }}</mat-option>
+          <mat-option value="legal">{{ 'departments.legal' | translate }}</mat-option>
+          <mat-option value="operations">{{ 'departments.operations' | translate }}</mat-option>
+          <mat-option value="marketing">{{ 'departments.marketing' | translate }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="commentForm.get('redirectDepartment')?.hasError('required')">
+          {{ "validation.required" | translate }}
+        </mat-error>
+      </mat-form-field>
+    </form>
+  </div>
+
+  <div class="modal-actions">
+    <button mat-button (click)="onCancel()" class="cancel-button">
+      {{ "common.cancel" | translate }}
+    </button>
+    <button 
+      mat-raised-button 
+      color="primary"
+      (click)="onSubmit()"
+      [disabled]="commentForm.invalid || isSubmitting"
+      class="submit-button">
+      <mat-icon>send</mat-icon>
+      {{ "common.submit" | translate }}
+    </button>
+  </div>
+</div>

@@ -123,6 +123,17 @@
     "reviewedAt": "Reviewed At",
     "attachments": "Attachments",
     "fileName": "File Name",
+    "fields": {
+      "title": "Title",
+      "description": "Description",
+      "department": "Department",
+      "priority": "Priority",
+      "status": "Status",
+      "createdAt": "Created Date",
+      "uploadedBy": "Uploaded By",
+      "reviewedAt": "Reviewed Date",
+      "redirectDepartment": "Redirect Department"
+    },
     "view": {
       "title": "View Document",
       "details": "Document Details",
@@ -132,7 +143,9 @@
       "redirectDepartment": "Redirect Department",
       "selectDepartment": "Select department",
       "submitComment": "Submit Comment",
-      "signDocument": "Sign Document"
+      "signDocument": "Sign Document",
+      "viewAttachment": "View Attachment",
+      "downloadAttachment": "Download Attachment"
     },
     "signature": {
       "title": "Sign Document",

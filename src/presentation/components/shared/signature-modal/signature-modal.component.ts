@@ -1,14 +1,12 @@
-import { Component, ElementRef, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { LanguageService } from '../../../../core/use-cases/language.service';
-
-export interface SignatureData {
+export interface SignatureModalResult {
   signatureBase64: string;
 }
 
@@ -17,155 +15,139 @@ export interface SignatureData {
   standalone: true,
   imports: [
     CommonModule,
+    MatDialogModule,
     MatButtonModule,
     MatIconModule,
-    MatDialogModule,
+    MatTooltipModule,
     TranslateModule
   ],
   templateUrl: './signature-modal.component.html',
   styleUrls: ['./signature-modal.component.scss']
 })
-export class SignatureModalComponent implements OnInit, AfterViewInit {
-  @ViewChild('signatureCanvas') signatureCanvas!: ElementRef<HTMLCanvasElement>;
+export class SignatureModalComponent implements AfterViewInit {
+  @ViewChild('signatureCanvas', { static: false }) signatureCanvas!: ElementRef<HTMLCanvasElement>;
   
-  isRTL = false;
-  isDrawing = false;
-  canvasContext: CanvasRenderingContext2D | null = null;
-  lastX = 0;
-  lastY = 0;
-  
-  constructor(
-    private dialogRef: MatDialogRef<SignatureModalComponent>,
-    private languageService: LanguageService
-  ) {}
+  private canvas!: HTMLCanvasElement;
+  private ctx!: CanvasRenderingContext2D;
+  private isDrawing = false;
+  private lastX = 0;
+  private lastY = 0;
 
-  ngOnInit(): void {
-    this.languageService.isRTL$.subscribe(isRTL => {
-      this.isRTL = isRTL;
-    });
-  }
+  constructor(public dialogRef: MatDialogRef<SignatureModalComponent>) {}
 
   ngAfterViewInit(): void {
     this.initializeCanvas();
   }
 
   private initializeCanvas(): void {
-    const canvas = this.signatureCanvas.nativeElement;
-    this.canvasContext = canvas.getContext('2d');
+    this.canvas = this.signatureCanvas.nativeElement;
+    this.ctx = this.canvas.getContext('2d')!;
     
-    if (this.canvasContext) {
-      // Set canvas size to match container
-      this.resizeCanvas();
-      
-      // Set drawing style
-      this.canvasContext.lineJoin = 'round';
-      this.canvasContext.lineCap = 'round';
-      this.canvasContext.lineWidth = 2;
-      this.canvasContext.strokeStyle = '#000000';
-      
-      // Add event listeners
-      canvas.addEventListener('mousedown', this.startDrawing.bind(this));
-      canvas.addEventListener('mousemove', this.draw.bind(this));
-      canvas.addEventListener('mouseup', this.stopDrawing.bind(this));
-      canvas.addEventListener('mouseout', this.stopDrawing.bind(this));
-      
-      // Touch events
-      canvas.addEventListener('touchstart', this.handleTouchStart.bind(this));
-      canvas.addEventListener('touchmove', this.handleTouchMove.bind(this));
-      canvas.addEventListener('touchend', this.stopDrawing.bind(this));
-    }
+    // Set canvas size
+    this.canvas.width = 400;
+    this.canvas.height = 200;
     
-    // Handle window resize
-    window.addEventListener('resize', this.resizeCanvas.bind(this));
+    // Set canvas style
+    this.ctx.strokeStyle = '#000';
+    this.ctx.lineWidth = 2;
+    this.ctx.lineCap = 'round';
+    this.ctx.lineJoin = 'round';
+    
+    // Clear canvas
+    this.clearCanvas();
   }
 
-  private resizeCanvas(): void {
-    const canvas = this.signatureCanvas.nativeElement;
-    const container = canvas.parentElement;
-    
-    if (container) {
-      canvas.width = container.clientWidth;
-      canvas.height = container.clientHeight;
-    }
-  }
-
-  private startDrawing(event: MouseEvent): void {
+  onMouseDown(event: MouseEvent): void {
     this.isDrawing = true;
-    const rect = this.signatureCanvas.nativeElement.getBoundingClientRect();
+    const rect = this.canvas.getBoundingClientRect();
     this.lastX = event.clientX - rect.left;
     this.lastY = event.clientY - rect.top;
   }
 
-  private handleTouchStart(event: TouchEvent): void {
-    event.preventDefault();
-    if (event.touches.length === 1) {
-      this.isDrawing = true;
-      const touch = event.touches[0];
-      const rect = this.signatureCanvas.nativeElement.getBoundingClientRect();
-      this.lastX = touch.clientX - rect.left;
-      this.lastY = touch.clientY - rect.top;
-    }
-  }
-
-  private draw(event: MouseEvent): void {
-    if (!this.isDrawing || !this.canvasContext) return;
+  onMouseMove(event: MouseEvent): void {
+    if (!this.isDrawing) return;
     
-    const rect = this.signatureCanvas.nativeElement.getBoundingClientRect();
+    const rect = this.canvas.getBoundingClientRect();
     const currentX = event.clientX - rect.left;
     const currentY = event.clientY - rect.top;
     
-    this.canvasContext.beginPath();
-    this.canvasContext.moveTo(this.lastX, this.lastY);
-    this.canvasContext.lineTo(currentX, currentY);
-    this.canvasContext.stroke();
+    this.ctx.beginPath();
+    this.ctx.moveTo(this.lastX, this.lastY);
+    this.ctx.lineTo(currentX, currentY);
+    this.ctx.stroke();
     
     this.lastX = currentX;
     this.lastY = currentY;
   }
 
-  private handleTouchMove(event: TouchEvent): void {
-    event.preventDefault();
-    if (!this.isDrawing || !this.canvasContext || event.touches.length !== 1) return;
-    
-    const touch = event.touches[0];
-    const rect = this.signatureCanvas.nativeElement.getBoundingClientRect();
-    const currentX = touch.clientX - rect.left;
-    const currentY = touch.clientY - rect.top;
-    
-    this.canvasContext.beginPath();
-    this.canvasContext.moveTo(this.lastX, this.lastY);
-    this.canvasContext.lineTo(currentX, currentY);
-    this.canvasContext.stroke();
-    
-    this.lastX = currentX;
-    this.lastY = currentY;
-  }
-
-  private stopDrawing(): void {
+  onMouseUp(): void {
     this.isDrawing = false;
   }
 
-  clearSignature(): void {
-    if (this.canvasContext) {
-      this.canvasContext.clearRect(
-        0, 
-        0, 
-        this.signatureCanvas.nativeElement.width, 
-        this.signatureCanvas.nativeElement.height
-      );
-    }
+  onTouchStart(event: TouchEvent): void {
+    event.preventDefault();
+    const touch = event.touches[0];
+    const rect = this.canvas.getBoundingClientRect();
+    this.lastX = touch.clientX - rect.left;
+    this.lastY = touch.clientY - rect.top;
+    this.isDrawing = true;
   }
 
-  saveSignature(): void {
-    const canvas = this.signatureCanvas.nativeElement;
-    const signatureBase64 = canvas.toDataURL('image/png');
+  onTouchMove(event: TouchEvent): void {
+    event.preventDefault();
+    if (!this.isDrawing) return;
     
-    this.dialogRef.close({
-      signatureBase64
-    });
+    const touch = event.touches[0];
+    const rect = this.canvas.getBoundingClientRect();
+    const currentX = touch.clientX - rect.left;
+    const currentY = touch.clientY - rect.top;
+    
+    this.ctx.beginPath();
+    this.ctx.moveTo(this.lastX, this.lastY);
+    this.ctx.lineTo(currentX, currentY);
+    this.ctx.stroke();
+    
+    this.lastX = currentX;
+    this.lastY = currentY;
+  }
+
+  onTouchEnd(): void {
+    this.isDrawing = false;
+  }
+
+  clearCanvas(): void {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillStyle = '#f8f9fa';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
+  onSubmit(): void {
+    if (this.isCanvasEmpty()) {
+      return; // Don't submit if canvas is empty
+    }
+    
+    const signatureBase64 = this.canvas.toDataURL('image/png');
+    const result: SignatureModalResult = {
+      signatureBase64: signatureBase64
+    };
+    
+    this.dialogRef.close(result);
   }
 
   onCancel(): void {
     this.dialogRef.close();
+  }
+
+  private isCanvasEmpty(): boolean {
+    const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+    const data = imageData.data;
+    
+    // Check if all pixels are transparent or white
+    for (let i = 3; i < data.length; i += 4) {
+      if (data[i] !== 0) { // Alpha channel
+        return false;
+      }
+    }
+    return true;
   }
 }

@@ -1,34 +1,48 @@
-<div class="signature-modal" [class.rtl]="isRTL" [attr.dir]="isRTL ? 'rtl' : 'ltr'">
+<div class="signature-modal">
   <div class="modal-header">
-    <h2 mat-dialog-title [class.arabic-font]="isRTL">
-      {{ 'documents.signature.title' | translate }}
-    </h2>
-    <button mat-icon-button (click)="onCancel()">
+    <h2 class="modal-title">{{ "documents.signature.drawSignature" | translate }}</h2>
+    <button mat-icon-button class="close-button" (click)="onCancel()">
       <mat-icon>close</mat-icon>
     </button>
   </div>
 
-  <mat-dialog-content class="modal-content">
-    <div class="signature-instructions" [class.arabic-font]="isRTL">
-      {{ 'documents.signature.instructions' | translate }}
+  <div class="modal-content">
+    <div class="signature-instructions">
+      <p>{{ "documents.signature.instructions" | translate }}</p>
     </div>
-    
-    <div class="signature-canvas-container">
-      <canvas #signatureCanvas class="signature-canvas"></canvas>
-    </div>
-  </mat-dialog-content>
 
-  <mat-dialog-actions align="end">
-    <button mat-button (click)="clearSignature()">
-      <mat-icon>delete</mat-icon>
-      {{ 'documents.signature.clear' | translate }}
+    <div class="signature-canvas-container">
+      <canvas 
+        #signatureCanvas
+        class="signature-canvas"
+        (mousedown)="onMouseDown($event)"
+        (mousemove)="onMouseMove($event)"
+        (mouseup)="onMouseUp()"
+        (touchstart)="onTouchStart($event)"
+        (touchmove)="onTouchMove($event)"
+        (touchend)="onTouchEnd()">
+      </canvas>
+    </div>
+
+    <div class="signature-actions">
+      <button mat-stroked-button (click)="clearCanvas()" class="clear-button">
+        <mat-icon>clear</mat-icon>
+        {{ "documents.signature.clear" | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="modal-actions">
+    <button mat-button (click)="onCancel()" class="cancel-button">
+      {{ "common.cancel" | translate }}
     </button>
-    <button mat-button (click)="onCancel()">
-      {{ 'common.cancel' | translate }}
-    </button>
-    <button mat-raised-button color="primary" (click)="saveSignature()">
+    <button 
+      mat-raised-button 
+      color="primary"
+      (click)="onSubmit()"
+      class="submit-button">
       <mat-icon>check</mat-icon>
-      {{ 'documents.signature.save' | translate }}
+      {{ "documents.signature.submit" | translate }}
     </button>
-  </mat-dialog-actions>
+  </div>
 </div>

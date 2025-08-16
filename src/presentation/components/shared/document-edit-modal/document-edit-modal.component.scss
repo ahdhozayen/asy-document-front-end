@@ -1,4 +1,4 @@
-.document-view-modal {
+.document-edit-modal {
   width: 100vw;
   height: 100vh;
   max-width: none;
@@ -56,41 +56,13 @@
         letter-spacing: 0.5px;
 
         &.status-tag {
-          &.bg-yellow-100.text-yellow-800 {
-            background-color: #fff3cd;
-            color: #856404;
-          }
-          &.bg-blue-100.text-blue-800 {
-            background-color: #d1ecf1;
-            color: #0c5460;
-          }
-          &.bg-green-100.text-green-800 {
-            background-color: #d4edda;
-            color: #155724;
-          }
-          &.bg-red-100.text-red-800 {
-            background-color: #f8d7da;
-            color: #721c24;
-          }
+          background-color: #fff3cd;
+          color: #856404;
         }
 
         &.priority-tag {
-          &.bg-green-100.text-green-800 {
-            background-color: #d4edda;
-            color: #155724;
-          }
-          &.bg-blue-100.text-blue-800 {
-            background-color: #d1ecf1;
-            color: #0c5460;
-          }
-          &.bg-orange-100.text-orange-800 {
-            background-color: #ffeaa7;
-            color: #d63031;
-          }
-          &.bg-red-100.text-red-800 {
-            background-color: #f8d7da;
-            color: #721c24;
-          }
+          background-color: #f8d7da;
+          color: #721c24;
         }
 
         &.department-tag {
@@ -105,13 +77,6 @@
       align-items: center;
       gap: 1rem;
 
-      .edit-button {
-        color: #666;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
       .comments-button {
         color: #666;
         display: flex;
@@ -119,7 +84,14 @@
         gap: 0.5rem;
       }
 
-      .download-button {
+      .cancel-button {
+        color: #666;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .save-button {
         background-color: #007bff;
         color: white;
         display: flex;
@@ -132,6 +104,11 @@
         &:hover {
           background-color: #0056b3;
         }
+
+        &:disabled {
+          background-color: #6c757d;
+          cursor: not-allowed;
+        }
       }
     }
   }
@@ -143,8 +120,8 @@
     padding: 2rem;
     gap: 2rem;
 
-    // Left Panel - Document Preview
-    .document-preview-panel {
+    // Left Panel - Edit Form
+    .edit-form-panel {
       flex: 2;
       background-color: white;
       border-radius: 8px;
@@ -161,105 +138,151 @@
         padding-bottom: 0.75rem;
       }
 
-      .preview-content {
-        .document-description {
-          margin: 0 0 2rem 0;
-          font-size: 1rem;
-          color: #666;
-          line-height: 1.6;
+      .document-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+
+        .form-field {
+          width: 100%;
         }
 
-        .pdf-viewer {
-          border: 1px solid #e0e0e0;
-          border-radius: 8px;
-          overflow: hidden;
-
-          .pdf-toolbar {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1rem;
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #e0e0e0;
-
-            .toolbar-btn {
-              color: #666;
-              width: 32px;
-              height: 32px;
-              line-height: 32px;
-
-              &:hover {
-                background-color: #e9ecef;
-              }
-            }
-
-            .page-info {
-              margin: 0 1rem;
-              font-size: 0.875rem;
-              color: #666;
-              font-weight: 500;
+        .flex-row-container {
+          display: flex;
+          gap: 1rem;
+          width: 100%;
+          
+          .form-field {
+            flex: 1;
+            
+            &.mr-2 {
+              margin-right: 0.5rem;
             }
           }
+        }
 
-          .pdf-content {
-            min-height: 600px;
-            background-color: white;
-            
-            .pdf-viewer-container {
-              width: 100%;
-              height: 600px;
-              border: none;
-              overflow: hidden;
-              
-              .pdf-iframe {
-                width: 100%;
-                height: 100%;
-                border: none;
-              }
+        .description-field {
+          .field-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+            font-size: 0.875rem;
+          }
+
+          .description-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-family: 'Cairo', 'Noto Sans Arabic', sans-serif;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            resize: vertical;
+            background-color: #f8f9fa;
+
+            &:focus {
+              outline: none;
+              border-color: #007bff;
+              box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+            }
+          }
+        }
+
+        .current-file-section,
+        .upload-new-file-section {
+          .section-title {
+            margin: 0 0 1rem 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+          }
+        }
+
+        .current-file-display {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          padding: 1rem;
+          background-color: #f8f9fa;
+          border: 1px solid #e9ecef;
+          border-radius: 4px;
+
+          .file-icon {
+            font-size: 2rem;
+            color: #dc3545;
+            width: 2rem;
+            height: 2rem;
+          }
+
+          .file-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+
+            .file-name {
+              font-weight: 500;
+              color: #333;
             }
 
-            .pdf-placeholder {
-              padding: 2rem;
-              text-align: center;
+            .file-size {
+              font-size: 0.75rem;
+              color: #666;
+            }
+          }
+        }
+
+        .file-upload-container {
+          .file-upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 4px;
+            padding: 1.5rem;
+            text-align: center;
+            background-color: #f8f9fa;
+            transition: all 0.3s ease;
+
+            &:hover {
+              border-color: #007bff;
+              background-color: #f0f8ff;
+            }
+
+            .file-input {
+              display: none;
+            }
+
+            .upload-content {
               display: flex;
               flex-direction: column;
               align-items: center;
-              justify-content: center;
-              height: 600px;
-              background-color: #f8f9fa;
-              
-              .no-document-message {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                
-                .no-document-icon {
-                  font-size: 64px;
-                  width: 64px;
-                  height: 64px;
-                  color: #ccc;
-                  margin-bottom: 1rem;
-                }
-                
-                p {
-                  font-size: 1.2rem;
-                  color: #666;
-                  margin: 0;
+              gap: 1rem;
+
+              .choose-file-btn {
+                background-color: white;
+                color: #007bff;
+                border-color: #007bff;
+                padding: 0.5rem 1rem;
+                border-radius: 4px;
+                font-weight: 500;
+
+                &:hover {
+                  background-color: #007bff;
+                  color: white;
                 }
               }
-              
-              .pdf-content-text {
-                .arabic-text {
-                  margin: 0.5rem 0;
-                  font-family: 'Cairo', 'Noto Sans Arabic', sans-serif;
-                  font-size: 1rem;
-                  color: #333;
-                  line-height: 1.8;
-                  text-align: right;
-                }
+
+              .no-file-text {
+                color: #666;
+                font-size: 0.875rem;
               }
             }
+          }
+
+          .error-message {
+            color: #dc3545;
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+            text-align: center;
           }
         }
       }
@@ -315,6 +338,40 @@
     }
   }
 
+  // Material Form Field Styling
+  ::ng-deep .mat-mdc-form-field {
+    .mdc-text-field--outlined {
+      --mdc-outlined-text-field-container-shape: 8px;
+      --mdc-outlined-text-field-outline-width: 1px;
+      --mdc-outlined-text-field-outline-color: #d1d5db;
+      --mdc-outlined-text-field-hover-outline-color: #9ca3af;
+      --mdc-outlined-text-field-focus-outline-color: #007bff;
+      background-color: #ffffff;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: #f9fafb;
+      }
+    }
+
+    .mat-mdc-form-field-infix {
+      padding: 0.75rem 1rem !important;
+      font-size: 0.875rem;
+    }
+
+    .mat-mdc-floating-label {
+      color: #666;
+      font-size: 0.875rem;
+    }
+
+    .mat-mdc-select-value,
+    .mat-mdc-text-field-wrapper input {
+      color: #333;
+      font-family: 'Cairo', 'Noto Sans Arabic', sans-serif;
+    }
+  }
+
   // RTL Support
   &.rtl {
     .modal-header {
@@ -330,10 +387,6 @@
     .modal-content {
       flex-direction: row-reverse;
     }
-
-    .pdf-content-text .arabic-text {
-      text-align: right;
-    }
   }
 
   // Responsive Design
@@ -343,7 +396,7 @@
       gap: 1rem;
       padding: 1rem;
 
-      .document-preview-panel,
+      .edit-form-panel,
       .document-info-panel {
         flex: none;
       }

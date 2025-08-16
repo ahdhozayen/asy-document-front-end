@@ -1,0 +1,185 @@
+<div
+  class="document-view-page"
+  [class.rtl]="isRTL"
+  [attr.dir]="isRTL ? 'rtl' : 'ltr'"
+>
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>{{ "common.loading" | translate }}</p>
+  </div>
+
+  <!-- Document Not Found State -->
+  <div *ngIf="documentNotFound" class="not-found-container">
+    <mat-icon class="not-found-icon">error_outline</mat-icon>
+    <h2>{{ "documents.view.notFound" | translate }}</h2>
+    <p>{{ "documents.view.notFoundMessage" | translate }}</p>
+    <button mat-raised-button color="primary" (click)="onBack()">
+      {{ "common.backToDashboard" | translate }}
+    </button>
+  </div>
+
+  <!-- Document Content -->
+  <div *ngIf="!isLoading && !documentNotFound && document" class="document-content">
+    <!-- Header with back arrow, title, tags, and action buttons -->
+    <div class="page-header">
+      <div class="header-left">
+        <button mat-icon-button class="back-button" (click)="onBack()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h2 class="page-title" [class.arabic-font]="isRTL">
+          {{ document.title }}
+        </h2>
+      </div>
+      
+      <div class="header-tags">
+        <span class="tag status-tag" [ngClass]="getStatusColor(document.status)">
+          {{ "statuses." + document.status | translate }}
+        </span>
+        <span class="tag priority-tag" [ngClass]="getPriorityColor(document.priority)">
+          {{ "priorities." + document.priority | translate }}
+        </span>
+        <span class="tag department-tag">{{ document.department }}</span>
+      </div>
+      
+      <div class="header-actions">
+        <button mat-button class="edit-button" (click)="onEdit()">
+          <mat-icon>edit</mat-icon>
+          {{ "common.edit" | translate }}
+        </button>
+        <button mat-button class="comments-button" (click)="onComments()">
+          <mat-icon>chat_bubble_outline</mat-icon>
+          {{ "common.comments" | translate }} ({{ commentCount }})
+        </button>
+        <button mat-raised-button color="primary" class="download-button" (click)="onDownload()">
+          <mat-icon>download</mat-icon>
+          {{ "common.download" | translate }}
+        </button>
+        <button mat-raised-button color="accent" class="sign-button" (click)="onSignDocument()">
+          <mat-icon>draw</mat-icon>
+          {{ "documents.view.signDocument" | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="page-content">
+      <!-- Left Panel - Document Preview -->
+      <div class="document-preview-panel">
+        <h3 class="panel-title" [class.arabic-font]="isRTL">
+          {{ "documents.view.documentPreview" | translate }}
+        </h3>
+        
+                 <div class="preview-content">
+           <p class="document-description" [class.arabic-font]="isRTL">
+             {{ document.description || "No description provided" }}
+           </p>
+           
+           <!-- Attachment Information -->
+           <div *ngIf="currentAttachment" class="attachment-info">
+             <h4 class="attachment-title">{{ "documents.view.attachmentInfo" | translate }}</h4>
+             <div class="attachment-details">
+               <span class="attachment-name">{{ currentAttachment.original_name }}</span>
+               <span class="attachment-date">{{ formatDate(currentAttachment.created_at) }}</span>
+             </div>
+           </div>
+          
+          <!-- PDF Viewer -->
+          <div class="pdf-viewer">
+            <div class="pdf-toolbar">
+              <button mat-icon-button class="toolbar-btn">
+                <mat-icon>menu</mat-icon>
+              </button>
+              <span class="page-info">1 / 1</span>
+              <button mat-icon-button class="toolbar-btn">
+                <mat-icon>zoom_out</mat-icon>
+              </button>
+              <button mat-icon-button class="toolbar-btn">
+                <mat-icon>zoom_in</mat-icon>
+              </button>
+              <button mat-icon-button class="toolbar-btn">
+                <mat-icon>grid_view</mat-icon>
+              </button>
+              <button mat-icon-button class="toolbar-btn">
+                <mat-icon>rotate_left</mat-icon>
+              </button>
+              <button mat-icon-button class="toolbar-btn">
+                <mat-icon>rotate_right</mat-icon>
+              </button>
+              <button mat-icon-button class="toolbar-btn" (click)="onDownload()">
+                <mat-icon>download</mat-icon>
+              </button>
+              <button mat-icon-button class="toolbar-btn">
+                <mat-icon>print</mat-icon>
+              </button>
+              <button mat-icon-button class="toolbar-btn">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+            </div>
+            
+                         <div class="pdf-content">
+               <!-- PDF Content - Show actual document if available -->
+               <div *ngIf="currentAttachment?.file" class="pdf-iframe-container">
+                 <iframe 
+                   [src]="getFileUrl(currentAttachment.file) | safe" 
+                   class="pdf-iframe"
+                   title="Document Preview">
+                 </iframe>
+               </div>
+               
+               <!-- Document Not Found Message -->
+               <div *ngIf="!currentAttachment?.file" class="document-not-found">
+                 <div class="not-found-content">
+                   <mat-icon class="not-found-icon">error_outline</mat-icon>
+                   <h3>{{ "documents.view.notFound" | translate }}</h3>
+                   <p>{{ "documents.view.notFoundMessage" | translate }}</p>
+                 </div>
+               </div>
+             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel - Document Information -->
+      <div class="document-info-panel">
+        <h3 class="panel-title" [class.arabic-font]="isRTL">
+          {{ "documents.view.documentInformation" | translate }}
+        </h3>
+        
+                 <div class="info-content">
+           <div class="info-item">
+             <span class="info-label">{{ "documents.fields.department" | translate }}:</span>
+             <span class="info-value">{{ document.department }}</span>
+           </div>
+           
+           <div class="info-item">
+             <span class="info-label">{{ "documents.fields.uploadDate" | translate }}:</span>
+             <span class="info-value">{{ formatDate(document.createdAt) }}</span>
+           </div>
+           
+           <div class="info-item">
+             <span class="info-label">{{ "documents.fields.uploadedBy" | translate }}:</span>
+             <span class="info-value">{{ document.uploaded_by?.first_name }} {{ document.uploaded_by?.last_name }}</span>
+           </div>
+           
+           <div class="info-item">
+             <span class="info-label">{{ "documents.fields.attachmentName" | translate }}:</span>
+             <span class="info-value">{{ currentAttachment?.original_name || 'No attachment' }}</span>
+           </div>
+           
+           <div class="info-item">
+             <span class="info-label">{{ "documents.fields.attachmentDate" | translate }}:</span>
+             <span class="info-value">{{ formatDate(currentAttachment?.created_at) }}</span>
+           </div>
+           
+           <div class="info-item">
+             <span class="info-label">{{ "documents.fields.isSigned" | translate }}:</span>
+             <span class="info-value" [ngClass]="{'signed': currentAttachment?.is_signed, 'not-signed': !currentAttachment?.is_signed}">
+               {{ currentAttachment?.is_signed ? ('common.yes' | translate) : ('common.no' | translate) }}
+             </span>
+           </div>
+         </div>
+      </div>
+    </div>
+  </div>
+</div>

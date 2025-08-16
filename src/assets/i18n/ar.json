@@ -123,6 +123,17 @@
     "reviewedAt": "تاريخ المراجعة",
     "attachments": "المرفقات",
     "fileName": "اسم الملف",
+    "fields": {
+      "title": "العنوان",
+      "description": "الوصف",
+      "department": "القسم",
+      "priority": "الأولوية",
+      "status": "الحالة",
+      "createdAt": "تاريخ الإنشاء",
+      "uploadedBy": "رفع بواسطة",
+      "reviewedAt": "تاريخ المراجعة",
+      "redirectDepartment": "إعادة توجيه إلى قسم"
+    },
     "view": {
       "title": "عرض الوثيقة",
       "details": "تفاصيل الوثيقة",
@@ -132,7 +143,9 @@
       "redirectDepartment": "إعادة توجيه إلى قسم",
       "selectDepartment": "اختر القسم",
       "submitComment": "إرسال التعليق",
-      "signDocument": "توقيع الوثيقة"
+      "signDocument": "توقيع الوثيقة",
+      "viewAttachment": "عرض المرفق",
+      "downloadAttachment": "تحميل المرفق"
     },
     "signature": {
       "title": "توقيع الوثيقة",

@@ -1,137 +1,145 @@
-<div class="document-view-modal" [class.rtl]="isRTL" [attr.dir]="isRTL ? 'rtl' : 'ltr'">
+<div
+  class="document-view-modal"
+  [class.rtl]="isRTL"
+  [attr.dir]="isRTL ? 'rtl' : 'ltr'"
+>
+  <!-- Header with back arrow, title, tags, and action buttons -->
   <div class="modal-header">
-    <h2 mat-dialog-title [class.arabic-font]="isRTL">
-      {{ 'documents.view.title' | translate }}
-    </h2>
-    <button mat-icon-button (click)="onClose()">
-      <mat-icon>close</mat-icon>
-    </button>
+    <div class="header-left">
+      <button mat-icon-button class="back-button" (click)="onClose()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h2 class="modal-title" [class.arabic-font]="isRTL">
+        {{ document.title }}
+      </h2>
+    </div>
+    
+    <div class="header-tags">
+      <span class="tag status-tag" [ngClass]="getStatusColor(document.status)">
+        {{ "statuses." + document.status | translate }}
+      </span>
+      <span class="tag priority-tag" [ngClass]="getPriorityColor(document.priority)">
+        {{ "priorities." + document.priority | translate }}
+      </span>
+      <span class="tag department-tag">{{ document.department }}</span>
+    </div>
+    
+    <div class="header-actions">
+      <button mat-button class="edit-button" (click)="onEdit()">
+        <mat-icon>edit</mat-icon>
+        {{ "common.edit" | translate }}
+      </button>
+      <button mat-button class="comments-button">
+        <mat-icon>chat_bubble_outline</mat-icon>
+        {{ "common.comments" | translate }} (0)
+      </button>
+      <button mat-raised-button color="primary" class="download-button" (click)="openPdfInNewTab()">
+        <mat-icon>download</mat-icon>
+        {{ "common.download" | translate }}
+      </button>
+    </div>
   </div>
 
-  <mat-dialog-content class="modal-content">
-    <!-- Document Details Section -->
-    <div class="document-details-section">
-      <h3 [class.arabic-font]="isRTL">{{ 'documents.view.details' | translate }}</h3>
+  <!-- Main Content Area -->
+  <div class="modal-content">
+    <!-- Left Panel - Document Preview -->
+    <div class="document-preview-panel">
+      <h3 class="panel-title" [class.arabic-font]="isRTL">
+        {{ "documents.view.documentPreview" | translate }}
+      </h3>
       
-      <div class="detail-row">
-        <span class="detail-label" [class.arabic-font]="isRTL">{{ 'documents.fields.title' | translate }}:</span>
-        <span class="detail-value">{{ document.title }}</span>
-      </div>
-      
-      <div class="detail-row">
-        <span class="detail-label" [class.arabic-font]="isRTL">{{ 'documents.fields.description' | translate }}:</span>
-        <span class="detail-value">{{ document.description }}</span>
-      </div>
-      
-      <div class="detail-row">
-        <span class="detail-label" [class.arabic-font]="isRTL">{{ 'documents.fields.department' | translate }}:</span>
-        <span class="detail-value">{{ document.department }}</span>
-      </div>
-      
-      <div class="detail-row">
-        <span class="detail-label" [class.arabic-font]="isRTL">{{ 'documents.fields.priority' | translate }}:</span>
-        <span class="detail-value">
-          <span class="status-chip" [ngClass]="getPriorityColor(document.priority)">
-            {{ 'documents.priority.' + document.priority | translate }}
-          </span>
-        </span>
-      </div>
-      
-      <div class="detail-row">
-        <span class="detail-label" [class.arabic-font]="isRTL">{{ 'documents.fields.status' | translate }}:</span>
-        <span class="detail-value">
-          <span class="status-chip" [ngClass]="getStatusColor(document.status)">
-            {{ 'documents.status.' + document.status | translate }}
-          </span>
-        </span>
-      </div>
-      
-      <div class="detail-row">
-        <span class="detail-label" [class.arabic-font]="isRTL">{{ 'documents.fields.createdAt' | translate }}:</span>
-        <span class="detail-value">{{ formatDate(document.createdAt) }}</span>
-      </div>
-      
-      <div class="detail-row" *ngIf="document.uploadedByName">
-        <span class="detail-label" [class.arabic-font]="isRTL">{{ 'documents.fields.uploadedBy' | translate }}:</span>
-        <span class="detail-value">{{ document.uploadedByName }}</span>
-      </div>
-      
-      <div class="detail-row" *ngIf="document.reviewedAt">
-        <span class="detail-label" [class.arabic-font]="isRTL">{{ 'documents.fields.reviewedAt' | translate }}:</span>
-        <span class="detail-value">{{ formatDate(document.reviewedAt) }}</span>
-      </div>
-    </div>
-
-    <mat-divider></mat-divider>
-
-    <!-- Document Attachment Section -->
-    <div class="document-attachment-section">
-      <h3 [class.arabic-font]="isRTL">{{ 'documents.view.attachment' | translate }}</h3>
-      
-      <div class="attachment-info">
-        <mat-icon>attachment</mat-icon>
-        <span class="file-name">{{ document.fileName }}</span>
-        <span class="file-size">({{ document.formattedFileSize }})</span>
+      <div class="preview-content">
+        <p class="document-description" [class.arabic-font]="isRTL">
+          {{ document.description || "No description provided" }}
+        </p>
         
-        <a mat-button color="primary" [href]="document.fileUrl" target="_blank" download>
-          <mat-icon>download</mat-icon>
-          {{ 'documents.actions.download' | translate }}
-        </a>
+        <!-- PDF Viewer -->
+        <div class="pdf-viewer">
+          <div class="pdf-toolbar">
+            <button mat-icon-button class="toolbar-btn">
+              <mat-icon>menu</mat-icon>
+            </button>
+            <span class="page-info">1 / 1</span>
+            <button mat-icon-button class="toolbar-btn">
+              <mat-icon>zoom_out</mat-icon>
+            </button>
+            <button mat-icon-button class="toolbar-btn">
+              <mat-icon>zoom_in</mat-icon>
+            </button>
+            <button mat-icon-button class="toolbar-btn">
+              <mat-icon>grid_view</mat-icon>
+            </button>
+            <button mat-icon-button class="toolbar-btn">
+              <mat-icon>rotate_left</mat-icon>
+            </button>
+            <button mat-icon-button class="toolbar-btn">
+              <mat-icon>rotate_right</mat-icon>
+            </button>
+            <button mat-icon-button class="toolbar-btn">
+              <mat-icon>download</mat-icon>
+            </button>
+            <button mat-icon-button class="toolbar-btn">
+              <mat-icon>print</mat-icon>
+            </button>
+            <button mat-icon-button class="toolbar-btn">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+          </div>
+
+          <div class="pdf-content">
+            <!-- PDF Viewer Component -->
+            <div class="pdf-viewer-container" *ngIf="document?.attachments?.length > 0; else noAttachment">
+              <iframe 
+                [src]="getPdfUrl()" 
+                class="pdf-iframe" 
+                frameborder="0" 
+                width="100%" 
+                height="600"
+                title="PDF Document Viewer">
+              </iframe>
+            </div>
+            
+            <!-- No attachment fallback -->
+            <ng-template #noAttachment>
+              <div class="pdf-placeholder">
+                <div class="no-document-message">
+                  <mat-icon class="no-document-icon">description_off</mat-icon>
+                  <p>{{ 'documents.view.noDocumentFound' | translate }}</p>
+                </div>
+              </div>
+            </ng-template>
+          </div>
+        </div>
       </div>
     </div>
 
-    <mat-divider></mat-divider>
-
-    <!-- Comments and Redirect Section -->
-    <div class="document-comment-section">
-      <h3 [class.arabic-font]="isRTL">{{ 'documents.view.addComment' | translate }}</h3>
+    <!-- Right Panel - Document Information -->
+    <div class="document-info-panel">
+      <h3 class="panel-title" [class.arabic-font]="isRTL">
+        {{ "documents.view.documentInformation" | translate }}
+      </h3>
       
-      <form [formGroup]="commentForm" class="comment-form">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>{{ 'documents.fields.comment' | translate }}</mat-label>
-          <textarea 
-            matInput 
-            formControlName="comment" 
-            rows="4"
-            placeholder="{{ 'documents.view.commentPlaceholder' | translate }}"
-          ></textarea>
-          <mat-error *ngIf="commentForm.get('comment')?.hasError('required')">
-            {{ 'validation.required' | translate }}
-          </mat-error>
-        </mat-form-field>
+      <div class="info-content">
+        <div class="info-item">
+          <span class="info-label">{{ "documents.fields.department" | translate }}:</span>
+          <span class="info-value">{{ document.department }}</span>
+        </div>
         
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>{{ 'documents.fields.redirectDepartment' | translate }}</mat-label>
-          <mat-select formControlName="redirectDepartment">
-            <mat-option *ngFor="let dept of departments" [value]="dept">
-              {{ dept }}
-            </mat-option>
-          </mat-select>
-          <mat-error *ngIf="commentForm.get('redirectDepartment')?.hasError('required')">
-            {{ 'validation.required' | translate }}
-          </mat-error>
-        </mat-form-field>
-      </form>
+        <div class="info-item">
+          <span class="info-label">{{ "documents.fields.uploadDate" | translate }}:</span>
+          <span class="info-value">{{ formatDate(document.createdAt) }}</span>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">{{ "documents.fields.fileSize" | translate }}:</span>
+          <span class="info-value">{{ document.formattedFileSize }}</span>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">{{ "documents.fields.fileType" | translate }}:</span>
+          <span class="info-value">{{ getFileTypeDisplay(document.mimeType) }}</span>
+        </div>
+      </div>
     </div>
-  </mat-dialog-content>
-
-  <mat-dialog-actions align="end">
-    <button mat-button (click)="onClose()">
-      {{ 'common.cancel' | translate }}
-    </button>
-    <button 
-      mat-raised-button 
-      color="accent" 
-      (click)="onSubmitComment()" 
-      [disabled]="commentForm.invalid">
-      {{ 'documents.view.submitComment' | translate }}
-    </button>
-    <button 
-      mat-raised-button 
-      color="primary" 
-      (click)="onSignDocument()">
-      <mat-icon>draw</mat-icon>
-      {{ 'documents.view.signDocument' | translate }}
-    </button>
-  </mat-dialog-actions>
+  </div>
 </div>

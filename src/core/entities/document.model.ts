@@ -8,6 +8,24 @@ export enum DOCUMENT_PRIORITY {
   URGENT = 'urgent'
 }
 
+export interface Attachment {
+  id: number;
+  file: string;
+  original_name: string;
+  is_signed: boolean;
+  created_at: string;
+  document: number;
+}
+
+export interface DocumentUser {
+  id: number;
+  username: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: string;
+}
+
 interface DocumentApiResponse {
   id?: number;
   title?: string;
@@ -21,7 +39,7 @@ interface DocumentApiResponse {
   status?: string;
   priority?: string;
   department?: string;
-  uploaded_by?: number;
+  uploaded_by?: DocumentUser | number;
   uploadedBy?: number;
   uploaded_by_name?: string;
   uploadedByName?: string;
@@ -31,11 +49,13 @@ interface DocumentApiResponse {
   updatedAt?: string;
   file_url?: string;
   fileUrl?: string;
-  reviewed_by?: number;
+  reviewed_by?: DocumentUser | number;
   reviewedBy?: number;
   reviewed_at?: string;
   reviewedAt?: string;
   comments?: string;
+  redirect_department?: string;
+  attachments?: Attachment[];
 }
 
 export class Document {
@@ -56,7 +76,9 @@ export class Document {
     public readonly fileUrl?: string,
     public readonly reviewedBy?: number,
     public readonly reviewedAt?: Date,
-    public readonly comments?: string
+    public readonly comments?: string,
+    public readonly redirectDepartment?: string,
+    public readonly attachments?: Attachment[]
   ) {}
 
   get isPending(): boolean {
@@ -148,6 +170,11 @@ export class Document {
     return this.createdAt < thirtyDaysAgo;
   }
 
+  get uploadedByUser(): DocumentUser | undefined {
+    // This will be populated when the document is loaded from the API
+    return undefined; // For now, we'll access it directly from the API response
+  }
+
   get daysSinceCreated(): number {
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - this.createdAt.getTime());
@@ -187,6 +214,15 @@ export class Document {
       return isNaN(parsed.getTime()) ? undefined : parsed;
     };
 
+    // Handle uploaded_by as either User object or number
+    const uploadedBy = typeof data.uploaded_by === 'object' ? data.uploaded_by.id : (data.uploaded_by || data.uploadedBy || 0);
+    const uploadedByName = typeof data.uploaded_by === 'object' 
+      ? `${data.uploaded_by.first_name} ${data.uploaded_by.last_name}`.trim()
+      : (data.uploaded_by_name || data.uploadedByName || '');
+
+    // Handle reviewed_by as either User object or number
+    const reviewedBy = typeof data.reviewed_by === 'object' ? data.reviewed_by.id : (data.reviewed_by || data.reviewedBy);
+
     return new Document(
       data.id || 0,
       data.title || '',
@@ -197,14 +233,16 @@ export class Document {
       (data.status as DocumentStatus) || 'pending',
       (data.priority as DocumentPriority) || 'medium',
       data.department || '',
-      data.uploaded_by || data.uploadedBy || 0,
-      data.uploaded_by_name || data.uploadedByName || '',
+      uploadedBy,
+      uploadedByName,
       parseDate(data.created_at || data.createdAt),
       parseDate(data.updated_at || data.updatedAt),
       data.file_url || data.fileUrl,
-      data.reviewed_by || data.reviewedBy,
+      reviewedBy,
       parseOptionalDate(data.reviewed_at || data.reviewedAt),
-      data.comments
+      data.comments,
+      data.redirect_department,
+      data.attachments
     );
   }
 
@@ -240,7 +278,9 @@ export class Document {
       this.fileUrl,
       this.reviewedBy,
       this.reviewedAt,
-      this.comments
+      this.comments,
+      this.redirectDepartment,
+      this.attachments
     );
   }
 
@@ -262,7 +302,9 @@ export class Document {
       this.fileUrl,
       this.reviewedBy,
       this.reviewedAt,
-      comments
+      comments,
+      this.redirectDepartment,
+      this.attachments
     );
   }
 }

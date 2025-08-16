@@ -9,7 +9,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { environment } from '../../../../environments/environment';
 
 import { Document } from '../../../../core/entities/document.model';
 import { LanguageService } from '../../../../core/use-cases/language.service';
@@ -42,6 +45,7 @@ export interface DocumentCommentData {
     MatSelectModule,
     MatDividerModule,
     MatChipsModule,
+    MatTooltipModule,
     TranslateModule
   ],
   providers: [
@@ -63,7 +67,8 @@ export class DocumentViewModalComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: DocumentViewModalData,
     private languageService: LanguageService,
     private fb: FormBuilder,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private sanitizer: DomSanitizer
   ) {
     this.document = data.document;
     this.departments = data.departments || ['HR', 'IT', 'Finance', 'Marketing', 'Operations'];
@@ -114,6 +119,29 @@ export class DocumentViewModalComponent implements OnInit {
     });
   }
 
+  openPdfInNewTab(): void {
+    if (!this.document?.attachments || this.document.attachments.length === 0) {
+      return;
+    }
+    
+    // Get the file path from the first attachment
+    const filePath = this.document.attachments[0].file;
+    
+    // If the file path is a full URL, use it directly
+    if (filePath.startsWith('http')) {
+      window.open(filePath, '_blank');
+      return;
+    }
+    
+    // Otherwise, construct the full URL using the API base URL
+    const baseUrl = environment.apiUrl;
+    const fullUrl = filePath.startsWith('/') 
+      ? `${baseUrl}${filePath}` 
+      : `${baseUrl}/${filePath}`;
+    
+    window.open(fullUrl, '_blank');
+  }
+
   getStatusColor(status: string): string {
     switch (status) {
       case 'pending': return 'bg-yellow-100 text-yellow-800';
@@ -137,5 +165,51 @@ export class DocumentViewModalComponent implements OnInit {
   formatDate(date: Date | undefined): string {
     if (!date) return '-';
     return date.toLocaleString();
+  }
+
+  onEdit(): void {
+    // This would typically open the edit modal
+    console.log('Edit document clicked');
+  }
+
+  getFileTypeDisplay(mimeType: string): string {
+    if (!mimeType) return 'Unknown';
+    
+    const typeMap: { [key: string]: string } = {
+      'application/pdf': 'PDF Document',
+      'application/msword': 'Word Document',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'Word Document',
+      'image/jpeg': 'JPEG Image',
+      'image/jpg': 'JPEG Image',
+      'image/png': 'PNG Image'
+    };
+    
+    return typeMap[mimeType] || `${mimeType.split('/')[1]?.toUpperCase()} Document`;
+  }
+  
+  /**
+   * Gets the sanitized PDF URL from the document's attachments
+   * @returns SafeResourceUrl for the PDF iframe
+   */
+  getPdfUrl(): SafeResourceUrl {
+    if (!this.document?.attachments || this.document.attachments.length === 0) {
+      return this.sanitizer.bypassSecurityTrustResourceUrl('');
+    }
+    
+    // Get the file path from the first attachment
+    const filePath = this.document.attachments[0].file;
+    
+    // If the file path is a full URL, use it directly
+    if (filePath.startsWith('http')) {
+      return this.sanitizer.bypassSecurityTrustResourceUrl(filePath);
+    }
+    
+    // Otherwise, construct the full URL using the API base URL
+    const baseUrl = environment.apiUrl;
+    const fullUrl = filePath.startsWith('/') 
+      ? `${baseUrl}${filePath}` 
+      : `${baseUrl}/${filePath}`;
+    
+    return this.sanitizer.bypassSecurityTrustResourceUrl(fullUrl);
   }
 }

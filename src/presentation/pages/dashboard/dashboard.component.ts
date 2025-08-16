@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, inject, ViewChildren, QueryList, HostListener, ElementRef, ENVIRONMENT_INITIALIZER, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { MatSelect } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
@@ -30,8 +31,6 @@ import { User, Document, DocumentFilters, DocumentStats } from '../../../core/en
 import { Department } from '../../../domain/models/department.model';
 import { LanguageSwitcherComponent } from '../../components/shared/language-switcher/language-switcher.component';
 // Import dialog components that will be loaded dynamically
-import { DocumentViewModalComponent } from '../../components/shared/document-view-modal/document-view-modal.component';
-import { DocumentEditModalComponent, DocumentEditModalData, DocumentEditData } from '../../components/shared/document-edit-modal/document-edit-modal.component';
 import { ConfirmationDialogComponent, ConfirmationDialogData } from '../../components/shared/confirmation-dialog/confirmation-dialog.component';
 import { DocumentCreateModalComponent, DocumentCreateData } from '../../components/shared/document-create-modal/document-create-modal.component';
 @Component({
@@ -96,6 +95,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private translate = inject(TranslateService);
   private dialog = inject(MatDialog);
   private departmentService = inject(DepartmentService);
+  private router = inject(Router);
   
   departments: Department[] = [];
 
@@ -205,30 +205,7 @@ async onLogout(): Promise<void> {
 }
 
   onViewDocument(document: Document): void {
-    const dialogData = {
-      document: document,
-      departments: ['HR', 'IT', 'Finance', 'Marketing', 'Operations']
-    };
-
-    const dialogRef = this.dialog.open(DocumentViewModalComponent, {
-      width: '700px',
-      maxWidth: '95vw',
-      maxHeight: '90vh',
-      data: dialogData,
-      disableClose: false
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        if (result.signatureBase64) {
-          // Handle document signing with signature
-          this.signDocument(document.id, result.signatureBase64, result.comment, result.redirectDepartment);
-        } else if (result.comment && result.redirectDepartment) {
-          // Handle just adding comment and redirect
-          this.addDocumentComment(document.id, result.comment, result.redirectDepartment);
-        }
-      }
-    });
+    this.router.navigate(['/document/view', document.id]);
   }
 
   onCreateDocument(): void {
@@ -263,22 +240,7 @@ async onLogout(): Promise<void> {
   }
 
   onEditDocument(document: Document): void {
-    const dialogData: DocumentEditModalData = {
-      document: document
-    };
-
-    const dialogRef = this.dialog.open(DocumentEditModalComponent, {
-      width: '800px',
-      maxWidth: '90vw',
-      data: dialogData,
-      disableClose: true
-    });
-
-    dialogRef.afterClosed().subscribe((editData: DocumentEditData) => {
-      if (editData) {
-        this.updateDocument(document, editData);
-      }
-    });
+    this.router.navigate(['/document/edit', document.id]);
   }
 
   onDeleteDocument(document: Document): void {
@@ -309,64 +271,7 @@ async onLogout(): Promise<void> {
     this.documentService.downloadDocument(document.id, document.title).subscribe();
   }
 
-  private updateDocument(document: Document, editData: DocumentEditData): void {
-    // If there's a file, use the two-step process
-    if (editData.file) {
-      this.updateDocumentWithFile(document, editData);
-    } else {
-      // Just update metadata
-      this.updateDocumentMetadata(document, editData);
-    }
-  }
 
-  private updateDocumentMetadata(document: Document, editData: DocumentEditData): void {
-    this.documentService.updateDocument(document.id, {
-      title: editData.title,
-      description: editData.description,
-      department: editData.department,
-      priority: editData.priority,
-      status: editData.status
-    }).subscribe({
-      next: () => {
-        this.toastService.successTranslated('documents.edit.success');
-      },
-      error: (error) => {
-        this.toastService.errorTranslated('documents.edit.error');
-      }
-    });
-  }
-
-  private updateDocumentWithFile(document: Document, editData: DocumentEditData): void {
-    // First update the metadata
-    this.documentService.updateDocument(document.id, {
-      title: editData.title,
-      description: editData.description,
-      department: editData.department,
-      priority: editData.priority,
-      status: editData.status
-    }).subscribe({
-      next: () => {
-        // Then upload the new attachment
-        if (editData.file) {
-          this.documentService.uploadDocumentAttachment({
-            documentId: document.id,
-            file: editData.file,
-            originalName: editData.file.name
-          }).subscribe({
-            next: () => {
-              this.toastService.successTranslated('documents.edit.success');
-            },
-            error: (error) => {
-              this.toastService.errorTranslated('documents.edit.error');
-            }
-          });
-        }
-      },
-      error: (error) => {
-        this.toastService.errorTranslated('documents.edit.error');
-      }
-    });
-  }
 
   private deleteDocument(document: Document): void {
     this.documentService.deleteDocument(document.id).subscribe({

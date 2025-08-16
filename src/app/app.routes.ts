@@ -18,6 +18,16 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'document/view/:id',
+    loadComponent: () => import('../presentation/pages/document-view/document-view.component').then(m => m.DocumentViewComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'document/edit/:id',
+    loadComponent: () => import('../presentation/pages/document-edit/document-edit.component').then(m => m.DocumentEditComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: '**',
     redirectTo: '/dashboard'
   }
