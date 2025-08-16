@@ -40,6 +40,20 @@ export interface ApiResponse<T> {
   previous?: string;
 }
 
+// Home Stats API Response
+export interface HomeStatsApiResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: HomeStatsResult[];
+}
+
+export interface HomeStatsResult {
+  total_documents: number;
+  total_signed: number;
+  total_pending: number;
+}
+
 export interface DocumentStats {
   total: number;
   pending: number;

@@ -45,6 +45,9 @@ export class ApiConfig {
         update: (id: number) => `${this.baseUrl}/users/${id}/`,
         delete: (id: number) => `${this.baseUrl}/users/${id}/`
       },
+      home: {
+        stats: `${this.baseUrl}/home/stats`
+      },
       documents: {
         list: `${this.baseUrl}/documents/list`,
         detail: (id: number) => `${this.baseUrl}/documents/${id}/`,
@@ -54,7 +57,7 @@ export class ApiConfig {
         download: (id: number) => `${this.baseUrl}/documents/attachments/${id}`,
         sign: (id: number) => `${this.baseUrl}/documents/${id}/sign/`,
         comment: (id: number) => `${this.baseUrl}/documents/${id}/comment/`,
-        stats: ``,
+        stats: `${this.baseUrl}/home/stats`,
         attachments: {
           create: `${this.baseUrl}/documents/attachments/create`,
           detail: (id: number) => `${this.baseUrl}/documents/attachments/${id}/`

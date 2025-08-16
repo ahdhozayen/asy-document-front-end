@@ -95,7 +95,8 @@
       "status": "Status",
       "all_departments": "All Departments",
       "all_priorities": "All Priorities",
-      "all_statuses": "All Statuses"
+      "all_statuses": "All Statuses",
+      "reset": "Reset Filters"
     },
     "actions": {
       "view": "View",
@@ -236,7 +237,8 @@
     "validationError": "Validation error",
     "fileUploadError": "File upload failed",
     "fileSizeError": "File size too large",
-    "fileTypeError": "File type not supported"
+    "fileTypeError": "File type not supported",
+    "loadingDepartments": "Failed to load departments"
   },
   "dialogs": {
     "confirmation": {

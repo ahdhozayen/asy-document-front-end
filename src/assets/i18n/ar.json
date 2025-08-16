@@ -95,7 +95,8 @@
       "status": "الحالة",
       "all_departments": "جميع الأقسام",
       "all_priorities": "جميع الأولويات",
-      "all_statuses": "جميع الحالات"
+      "all_statuses": "جميع الحالات",
+      "reset": "إعادة تعيين الفلاتر"
     },
     "actions": {
       "view": "عرض",
@@ -235,7 +236,8 @@
     "validationError": "خطأ في التحقق من البيانات",
     "fileUploadError": "فشل في رفع الملف",
     "fileSizeError": "حجم الملف كبير جداً",
-    "fileTypeError": "نوع الملف غير مدعوم"
+    "fileTypeError": "نوع الملف غير مدعوم",
+    "loadingDepartments": "فشل في تحميل الأقسام"
   },
   "dialogs": {
     "confirmation": {

@@ -10,7 +10,8 @@ import {
   CreateDocumentData,
   CreateDocumentMetadata,
   UploadDocumentAttachment,
-  ApiResponse
+  ApiResponse,
+  HomeStatsApiResponse
 } from '../entities';
 
 @Injectable({
@@ -80,7 +81,7 @@ export class DocumentService {
   }
 
   getDocumentStats(): Observable<DocumentStats> {
-    const statsEndpoint = this.config.endpoints.documents.stats;
+    const statsEndpoint = this.config.endpoints.home.stats;
 
     if (!statsEndpoint) {
       const defaultStats: DocumentStats = {
@@ -97,7 +98,27 @@ export class DocumentService {
       });
     }
 
-    return this.httpClient.get<DocumentStats>(statsEndpoint).pipe(
+    return this.httpClient.get<HomeStatsApiResponse>(statsEndpoint).pipe(
+      map(response => {
+        // Map the API response to DocumentStats interface
+        const stats = response.results[0];
+        if (stats) {
+          return {
+            total: stats.total_documents,
+            pending: stats.total_pending,
+            inProgress: 0, // Not provided by API
+            completed: 0,  // Not provided by API
+            signed: stats.total_signed
+          };
+        }
+        return {
+          total: 0,
+          pending: 0,
+          inProgress: 0,
+          completed: 0,
+          signed: 0
+        };
+      }),
       tap(stats => this.statsSubject.next(stats)),
       catchError(error => {
         const defaultStats: DocumentStats = {

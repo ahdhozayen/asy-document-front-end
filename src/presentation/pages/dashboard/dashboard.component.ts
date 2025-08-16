@@ -470,4 +470,17 @@ async onLogout(): Promise<void> {
       }
     ).format(date);
   }
+  
+  resetFilters(): void {
+    // Reset form to default values
+    this.filterForm.reset({
+      search: '',
+      department: 'all',
+      priority: 'all',
+      status: 'all'
+    });
+    
+    // Reload the page to reset all filters and data
+    window.location.reload();
+  }
 }
