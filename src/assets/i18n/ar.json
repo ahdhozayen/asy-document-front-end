@@ -93,9 +93,9 @@
       "department": "القسم",
       "priority": "الأولوية",
       "status": "الحالة",
-      "allDepartments": "جميع الأقسام",
-      "allPriorities": "جميع الأولويات",
-      "allStatuses": "جميع الحالات"
+      "all_departments": "جميع الأقسام",
+      "all_priorities": "جميع الأولويات",
+      "all_statuses": "جميع الحالات"
     },
     "actions": {
       "view": "عرض",

@@ -128,14 +128,11 @@ ngOnInit(): void {
   }
   
   // Load departments from the service
-  console.log('Fetching departments...');
   this.departmentService.getDepartments().subscribe({
     next: (departments) => {
-      console.log('Departments loaded successfully:', departments);
       this.departments = departments;
     },
     error: (error) => {
-      console.error('Error loading departments:', error);
       this.toastService.error(this.translate.instant('common.errors.loadingDepartments'));
     }
   });

@@ -29,14 +29,11 @@ export class DepartmentService {
         map(response => {
           // Check if response has the expected format
           if (response && response.results && Array.isArray(response.results)) {
-            console.log('Department API response:', response);
             return response.results;
           } else if (Array.isArray(response)) {
             // Handle case where API returns direct array instead of paginated response
-            console.log('Department API returned direct array:', response);
             return response;
           } else {
-            console.error('Unexpected department API response format:', response);
             return [];
           }
         })

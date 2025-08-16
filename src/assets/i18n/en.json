@@ -93,9 +93,9 @@
       "department": "Department",
       "priority": "Priority",
       "status": "Status",
-      "allDepartments": "All Departments",
-      "allPriorities": "All Priorities",
-      "allStatuses": "All Statuses"
+      "all_departments": "All Departments",
+      "all_priorities": "All Priorities",
+      "all_statuses": "All Statuses"
     },
     "actions": {
       "view": "View",
