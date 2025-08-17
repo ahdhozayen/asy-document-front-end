@@ -467,6 +467,22 @@
         width: 100%;
         justify-content: center;
         flex-wrap: wrap;
+        
+        .sign-button {
+          background-color: #28a745;
+          color: white;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 1rem;
+          border-radius: 4px;
+          font-weight: 500;
+          margin: 0.5rem 0.25rem;
+          
+          &:hover {
+            background-color: #218838;
+          }
+        }
       }
     }
 

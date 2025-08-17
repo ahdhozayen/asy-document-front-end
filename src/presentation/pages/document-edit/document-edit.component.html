@@ -23,7 +23,7 @@
     <div class="header-actions">
       <button mat-button class="comments-button">
         <mat-icon>chat_bubble_outline</mat-icon>
-        {{ "common.comments" | translate }} ({{ commentCount }})
+        {{ "common.comments" | translate:{count: commentCount} }}
       </button>
       <button mat-button (click)="onCancel()" class="cancel-button">
         <mat-icon>close</mat-icon>

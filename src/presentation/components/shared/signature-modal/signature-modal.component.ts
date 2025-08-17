@@ -45,7 +45,7 @@ export class SignatureModalComponent implements AfterViewInit {
     
     // Set canvas size
     this.canvas.width = 400;
-    this.canvas.height = 200;
+    this.canvas.height = 300;
     
     // Set canvas style
     this.ctx.strokeStyle = '#000';
