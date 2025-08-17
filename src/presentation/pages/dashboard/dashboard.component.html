@@ -232,12 +232,6 @@
                     <mat-icon>edit</mat-icon>
                   </button>
 
-                  <!-- Download Button -->
-                  <button mat-icon-button color="primary" (click)="onDownloadDocument(document)"
-                    [matTooltip]="'dashboard.actions.download' | translate">
-                    <mat-icon>download</mat-icon>
-                  </button>
-
                   <!-- Delete Button -->
                   <button mat-icon-button color="warn" *ngIf="canDeleteDocument()" (click)="onDeleteDocument(document)"
                     [matTooltip]="'dashboard.actions.delete' | translate">

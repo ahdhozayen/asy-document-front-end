@@ -1,9 +1,8 @@
 <div class="comments-modal">
   <div class="modal-header">
-    <h2 class="modal-title">{{ "documents.comments.addComment" | translate }}</h2>
-    <button mat-icon-button class="close-button" (click)="onCancel()">
-      <mat-icon>close</mat-icon>
-    </button>
+    <h2 class="modal-title">
+      {{ "documents.comments.addComment" | translate }}
+    </h2>
   </div>
 
   <div class="modal-content">
@@ -25,16 +24,31 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="form-field">
-        <mat-label>{{ "documents.comments.redirectDepartment" | translate }} *</mat-label>
+        <mat-label
+          >{{
+            "documents.comments.redirectDepartment" | translate
+          }}
+          *</mat-label
+        >
         <mat-select formControlName="redirectDepartment">
-          <mat-option value="finance">{{ 'departments.finance' | translate }}</mat-option>
-          <mat-option value="hr">{{ 'departments.hr' | translate }}</mat-option>
-          <mat-option value="it">{{ 'departments.it' | translate }}</mat-option>
-          <mat-option value="legal">{{ 'departments.legal' | translate }}</mat-option>
-          <mat-option value="operations">{{ 'departments.operations' | translate }}</mat-option>
-          <mat-option value="marketing">{{ 'departments.marketing' | translate }}</mat-option>
+          <mat-option value="finance">{{
+            "departments.finance" | translate
+          }}</mat-option>
+          <mat-option value="hr">{{ "departments.hr" | translate }}</mat-option>
+          <mat-option value="it">{{ "departments.it" | translate }}</mat-option>
+          <mat-option value="legal">{{
+            "departments.legal" | translate
+          }}</mat-option>
+          <mat-option value="operations">{{
+            "departments.operations" | translate
+          }}</mat-option>
+          <mat-option value="marketing">{{
+            "departments.marketing" | translate
+          }}</mat-option>
         </mat-select>
-        <mat-error *ngIf="commentForm.get('redirectDepartment')?.hasError('required')">
+        <mat-error
+          *ngIf="commentForm.get('redirectDepartment')?.hasError('required')"
+        >
           {{ "validation.required" | translate }}
         </mat-error>
       </mat-form-field>
@@ -42,15 +56,15 @@
   </div>
 
   <div class="modal-actions">
-    <button mat-button (click)="onCancel()" class="cancel-button">
+    <button mat-button mat-dialog-close class="cancel-button">
       {{ "common.cancel" | translate }}
     </button>
-    <button 
-      mat-raised-button 
+    <button
+      mat-button
       color="primary"
       (click)="onSubmit()"
       [disabled]="commentForm.invalid || isSubmitting"
-      class="submit-button">
+    >
       <mat-icon>send</mat-icon>
       {{ "common.submit" | translate }}
     </button>

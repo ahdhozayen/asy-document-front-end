@@ -7,7 +7,7 @@
     "delete": "حذف",
     "edit": "تعديل",
     "view": "عرض",
-    "download": "تحميل",
+    "download": "تنزيل",
     "upload": "رفع",
     "search": "بحث",
     "filter": "تصفية",
@@ -22,7 +22,9 @@
     "submit": "إرسال",
     "reset": "إعادة تعيين",
     "refresh": "تحديث",
-    "all": "الكل"
+    "all": "الكل",
+    "saveChanges": "حفظ التغييرات",
+    "comments": "التعليقات ({{count}})"
   },
   "departments": {
     "finance": "المالية",
@@ -119,10 +121,23 @@
     "actions": "الإجراءات",
     "fileSize": "حجم الملف",
     "description": "الوصف",
-    "comments": "التعليقات",
     "reviewedAt": "تاريخ المراجعة",
     "attachments": "المرفقات",
     "fileName": "اسم الملف",
+    "comments": {
+      "addComment": "إضافة تعليق",
+      "comment": "التعليق",
+      "commentPlaceholder": "أدخل تعليقك هنا (10 أحرف على الأقل)",
+      "redirectDepartment": "إعادة توجيه إلى قسم",
+      "submit": "إرسال التعليق",
+      "cancel": "إلغاء",
+      "success": "تمت إضافة التعليق بنجاح",
+      "error": "فشل في إضافة التعليق",
+      "noComments": "لا توجد تعليقات حتى الآن",
+      "commentsList": "قائمة التعليقات",
+      "commentBy": "تعليق بواسطة",
+      "commentDate": "التاريخ"
+    },
     "fields": {
       "title": "العنوان",
       "description": "الوصف",
@@ -132,7 +147,13 @@
       "createdAt": "تاريخ الإنشاء",
       "uploadedBy": "رفع بواسطة",
       "reviewedAt": "تاريخ المراجعة",
-      "redirectDepartment": "إعادة توجيه إلى قسم"
+      "redirectDepartment": "إعادة توجيه إلى قسم",
+      "attachmentName": "اسم المرفق",
+      "attachmentDate": "تاريخ المرفق",
+      "isSigned": "موقع",
+      "uploadDate": "تاريخ الرفع",
+      "fileSize": "حجم الملف",
+      "fileType": "نوع الملف"
     },
     "view": {
       "title": "عرض الوثيقة",
@@ -140,12 +161,17 @@
       "attachments": "المرفقات",
       "addComment": "إضافة تعليق",
       "commentPlaceholder": "أدخل تعليقك هنا",
-      "redirectDepartment": "إعادة توجيه إلى قسم",
+      "redirectDepartment": "إعادة توجيه القسم",
       "selectDepartment": "اختر القسم",
       "submitComment": "إرسال التعليق",
       "signDocument": "توقيع الوثيقة",
       "viewAttachment": "عرض المرفق",
-      "downloadAttachment": "تحميل المرفق"
+      "downloadAttachment": "تنزيل المرفق",
+      "documentPreview": "معاينة الوثيقة",
+      "documentInformation": "معلومات الوثيقة",
+      "attachmentInfo": "معلومات المرفق",
+      "notFound": "الوثيقة غير موجودة",
+      "notFoundMessage": "لم يتم العثور على الوثيقة المطلوبة أو ليس لديك صلاحية لعرضها."
     },
     "signature": {
       "title": "توقيع الوثيقة",
@@ -189,8 +215,14 @@
     },
     "edit": {
       "title": "تعديل الوثيقة",
+      "details": "تعديل تفاصيل الوثيقة",
       "success": "تم تحديث الوثيقة بنجاح",
-      "error": "فشل في تحديث الوثيقة"
+      "error": "فشل في تحديث الوثيقة",
+      "editDocument": "تعديل الوثيقة",
+      "documentInformation": "معلومات الوثيقة",
+      "uploadDate": "تاريخ الرفع:",
+      "fileSize": "حجم الملف:",
+      "fileType": "نوع الملف:"
     },
     "form": {
       "title": "العنوان",

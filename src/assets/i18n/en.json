@@ -22,7 +22,9 @@
     "submit": "Submit",
     "reset": "Reset",
     "refresh": "Refresh",
-    "all": "All"
+    "all": "All",
+    "saveChanges": "Save Changes",
+    "comments": "Comments ({{count}})"
   },
   "departments": {
     "finance": "Finance",
@@ -119,10 +121,23 @@
     "actions": "Actions",
     "fileSize": "File Size",
     "description": "Description",
-    "comments": "Comments",
     "reviewedAt": "Reviewed At",
     "attachments": "Attachments",
     "fileName": "File Name",
+    "comments": {
+      "addComment": "Add Comment",
+      "comment": "Comment",
+      "commentPlaceholder": "Enter your comment here (minimum 10 characters)",
+      "redirectDepartment": "Redirect to Department",
+      "submit": "Submit Comment",
+      "cancel": "Cancel",
+      "success": "Comment added successfully",
+      "error": "Failed to add comment",
+      "noComments": "No comments yet",
+      "commentsList": "Comments List",
+      "commentBy": "Comment by",
+      "commentDate": "Date"
+    },
     "fields": {
       "title": "Title",
       "description": "Description",
@@ -132,7 +147,13 @@
       "createdAt": "Created Date",
       "uploadedBy": "Uploaded By",
       "reviewedAt": "Reviewed Date",
-      "redirectDepartment": "Redirect Department"
+      "redirectDepartment": "Redirect Department",
+      "attachmentName": "Attachment Name",
+      "attachmentDate": "Attachment Date",
+      "isSigned": "Is Signed",
+      "uploadDate": "Upload Date",
+      "fileSize": "File Size",
+      "fileType": "File Type"
     },
     "view": {
       "title": "View Document",
@@ -145,7 +166,12 @@
       "submitComment": "Submit Comment",
       "signDocument": "Sign Document",
       "viewAttachment": "View Attachment",
-      "downloadAttachment": "Download Attachment"
+      "downloadAttachment": "Download Attachment",
+      "documentPreview": "Document Preview",
+      "documentInformation": "Document Information",
+      "attachmentInfo": "Attachment Information",
+      "notFound": "Document Not Found",
+      "notFoundMessage": "The requested document could not be found or you don't have permission to view it."
     },
     "signature": {
       "title": "Sign Document",
@@ -190,8 +216,14 @@
     },
     "edit": {
       "title": "Edit Document",
+      "details": "Edit Document Details",
       "success": "Document updated successfully",
-      "error": "Failed to update document"
+      "error": "Failed to update document",
+      "editDocument": "Edit Document",
+      "documentInformation": "Document Information",
+      "uploadDate": "Upload Date:",
+      "fileSize": "File Size:",
+      "fileType": "File Type:"
     },
     "form": {
       "title": "Title",

@@ -137,10 +137,8 @@ export class DocumentService {
     );
   }
 
-  getDocument(id: number): Observable<Document> {
-    return this.httpClient.get<any>(this.config.endpoints.documents.detail(id)).pipe(
-      map(response => Document.fromApiResponse(response))
-    );
+  getDocument(id: number){
+    return this.httpClient.get<{results: Document[]}>(this.config.endpoints.documents.detail(id))
   }
 
   createDocument(data: CreateDocumentData): Observable<Document> {

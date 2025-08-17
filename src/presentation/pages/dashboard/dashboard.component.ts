@@ -267,12 +267,6 @@ async onLogout(): Promise<void> {
     });
   }
 
-  onDownloadDocument(document: Document): void {
-    this.documentService.downloadDocument(document.id, document.title).subscribe();
-  }
-
-
-
   private deleteDocument(document: Document): void {
     this.documentService.deleteDocument(document.id).subscribe({
       next: () => {

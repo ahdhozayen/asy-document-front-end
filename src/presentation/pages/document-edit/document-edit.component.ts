@@ -85,12 +85,14 @@ export class DocumentEditComponent implements OnInit {
     if (this.documentId) {
       this.documentService.getDocument(this.documentId).subscribe({
         next: (document) => {
+          let newDocument = document.results[0];
+          
           this.currentDocument = {
             ...document,
-            fileName: document.fileName || 'No file uploaded',
-            fileSize: document.formattedFileSize || '0 MB',
-            fileType: document.mimeType || 'Unknown',
-            uploadDate: document.createdAt || new Date()
+            fileName: newDocument.fileName || 'No file uploaded',
+            fileSize: newDocument.formattedFileSize || '0 MB',
+            fileType: newDocument.mimeType || 'Unknown',
+            uploadDate: newDocument.createdAt || new Date()
           };
           this.populateForm();
         },

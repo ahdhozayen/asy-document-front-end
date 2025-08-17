@@ -121,7 +121,7 @@
                <!-- PDF Content - Show actual document if available -->
                <div *ngIf="currentAttachment?.file" class="pdf-iframe-container">
                  <iframe 
-                   [src]="getFileUrl(currentAttachment.file) | safe" 
+                   [src]="getFileUrl(currentAttachment?.file)" 
                    class="pdf-iframe"
                    title="Document Preview">
                  </iframe>
@@ -150,11 +150,6 @@
            <div class="info-item">
              <span class="info-label">{{ "documents.fields.department" | translate }}:</span>
              <span class="info-value">{{ document.department }}</span>
-           </div>
-           
-           <div class="info-item">
-             <span class="info-label">{{ "documents.fields.uploadDate" | translate }}:</span>
-             <span class="info-value">{{ formatDate(document.createdAt) }}</span>
            </div>
            
            <div class="info-item">

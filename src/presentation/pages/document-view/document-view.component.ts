@@ -13,6 +13,8 @@ import { Document } from '../../../core/entities/document.model';
 import { ToastService } from '../../../core/use-cases/toast.service';
 import { SignatureModalComponent } from '../../components/shared/signature-modal/signature-modal.component';
 import { CommentsModalComponent } from '../../components/shared/comments-modal/comments-modal.component';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { environment } from '@env/environment';
 
 @Component({
   selector: 'app-document-view',
@@ -24,10 +26,10 @@ import { CommentsModalComponent } from '../../components/shared/comments-modal/c
     MatDialogModule,
     MatTooltipModule,
     MatProgressSpinnerModule,
-    TranslateModule
+    TranslateModule,
   ],
   templateUrl: './document-view.component.html',
-  styleUrls: ['./document-view.component.scss']
+  styleUrls: ['./document-view.component.scss'],
 })
 export class DocumentViewComponent implements OnInit {
   document: Document | null = null;
@@ -44,15 +46,16 @@ export class DocumentViewComponent implements OnInit {
     private languageService: LanguageService,
     private documentService: DocumentService,
     private toastService: ToastService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private sanitizer: DomSanitizer
   ) {
-    this.languageService.isRTL$.subscribe(isRTL => {
+    this.languageService.isRTL$.subscribe((isRTL) => {
       this.isRTL = isRTL;
     });
   }
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
+    this.route.params.subscribe((params) => {
       this.documentId = +params['id'];
       if (this.documentId) {
         this.loadDocument();
@@ -65,10 +68,12 @@ export class DocumentViewComponent implements OnInit {
       this.isLoading = true;
       this.documentService.getDocument(this.documentId).subscribe({
         next: (document) => {
-          this.document = document;
-          // Get the first attachment if available
-          if (document.attachments && document.attachments.length > 0) {
-            this.currentAttachment = document.attachments[0];
+          let newDocument = document.results[0];
+
+          this.document = newDocument;
+
+          if (newDocument.attachments && newDocument.attachments.length > 0) {
+            this.currentAttachment = newDocument.attachments[0];
           }
           this.isLoading = false;
           this.documentNotFound = false;
@@ -77,7 +82,7 @@ export class DocumentViewComponent implements OnInit {
           this.isLoading = false;
           this.documentNotFound = true;
           this.toastService.errorTranslated('documents.view.loadError');
-        }
+        },
       });
     }
   }
@@ -98,14 +103,13 @@ export class DocumentViewComponent implements OnInit {
       maxWidth: '95vw',
       data: {
         documentId: this.documentId,
-        commentCount: this.commentCount
-      }
+        commentCount: this.commentCount,
+      },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         // Handle comment submission
-        console.log('Comment submitted:', result);
         this.toastService.successTranslated('documents.comments.success');
       }
     });
@@ -115,10 +119,10 @@ export class DocumentViewComponent implements OnInit {
     const dialogRef = this.dialog.open(SignatureModalComponent, {
       width: '500px',
       maxWidth: '95vw',
-      disableClose: true
+      disableClose: true,
     });
 
-    dialogRef.afterClosed().subscribe(signatureData => {
+    dialogRef.afterClosed().subscribe((signatureData) => {
       if (signatureData && signatureData.signatureBase64) {
         this.submitSignature(signatureData.signatureBase64);
       }
@@ -128,20 +132,22 @@ export class DocumentViewComponent implements OnInit {
   private submitSignature(signatureBase64: string): void {
     if (this.documentId) {
       // Send signature to backend
-      this.documentService.signDocument(this.documentId, {
-        signature: signatureBase64,
-        comment: 'Document signed by CEO',
-        redirectDepartment: 'CEO'
-      }).subscribe({
-        next: () => {
-          this.toastService.successTranslated('documents.sign.success');
-          // Refresh document data
-          this.loadDocument();
-        },
-        error: (error) => {
-          this.toastService.errorTranslated('documents.sign.error');
-        }
-      });
+      this.documentService
+        .signDocument(this.documentId, {
+          signature: signatureBase64,
+          comment: 'Document signed by CEO',
+          redirectDepartment: 'CEO',
+        })
+        .subscribe({
+          next: () => {
+            this.toastService.successTranslated('documents.sign.success');
+            // Refresh document data
+            this.loadDocument();
+          },
+          error: (error) => {
+            this.toastService.errorTranslated('documents.sign.error');
+          },
+        });
     }
   }
 
@@ -158,47 +164,80 @@ export class DocumentViewComponent implements OnInit {
 
   getStatusColor(status: string): string {
     switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'in_review': return 'bg-blue-100 text-blue-800';
-      case 'signed': return 'bg-green-100 text-green-800';
-      case 'rejected': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'in_review':
+        return 'bg-blue-100 text-blue-800';
+      case 'signed':
+        return 'bg-green-100 text-green-800';
+      case 'rejected':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   }
 
   getPriorityColor(priority: string): string {
     switch (priority) {
-      case 'low': return 'bg-green-100 text-green-800';
-      case 'medium': return 'bg-blue-100 text-blue-800';
-      case 'high': return 'bg-orange-100 text-orange-800';
-      case 'urgent': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'low':
+        return 'bg-green-100 text-green-800';
+      case 'medium':
+        return 'bg-blue-100 text-blue-800';
+      case 'high':
+        return 'bg-orange-100 text-orange-800';
+      case 'urgent':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   }
 
-  formatDate(date: Date | undefined): string {
+  formatDate(date: Date | string | undefined): string {
     if (!date) return '-';
-    return date.toLocaleString();
+    
+    // Convert string to Date if needed
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    
+    // Check if date is valid
+    if (isNaN(dateObj.getTime())) return '-';
+    
+    // Format date with day, month, year, hours and minutes
+    return dateObj.toLocaleString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 
-  getFileUrl(filePath: string): string {
-    // Construct the full URL for the file
-    const baseUrl = 'http://localhost:8000'; // This should come from environment config
-    return baseUrl + filePath;
+  getFileUrl(file: string): SafeResourceUrl {
+    const filePath = file;
+
+    if (filePath.startsWith('http')) {
+      return this.sanitizer.bypassSecurityTrustResourceUrl(filePath);
+    }
+
+    const baseUrl = environment.mediaURL + filePath;
+
+    return this.sanitizer.bypassSecurityTrustResourceUrl(baseUrl);
   }
 
   getFileTypeDisplay(mimeType: string): string {
     if (!mimeType) return 'Unknown';
-    
+
     const typeMap: { [key: string]: string } = {
       'application/pdf': 'PDF Document',
       'application/msword': 'Word Document',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'Word Document',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+        'Word Document',
       'image/jpeg': 'JPEG Image',
       'image/jpg': 'JPEG Image',
-      'image/png': 'PNG Image'
+      'image/png': 'PNG Image',
     };
-    
-    return typeMap[mimeType] || `${mimeType.split('/')[1]?.toUpperCase()} Document`;
+
+    return (
+      typeMap[mimeType] || `${mimeType.split('/')[1]?.toUpperCase()} Document`
+    );
   }
 }
