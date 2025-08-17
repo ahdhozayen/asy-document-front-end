@@ -130,13 +130,19 @@ export class DocumentViewComponent implements OnInit {
   }
 
   private submitSignature(signatureBase64: string): void {
-    if (this.documentId) {
+    if (
+      this.documentId &&
+      this.document &&
+      this.document.attachments &&
+      this.document.attachments.length > 0
+    ) {
+      console.log('test the document');
+      console.log(this.document.attachments[0].id);
       // Send signature to backend
       this.documentService
         .signDocument(this.documentId, {
-          signature: signatureBase64,
-          comment: 'Document signed by CEO',
-          redirectDepartment: 'CEO',
+          signature_data: signatureBase64,
+          attachmentId: this.document.attachments[0].id,
         })
         .subscribe({
           next: () => {
@@ -194,20 +200,20 @@ export class DocumentViewComponent implements OnInit {
 
   formatDate(date: Date | string | undefined): string {
     if (!date) return '-';
-    
+
     // Convert string to Date if needed
     const dateObj = typeof date === 'string' ? new Date(date) : date;
-    
+
     // Check if date is valid
     if (isNaN(dateObj.getTime())) return '-';
-    
+
     // Format date with day, month, year, hours and minutes
     return dateObj.toLocaleString(undefined, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   }
 

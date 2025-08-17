@@ -262,14 +262,13 @@ export class DocumentService {
     );
   }
 
-  signDocument(id: number, data: { signature: string, comment: string, redirectDepartment: string }): Observable<Document> {
+  signDocument(id:number, data: { signature_data: string, attachmentId:number }): Observable<Document> {
     const signData = {
-      signature: data.signature,
-      comment: data.comment || '',
-      redirect_department: data.redirectDepartment
+      signature_data: data.signature_data,
+      attachment: data.attachmentId || null
     };
 
-    return this.httpClient.post<any>(this.config.endpoints.documents.sign(id), signData).pipe(
+    return this.httpClient.post<any>(this.config.endpoints.documents.sign, signData).pipe(
       map(response => Document.fromApiResponse(response)),
       tap(updatedDocument => {
         // Update local documents list

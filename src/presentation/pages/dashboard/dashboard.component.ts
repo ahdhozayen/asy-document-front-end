@@ -278,22 +278,21 @@ async onLogout(): Promise<void> {
     });
   }
 
-  private signDocument(documentId: number, signatureBase64: string, comment: string, redirectDepartment: string): void {
-    this.documentService.signDocument(documentId, {
-      signature: signatureBase64,
-      comment: comment,
-      redirectDepartment: redirectDepartment
-    }).subscribe({
-      next: () => {
-        this.toastService.successTranslated('documents.sign.success');
-        // Refresh documents list
-        this.loadData();
-      },
-      error: (error) => {
-        this.toastService.errorTranslated('documents.sign.error');
-      }
-    });
-  }
+  // private signDocument(documentId: number, signatureBase64: string): void {
+  //   this.documentService.signDocument(documentId, {
+  //     signature_data: signatureBase64,
+  //     documentId: documentId
+  //   }).subscribe({
+  //     next: () => {
+  //       this.toastService.successTranslated('documents.sign.success');
+  //       // Refresh documents list
+  //       this.loadData();
+  //     },
+  //     error: (error) => {
+  //       this.toastService.errorTranslated('documents.sign.error');
+  //     }
+  //   });
+  // }
 
   private addDocumentComment(documentId: number, comment: string, redirectDepartment: string): void {
     this.documentService.addDocumentComment(documentId, {
