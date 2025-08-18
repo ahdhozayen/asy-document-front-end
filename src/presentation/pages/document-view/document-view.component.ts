@@ -67,8 +67,17 @@ export class DocumentViewComponent implements OnInit {
     if (this.documentId) {
       this.isLoading = true;
       this.documentService.getDocument(this.documentId).subscribe({
-        next: (document) => {
-          let newDocument = document.results[0];
+        next: (response) => {
+          // Handle both paginated responses and direct document responses
+          let newDocument: Document;
+          
+          if (response && 'results' in response && Array.isArray(response.results)) {
+            // It's a paginated response
+            newDocument = response.results[0];
+          } else {
+            // It's a direct document response
+            newDocument = response as Document;
+          }
 
           this.document = newDocument;
 
@@ -159,9 +168,9 @@ export class DocumentViewComponent implements OnInit {
 
   onDownload(): void {
     if (this.currentAttachment?.file) {
-      // Construct the full URL for the file
-      const baseUrl = 'http://localhost:8000'; // This should come from environment config
-      const fileUrl = baseUrl + this.currentAttachment.file;
+      // Fallback to direct file path if ID is not available
+      const fileUrl = environment.mediaURL+this.currentAttachment.file;
+      // const fileUrl = `${environment.mediaURL}${normalizedPath}`;
       window.open(fileUrl, '_blank');
     } else {
       this.toastService.errorTranslated('documents.download.error');
@@ -218,14 +227,28 @@ export class DocumentViewComponent implements OnInit {
   }
 
   getFileUrl(file: string): SafeResourceUrl {
-    const filePath = file;
-
-    if (filePath.startsWith('http')) {
-      return this.sanitizer.bypassSecurityTrustResourceUrl(filePath);
+    if (!file) {
+      console.error('File path is empty or undefined');
+      return this.sanitizer.bypassSecurityTrustResourceUrl('');
     }
-
-    const baseUrl = environment.mediaURL + filePath;
-
+    
+    // If it's already a full URL, use it directly
+    if (file.startsWith('http')) {
+      return this.sanitizer.bypassSecurityTrustResourceUrl(file);
+    }
+    
+    // For attachment IDs, use the document attachment endpoint
+    if (!isNaN(Number(file))) {
+      const attachmentUrl = `${environment.apiUrl}/documents/attachments/${file}`;
+      return this.sanitizer.bypassSecurityTrustResourceUrl(attachmentUrl);
+    }
+    
+    // For file paths, ensure they're properly joined with the media URL
+    // Remove any leading slash to avoid double slashes
+    const normalizedPath = file.startsWith('/') ? file : `/${file}`;
+    const baseUrl = `${environment.mediaURL}${normalizedPath}`;
+    
+    console.log('Generated file URL:', baseUrl);
     return this.sanitizer.bypassSecurityTrustResourceUrl(baseUrl);
   }
 

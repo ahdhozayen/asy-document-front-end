@@ -49,10 +49,6 @@ interface DocumentApiResponse {
   updatedAt?: string;
   file_url?: string;
   fileUrl?: string;
-  reviewed_by?: DocumentUser | number;
-  reviewedBy?: number;
-  reviewed_at?: string;
-  reviewedAt?: string;
   comments?: string;
   redirect_department?: string;
   attachments?: Attachment[];
@@ -74,8 +70,6 @@ export class Document {
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
     public readonly fileUrl?: string,
-    public readonly reviewedBy?: number,
-    public readonly reviewedAt?: Date,
     public readonly comments?: string,
     public readonly redirectDepartment?: string,
     public readonly attachments?: Attachment[]
@@ -220,9 +214,6 @@ export class Document {
       ? `${data.uploaded_by.first_name} ${data.uploaded_by.last_name}`.trim()
       : (data.uploaded_by_name || data.uploadedByName || '');
 
-    // Handle reviewed_by as either User object or number
-    const reviewedBy = typeof data.reviewed_by === 'object' ? data.reviewed_by.id : (data.reviewed_by || data.reviewedBy);
-
     return new Document(
       data.id || 0,
       data.title || '',
@@ -238,8 +229,6 @@ export class Document {
       parseDate(data.created_at || data.createdAt),
       parseDate(data.updated_at || data.updatedAt),
       data.file_url || data.fileUrl,
-      reviewedBy,
-      parseOptionalDate(data.reviewed_at || data.reviewedAt),
       data.comments,
       data.redirect_department,
       data.attachments
@@ -276,8 +265,6 @@ export class Document {
       this.createdAt,
       new Date(), // Update the updatedAt timestamp
       this.fileUrl,
-      this.reviewedBy,
-      this.reviewedAt,
       this.comments,
       this.redirectDepartment,
       this.attachments
@@ -300,8 +287,6 @@ export class Document {
       this.createdAt,
       new Date(),
       this.fileUrl,
-      this.reviewedBy,
-      this.reviewedAt,
       comments,
       this.redirectDepartment,
       this.attachments

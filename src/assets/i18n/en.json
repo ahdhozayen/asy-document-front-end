@@ -171,13 +171,18 @@
       "documentInformation": "Document Information",
       "attachmentInfo": "Attachment Information",
       "notFound": "Document Not Found",
-      "notFoundMessage": "The requested document could not be found or you don't have permission to view it."
+      "notFoundMessage": "The requested document could not be found or you don't have permission to view it.",
+      "fileNotFound": "File not found",
+      "noAttachment": "No attachment available",
+      "legacyAttachment": "Using legacy file path. Authentication may be required."
     },
     "signature": {
       "title": "Sign Document",
+      "drawSignature": "Draw Your Signature",
       "instructions": "Draw your signature below using mouse or touch",
       "clear": "Clear",
-      "save": "Save Signature"
+      "save": "Save Signature",
+      "submit": "Submit Signature"
     },
     "sign": {
       "success": "Document signed successfully",
@@ -223,7 +228,12 @@
       "documentInformation": "Document Information",
       "uploadDate": "Upload Date:",
       "fileSize": "File Size:",
-      "fileType": "File Type:"
+      "fileType": "File Type:",
+      "currentFile": "Current File",
+      "viewFile": "View File",
+      "noFileChosen": "No file chosen",
+      "uploadNewFile": "Upload New File",
+      "loadWarning": "Could not load document details. Some information may be missing."
     },
     "form": {
       "title": "Title",

@@ -40,7 +40,7 @@ export class DocumentService {
    * @param response API response that might be paginated
    * @returns Document instance
    */
-  private extractDocumentFromResponse(response: any): Document {
+  public extractDocumentFromResponse(response: any): Document {
     // Handle paginated response structure
     if (response.results && Array.isArray(response.results) && response.results.length > 0) {
       return Document.fromApiResponse(response.results[0]);

@@ -15,6 +15,8 @@ import { LanguageService } from '../../../core/use-cases/language.service';
 import { DocumentService } from '../../../core/use-cases/document.service';
 import { Document } from '../../../core/entities/document.model';
 import { ToastService } from '../../../core/use-cases/toast.service';
+import { DomSanitizer } from '@angular/platform-browser';
+import { environment } from '@env/environment';
 
 export interface DocumentEditData {
   title: string;
@@ -63,7 +65,8 @@ export class DocumentEditComponent implements OnInit {
     private fb: FormBuilder,
     private languageService: LanguageService,
     private documentService: DocumentService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private sanitizer: DomSanitizer
   ) {
     this.editForm = this.createForm();
     
@@ -85,14 +88,10 @@ export class DocumentEditComponent implements OnInit {
     if (this.documentId) {
       this.documentService.getDocument(this.documentId).subscribe({
         next: (document) => {
-          let newDocument = document.results[0];
-          
           this.currentDocument = {
             ...document,
-            fileName: newDocument.fileName || 'No file uploaded',
-            fileSize: newDocument.formattedFileSize || '0 MB',
-            fileType: newDocument.mimeType || 'Unknown',
-            uploadDate: newDocument.createdAt || new Date()
+            fileName: document.attachments?.[0].original_name || 'No file uploaded',
+            uploadDate: document.attachments?.[0].created_at || new Date()
           };
           this.populateForm();
         },
@@ -108,8 +107,6 @@ export class DocumentEditComponent implements OnInit {
             priority: 'medium',
             status: 'pending',
             fileName: 'No file uploaded',
-            fileSize: '0 MB',
-            fileType: 'Unknown',
             uploadDate: new Date()
           };
           this.populateForm();
@@ -299,5 +296,34 @@ export class DocumentEditComponent implements OnInit {
     };
     
     return typeMap[fileType.toLowerCase()] || `${fileType.toUpperCase()} Document`;
+  }
+
+  /**
+   * Opens the current document attachment in a new tab
+   */
+  viewCurrentAttachment(): void {
+    if (this.currentDocument?.attachments?.length > 0) {
+      const attachment = this.currentDocument.attachments[0];
+      
+      // First try to use the attachment ID (preferred method)
+      if (attachment.id) {
+        const fileUrl = environment.mediaURL+attachment.file;
+        // const fileUrl = `${environment.apiUrl}/documents/attachments/${attachment.id}`;
+        window.open(fileUrl, '_blank');
+        return;
+      }
+      
+      // Fallback to using the file path if ID is not available
+      if (attachment.file) {
+        const normalizedPath = attachment.file.startsWith('/') ? attachment.file : `/${attachment.file}`;
+        const fileUrl = `${environment.mediaURL}${normalizedPath}`;
+        window.open(fileUrl, '_blank');
+        return;
+      }
+      
+      this.toastService.errorTranslated('documents.view.fileNotFound');
+    } else {
+      this.toastService.errorTranslated('documents.view.noAttachment');
+    }
   }
 }

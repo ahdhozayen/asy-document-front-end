@@ -121,9 +121,12 @@
               <span class="file-name" [ngClass]="{'no-file-text': !currentDocument?.fileName || currentDocument?.fileName === 'No file uploaded'}">
                 {{ currentDocument?.fileName || 'No file uploaded' }}
               </span>
-              <span class="file-size" [ngClass]="{'no-file-text': !currentDocument?.fileName || currentDocument?.fileName === 'No file uploaded'}">
-                {{ currentDocument?.fileSize || '0 MB' }}
-              </span>
+              <div class="file-actions" *ngIf="currentDocument?.attachments?.length">
+                <button mat-button color="primary" (click)="viewCurrentAttachment()" class="view-file-button">
+                  <mat-icon>visibility</mat-icon>
+                  {{ 'documents.edit.viewFile' | translate }}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -185,16 +188,6 @@
         <div class="info-item">
           <span class="info-label">{{ "documents.edit.uploadDate" | translate }}:</span>
           <span class="info-value">{{ currentDocument?.uploadDate | date:'M/d/yyyy, h:mm:ss a' }}</span>
-        </div>
-        
-        <div class="info-item">
-          <span class="info-label">{{ "documents.edit.fileSize" | translate }}:</span>
-          <span class="info-value">{{ currentDocument?.fileSize || '0 MB' }}</span>
-        </div>
-        
-        <div class="info-item">
-          <span class="info-label">{{ "documents.edit.fileType" | translate }}:</span>
-          <span class="info-value">{{ getFileTypeDisplay(currentDocument?.fileType) }}</span>
         </div>
       </div>
     </div>

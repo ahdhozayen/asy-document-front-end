@@ -41,7 +41,7 @@ export class SignatureModalComponent implements AfterViewInit {
 
   private initializeCanvas(): void {
     this.canvas = this.signatureCanvas.nativeElement;
-    this.ctx = this.canvas.getContext('2d')!;
+    this.ctx = this.canvas.getContext('2d', { alpha: true })!;
     
     // Set canvas size
     this.canvas.width = 400;
@@ -117,8 +117,7 @@ export class SignatureModalComponent implements AfterViewInit {
 
   clearCanvas(): void {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.fillStyle = '#f8f9fa';
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    // Don't fill with background color to keep it transparent
   }
 
   onSubmit(): void {
@@ -126,7 +125,17 @@ export class SignatureModalComponent implements AfterViewInit {
       return; // Don't submit if canvas is empty
     }
     
-    const signatureBase64 = this.canvas.toDataURL('image/png');
+    // Create a temporary canvas to extract just the signature with transparent background
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = this.canvas.width;
+    tempCanvas.height = this.canvas.height;
+    const tempCtx = tempCanvas.getContext('2d')!;
+    
+    // Draw the signature with transparent background
+    tempCtx.drawImage(this.canvas, 0, 0);
+    
+    // Get the signature as a PNG with transparency
+    const signatureBase64 = tempCanvas.toDataURL('image/png');
     const result: SignatureModalResult = {
       signatureBase64: signatureBase64
     };
@@ -142,9 +151,10 @@ export class SignatureModalComponent implements AfterViewInit {
     const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
     const data = imageData.data;
     
-    // Check if all pixels are transparent or white
-    for (let i = 3; i < data.length; i += 4) {
-      if (data[i] !== 0) { // Alpha channel
+    // Check if any non-transparent pixels exist (looking for actual drawing)
+    for (let i = 0; i < data.length; i += 4) {
+      // If any pixel has color data (not fully transparent)
+      if (data[i+3] !== 0) {
         return false;
       }
     }
