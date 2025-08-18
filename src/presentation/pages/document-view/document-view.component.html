@@ -43,19 +43,32 @@
       </div>
       
       <div class="header-actions">
-        <button mat-button class="edit-button" (click)="onEdit()">
+        <!-- Edit Button - Only visible for users with edit permission and disabled for signed documents -->
+        <button mat-button class="edit-button" 
+          *appHasPermission="{ permission: 'edit', document: document }"
+          (click)="onEdit()">
           <mat-icon>edit</mat-icon>
           {{ "common.edit" | translate }}
         </button>
-        <button mat-button class="comments-button" (click)="onComments()">
+        
+        <!-- Comments Button - Only visible for users with comment permission and disabled for signed documents -->
+        <button mat-button class="comments-button" 
+          *appHasPermission="{ permission: 'comment', document: document }"
+          (click)="onComments()">
           <mat-icon>chat_bubble_outline</mat-icon>
           {{ "common.comments" | translate:{count: commentCount} }}
         </button>
+        
+        <!-- Download Button - Always visible -->
         <button mat-raised-button color="primary" class="download-button" (click)="onDownload()">
           <mat-icon>download</mat-icon>
           {{ "common.download" | translate }}
         </button>
-        <button mat-raised-button color="accent" class="sign-button" (click)="onSignDocument()">
+        
+        <!-- Sign Button - Only visible for users with sign permission and disabled for already signed documents -->
+        <button mat-raised-button color="accent" class="sign-button" 
+          *appHasPermission="{ permission: 'sign', document: document }"
+          (click)="onSignDocument()">
           <mat-icon>draw</mat-icon>
           {{ "documents.view.signDocument" | translate }}
         </button>

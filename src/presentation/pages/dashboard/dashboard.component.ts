@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, ViewChildren, QueryList, HostListener, ElementRef, ENVIRONMENT_INITIALIZER, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ViewChildren, QueryList, ENVIRONMENT_INITIALIZER } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatSelect } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
@@ -26,13 +26,15 @@ import { AuthService } from '../../../core/use-cases/auth.service';
 import { DocumentService } from '../../../core/use-cases/document.service';
 import { ToastService } from '../../../core/use-cases/toast.service';
 import { LanguageService } from '../../../core/use-cases/language.service';
+import { AuthorizationService } from '../../../core/use-cases/authorization.service';
 import { DepartmentService } from '../../../data/services/department.service';
 import { User, Document, DocumentFilters, DocumentStats } from '../../../core/entities';
 import { Department } from '../../../domain/models/department.model';
 import { LanguageSwitcherComponent } from '../../components/shared/language-switcher/language-switcher.component';
+import { HasPermissionDirective } from '../../shared/directives/has-permission.directive';
 // Import dialog components that will be loaded dynamically
 import { ConfirmationDialogComponent, ConfirmationDialogData } from '../../components/shared/confirmation-dialog/confirmation-dialog.component';
-import { DocumentCreateModalComponent, DocumentCreateData } from '../../components/shared/document-create-modal/document-create-modal.component';
+import { DocumentCreateModalComponent } from '../../components/shared/document-create-modal/document-create-modal.component';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -56,12 +58,13 @@ import { DocumentCreateModalComponent, DocumentCreateData } from '../../componen
     MatSnackBarModule,
     MatDialogModule,
     TranslateModule,
-    LanguageSwitcherComponent
+    LanguageSwitcherComponent,
+    HasPermissionDirective
   ],
   providers: [
     // Register dialog components for dynamic loading without lint warnings
     // This is the recommended way to register components for dynamic loading in Angular
-    { provide: ENVIRONMENT_INITIALIZER, multi: true, useValue: () => {} }
+    { provide: ENVIRONMENT_INITIALIZER, multi: true, useValue: () => {/* no-op */} }
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
@@ -96,6 +99,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private dialog = inject(MatDialog);
   private departmentService = inject(DepartmentService);
   private router = inject(Router);
+  private authorizationService = inject(AuthorizationService);
   
   departments: Department[] = [];
 
@@ -132,9 +136,7 @@ ngOnInit(): void {
     next: (departments) => {
       this.departments = departments;
     },
-    error: (error) => {
-      this.toastService.error(this.translate.instant('common.errors.loadingDepartments'));
-    }
+    error: undefined
   });
 
     // Subscribe to documents
@@ -176,13 +178,11 @@ ngOnInit(): void {
     this.destroy$.complete();
   }
 
-  private async loadData(): Promise<void> {
-    try {
-      // Load documents and stats using the observable methods
-      this.documentService.getDocuments().subscribe();
-      this.documentService.getDocumentStats().subscribe();
-    } catch (error) {
-    }
+  private loadData(): void {
+    // Load documents and stats using the observable methods
+    // Errors are handled by the observables in the service
+    this.documentService.getDocuments().subscribe();
+    this.documentService.getDocumentStats().subscribe();
   }
 
   private applyFilters(formFilters: { search?: string; department?: string | number; priority?: string; status?: string }): void {
@@ -197,12 +197,10 @@ ngOnInit(): void {
     this.documentService.getDocuments(filters).subscribe();
   }
 
-async onLogout(): Promise<void> {
-  try {
-    await this.authService.logout();
-  } catch (error) {
+  onLogout(): void {
+    // Error is handled by the logout method in the service
+    this.authService.logout();
   }
-}
 
   onViewDocument(document: Document): void {
     this.router.navigate(['/document/view', document.id]);
@@ -230,7 +228,7 @@ async onLogout(): Promise<void> {
             this.toastService.success(this.translate.instant('documents.create.success'));
             this.loadData(); // Refresh document list
           },
-          error: (error) => {
+          error: () => {
             this.isLoading = false;
             this.toastService.error(this.translate.instant('documents.create.error'));
           }
@@ -272,7 +270,7 @@ async onLogout(): Promise<void> {
       next: () => {
         this.toastService.successTranslated('documents.delete.success');
       },
-      error: (error) => {
+      error: () => {
         this.toastService.errorTranslated('documents.delete.error');
       }
     });
@@ -304,37 +302,26 @@ async onLogout(): Promise<void> {
         // Refresh documents list
         this.loadData();
       },
-      error: (error) => {
+      error: () => {
         this.toastService.errorTranslated('documents.comment.error');
       }
     });
   }
 
   canViewDocument(): boolean {
-    if (!this.currentUser) return false;
-    // return this.currentUser.role === 'ceo';
-    return true;
+    // Use the synchronous method from the authorization service
+    return this.authorizationService.canViewDocumentOnDashboardSync();
   }
 
   canEditDocument(document: Document): boolean {
-    if (!this.currentUser) {
-      return false;
-    }
-
-    // Normalize role to lowercase for comparison
-    const userRole = this.currentUser.role?.toLowerCase();
-    const documentStatus = document.status?.toLowerCase();
-
-    // Allow CEO and HELPDESK roles to edit documents that are not signed
-    const hasEditPermission = userRole === 'ceo' || userRole === 'helpdesk';
-    const isNotSigned = documentStatus !== 'signed';
-
-    // return hasEditPermission && isNotSigned;
-    return true;
+    if (!document) return false;
+    
+    // Use the synchronous method from the authorization service
+    return this.authorizationService.canEditDocumentSync(document);
   }
 
   canDeleteDocument(): boolean {
-    return true; // All users can delete documents based on the React implementation
+    return true; // All users can delete documents based on the current implementation
   }
 
   getStatusColor(status: string): string {

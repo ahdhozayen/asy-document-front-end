@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,10 +11,13 @@ import { LanguageService } from '../../../core/use-cases/language.service';
 import { DocumentService } from '../../../core/use-cases/document.service';
 import { Document } from '../../../core/entities/document.model';
 import { ToastService } from '../../../core/use-cases/toast.service';
+import { AuthorizationService } from '../../../core/use-cases/authorization.service';
 import { SignatureModalComponent } from '../../components/shared/signature-modal/signature-modal.component';
 import { CommentsModalComponent } from '../../components/shared/comments-modal/comments-modal.component';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { environment } from '@env/environment';
+import { HasPermissionDirective } from '@presentation/shared/directives/has-permission.directive';
+import { Attachment } from '../../../core/entities/document.model';
 
 @Component({
   selector: 'app-document-view',
@@ -27,6 +30,7 @@ import { environment } from '@env/environment';
     MatTooltipModule,
     MatProgressSpinnerModule,
     TranslateModule,
+    HasPermissionDirective,
   ],
   templateUrl: './document-view.component.html',
   styleUrls: ['./document-view.component.scss'],
@@ -38,17 +42,18 @@ export class DocumentViewComponent implements OnInit {
   isLoading = true;
   documentNotFound = false;
   commentCount = 0;
-  currentAttachment: any = null;
+  currentAttachment: Attachment | null = null;
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private languageService: LanguageService,
-    private documentService: DocumentService,
-    private toastService: ToastService,
-    private dialog: MatDialog,
-    private sanitizer: DomSanitizer
-  ) {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private languageService = inject(LanguageService);
+  private documentService = inject(DocumentService);
+  private toastService = inject(ToastService);
+  private dialog = inject(MatDialog);
+  private sanitizer = inject(DomSanitizer);
+  private authorizationService = inject(AuthorizationService);
+
+  constructor() {
     this.languageService.isRTL$.subscribe((isRTL) => {
       this.isRTL = isRTL;
     });
@@ -87,7 +92,7 @@ export class DocumentViewComponent implements OnInit {
           this.isLoading = false;
           this.documentNotFound = false;
         },
-        error: (error) => {
+        error: () => {
           this.isLoading = false;
           this.documentNotFound = true;
           this.toastService.errorTranslated('documents.view.loadError');
@@ -101,41 +106,45 @@ export class DocumentViewComponent implements OnInit {
   }
 
   onEdit(): void {
-    if (this.documentId) {
+    if (this.documentId && this.canEditDocument()) {
       this.router.navigate(['/document/edit', this.documentId]);
     }
   }
 
   onComments(): void {
-    const dialogRef = this.dialog.open(CommentsModalComponent, {
-      width: '500px',
-      maxWidth: '95vw',
-      data: {
-        documentId: this.documentId,
-        commentCount: this.commentCount,
-      },
-    });
+    if (this.canCommentOnDocument()) {
+      const dialogRef = this.dialog.open(CommentsModalComponent, {
+        width: '500px',
+        maxWidth: '95vw',
+        data: {
+          documentId: this.documentId,
+          commentCount: this.commentCount,
+        },
+      });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        // Handle comment submission
-        this.toastService.successTranslated('documents.comments.success');
-      }
-    });
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result) {
+          // Handle comment submission
+          this.toastService.successTranslated('documents.comments.success');
+        }
+      });
+    }
   }
 
   onSignDocument(): void {
-    const dialogRef = this.dialog.open(SignatureModalComponent, {
-      width: '500px',
-      maxWidth: '95vw',
-      disableClose: true,
-    });
+    if (this.canSignDocument()) {
+      const dialogRef = this.dialog.open(SignatureModalComponent, {
+        width: '500px',
+        maxWidth: '95vw',
+        disableClose: true,
+      });
 
-    dialogRef.afterClosed().subscribe((signatureData) => {
-      if (signatureData && signatureData.signatureBase64) {
-        this.submitSignature(signatureData.signatureBase64);
-      }
-    });
+      dialogRef.afterClosed().subscribe((signatureData) => {
+        if (signatureData && signatureData.signatureBase64) {
+          this.submitSignature(signatureData.signatureBase64);
+        }
+      });
+    }
   }
 
   private submitSignature(signatureBase64: string): void {
@@ -145,8 +154,6 @@ export class DocumentViewComponent implements OnInit {
       this.document.attachments &&
       this.document.attachments.length > 0
     ) {
-      console.log('test the document');
-      console.log(this.document.attachments[0].id);
       // Send signature to backend
       this.documentService
         .signDocument(this.documentId, {
@@ -159,7 +166,7 @@ export class DocumentViewComponent implements OnInit {
             // Refresh document data
             this.loadDocument();
           },
-          error: (error) => {
+          error: () => {
             this.toastService.errorTranslated('documents.sign.error');
           },
         });
@@ -248,14 +255,13 @@ export class DocumentViewComponent implements OnInit {
     const normalizedPath = file.startsWith('/') ? file : `/${file}`;
     const baseUrl = `${environment.mediaURL}${normalizedPath}`;
     
-    console.log('Generated file URL:', baseUrl);
     return this.sanitizer.bypassSecurityTrustResourceUrl(baseUrl);
   }
 
   getFileTypeDisplay(mimeType: string): string {
     if (!mimeType) return 'Unknown';
 
-    const typeMap: { [key: string]: string } = {
+    const typeMap: Record<string, string> = {
       'application/pdf': 'PDF Document',
       'application/msword': 'Word Document',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
@@ -268,5 +274,20 @@ export class DocumentViewComponent implements OnInit {
     return (
       typeMap[mimeType] || `${mimeType.split('/')[1]?.toUpperCase()} Document`
     );
+  }
+
+  canEditDocument(): boolean {
+    if (!this.document) return false;
+    return this.authorizationService.canEditDocumentSync(this.document);
+  }
+
+  canCommentOnDocument(): boolean {
+    if (!this.document) return false;
+    return this.authorizationService.canCommentOnDocumentSync(this.document);
+  }
+
+  canSignDocument(): boolean {
+    if (!this.document) return false;
+    return this.authorizationService.canSignDocumentSync(this.document);
   }
 }

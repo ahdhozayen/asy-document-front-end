@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -14,10 +14,8 @@ export class ToastService {
     verticalPosition: 'bottom'
   };
 
-  constructor(
-    private snackBar: MatSnackBar,
-    private translate: TranslateService
-  ) {}
+  private snackBar = inject(MatSnackBar);
+  private translate = inject(TranslateService);
 
   show(message: string, type: ToastType = 'info', duration?: number): void {
     const config: MatSnackBarConfig = {

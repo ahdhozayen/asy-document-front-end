@@ -7,6 +7,7 @@ import { StorageService } from '../../infrastructure/storage/storage.service';
 import { ToastService } from '../../infrastructure/ui/toast.service';
 import { ApiConfig } from '../../infrastructure/http/api.config';
 import { User, AuthResult, LoginCredentials } from '../entities';
+import { UserApiResponse } from '../entities/user.model';
 
 export interface ChangePasswordData {
   oldPassword: string;
@@ -77,14 +78,7 @@ export class AuthService {
       this.isAuthenticatedSubject.next(true);
 
       this.getCurrentUser().subscribe({
-        next: (user) => {
-          this.currentUserSubject.next(user);
-          this.storage.setObject('current-user', user);
-          this.isLoadingSubject.next(false);
-        },
-    error: (error) => {
-  this.isLoadingSubject.next(false);
-}
+        next: (user) => this.currentUserSubject.next(user)
       });
     } else {
       this.storage.removeItem('current-user');
@@ -126,8 +120,6 @@ export class AuthService {
         this.storage.setItem('username', credentials.username);
 
         // Verify tokens were stored
-        const storedAccess = this.storage.getAccessToken();
-        const storedRefresh = this.storage.getRefreshToken();
 
 
         this.currentUserSubject.next(result.user);
@@ -137,7 +129,9 @@ export class AuthService {
         if (result.user.email === credentials.username && !result.user.firstName) {
           this.getCurrentUser().subscribe({
             next: (user) => this.currentUserSubject.next(user),
-            error: () => {} // Ignore errors, keep placeholder user
+            error: () => {
+              // Ignore errors, keep placeholder user
+            }
           });
         }
       }),
@@ -193,9 +187,10 @@ export class AuthService {
 
   getCurrentUser(): Observable<User> {
     const profileEndpoint = this.config.endpoints.auth.profile;
-
+    
     if (!profileEndpoint) {
       const currentUser = this.currentUserSubject.value;
+      
       if (currentUser) {
         return new Observable(observer => {
           observer.next(currentUser);
@@ -205,10 +200,20 @@ export class AuthService {
       return throwError(() => new Error('No current user and profile endpoint not configured'));
     }
 
-    return this.httpClient.get<any>(profileEndpoint).pipe(
-      map(response => User.fromApiResponse(response)),
+    return this.httpClient.get<UserApiResponse | { result?: UserApiResponse[]; results?: UserApiResponse[] }>(profileEndpoint).pipe(
+      map(response => {
+        if ('result' in response && Array.isArray(response.result) && response.result.length > 0) {
+          return User.fromApiResponse(response.result[0]);
+        } else if ('results' in response && Array.isArray(response.results) && response.results.length > 0) {
+          return User.fromApiResponse(response.results[0]);
+        } else {
+          // Direct response object
+          return User.fromApiResponse(response as UserApiResponse);
+        }
+      }),
       tap(user => this.currentUserSubject.next(user)),
       catchError(error => {
+        console.error('Error fetching user profile:', error);
         return throwError(() => error);
       })
     );
@@ -244,8 +249,8 @@ export class AuthService {
       profileData.avatar || currentUser.avatar
     );
 
-    return this.httpClient.put<any>(this.config.endpoints.auth.profile, updatedUser.toApiRequest()).pipe(
-      map(response => User.fromApiResponse(response)),
+    return this.httpClient.put<{ result: UserApiResponse[] }>(this.config.endpoints.auth.profile, updatedUser.toApiRequest()).pipe(
+      map(response => User.fromApiResponse(response.result[0])),
       tap(user => this.currentUserSubject.next(user))
     );
   }

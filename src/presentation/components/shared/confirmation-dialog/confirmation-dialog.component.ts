@@ -1,10 +1,11 @@
-import { Component, Inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 import { LanguageService } from '../../../../core/use-cases/language.service';
+import { inject } from '@angular/core';
 
 export interface ConfirmationDialogData {
   title: string;
@@ -148,13 +149,12 @@ export interface ConfirmationDialogData {
   `]
 })
 export class ConfirmationDialogComponent {
+  public dialogRef = inject(MatDialogRef<ConfirmationDialogComponent>);
+  public data = inject(MAT_DIALOG_DATA) as ConfirmationDialogData;
+  public languageService = inject(LanguageService);
   isRTL = false;
 
-  constructor(
-    public dialogRef: MatDialogRef<ConfirmationDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ConfirmationDialogData,
-    public languageService: LanguageService
-  ) {
+  constructor() {
     this.languageService.isRTL$.subscribe(isRTL => {
       this.isRTL = isRTL;
     });

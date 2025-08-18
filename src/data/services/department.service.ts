@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { Department } from '../../domain/models/department.model';
 import { environment } from '@env/environment';
@@ -15,16 +15,15 @@ interface PaginatedResponse<T> {
   providedIn: 'root'
 })
 export class DepartmentService {
+  private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/lookups/departments`;
-
-  constructor(private http: HttpClient) {}
 
   /**
    * Fetches all departments from the API
    * @returns Observable of Department array
    */
   getDepartments(): Observable<Department[]> {
-    return this.http.get<any>(this.apiUrl)
+    return this.http.get<PaginatedResponse<Department>>(this.apiUrl)
       .pipe(
         map(response => {
           // Check if response has the expected format

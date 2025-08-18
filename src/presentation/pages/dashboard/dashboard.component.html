@@ -220,20 +220,26 @@
               </th>
               <td mat-cell *matCellDef="let document">
                 <div class="actions-container" [class.rtl]="isRTL">
-                  <!-- View Button -->
-                  <button mat-icon-button color="primary" *ngIf="canViewDocument()" (click)="onViewDocument(document)"
+                  <!-- View Button - Only visible for CEO users -->
+                  <button mat-icon-button color="primary" 
+                    *appHasPermission="{ permission: 'viewOnDashboard' }"
+                    (click)="onViewDocument(document)"
                     [matTooltip]="'dashboard.actions.view' | translate">
                     <mat-icon>visibility</mat-icon>
                   </button>
 
-                  <!-- Edit Button -->
-                  <button mat-icon-button color="accent" *ngIf="canEditDocument(document)"
-                    (click)="onEditDocument(document)" [matTooltip]="'dashboard.actions.edit' | translate">
+                  <!-- Edit Button - Only visible for helpdesk users and disabled for signed documents -->
+                  <button mat-icon-button color="accent" 
+                    *appHasPermission="{ permission: 'edit', document: document }"
+                    (click)="onEditDocument(document)" 
+                    [matTooltip]="'dashboard.actions.edit' | translate">
                     <mat-icon>edit</mat-icon>
                   </button>
 
                   <!-- Delete Button -->
-                  <button mat-icon-button color="warn" *ngIf="canDeleteDocument()" (click)="onDeleteDocument(document)"
+                  <button mat-icon-button color="warn" 
+                    *ngIf="canDeleteDocument()" 
+                    (click)="onDeleteDocument(document)"
                     [matTooltip]="'dashboard.actions.delete' | translate">
                     <mat-icon>delete</mat-icon>
                   </button>

@@ -34,7 +34,8 @@ export class ApiConfig {
   get endpoints() {
     return {
       auth: {
-        login: `${this.baseUrl}/token`,
+        login: `${this.baseUrl}/auth/login`,
+        // login: `${this.baseUrl}/token`,
         logout: `${this.baseUrl}/auth/logout`,
         refresh: `${this.baseUrl}/token/refresh`,
         profile: `${this.baseUrl}/auth/profile`,

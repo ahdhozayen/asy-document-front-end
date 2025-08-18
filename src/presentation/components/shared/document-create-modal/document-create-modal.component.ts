@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -11,6 +11,9 @@ import { MatDividerModule } from '@angular/material/divider';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { LanguageService } from '../../../../core/use-cases/language.service';
+import { AuthorizationService } from '../../../../core/use-cases/authorization.service';
+import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
+import { PermissionDisableDirective } from '../../../shared/directives/permission-disable.directive';
 
 export interface DocumentCreateData {
   title: string;
@@ -33,7 +36,9 @@ export interface DocumentCreateData {
     MatInputModule,
     MatSelectModule,
     MatDividerModule,
-    TranslateModule
+    TranslateModule,
+    HasPermissionDirective,
+    PermissionDisableDirective
   ],
   templateUrl: './document-create-modal.component.html',
   styleUrls: ['./document-create-modal.component.scss']
@@ -45,12 +50,13 @@ export class DocumentCreateModalComponent implements OnInit {
   departments: string[] = ['HR', 'IT', 'Finance', 'Marketing', 'Operations'];
   priorities: string[] = ['High', 'Medium', 'Low'];
   
-  constructor(
-    private dialogRef: MatDialogRef<DocumentCreateModalComponent>,
-    private fb: FormBuilder,
-    private languageService: LanguageService,
-    private translate: TranslateService
-  ) {
+  private dialogRef = inject(MatDialogRef<DocumentCreateModalComponent>);
+  private fb = inject(FormBuilder);
+  private languageService = inject(LanguageService);
+  private translate = inject(TranslateService);
+  private authorizationService = inject(AuthorizationService);
+
+  constructor() {
     this.documentForm = this.fb.group({
       title: ['', [Validators.required, Validators.maxLength(100)]],
       description: [''],
@@ -99,7 +105,7 @@ export class DocumentCreateModalComponent implements OnInit {
   private markFormGroupTouched(formGroup: FormGroup): void {
     Object.values(formGroup.controls).forEach(control => {
       control.markAsTouched();
-      if ((control as any).controls) {
+      if (Object.prototype.hasOwnProperty.call(control, 'controls')) {
         this.markFormGroupTouched(control as FormGroup);
       }
     });

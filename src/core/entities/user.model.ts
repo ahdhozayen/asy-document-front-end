@@ -1,6 +1,6 @@
 export type UserRole = 'ceo' | 'admin' | 'user' | 'helpdesk';
 
-interface UserApiResponse {
+export interface UserApiResponse {
   id?: number;
   username?: string;
   email?: string;

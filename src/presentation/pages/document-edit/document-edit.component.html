@@ -21,19 +21,27 @@
     </div>
     
     <div class="header-actions">
-      <button mat-button class="comments-button">
+      <!-- Comments Button - Only visible for users with comment permission and disabled for signed documents -->
+      <button mat-button class="comments-button"
+        *appHasPermission="{ permission: 'comment', document: currentDocument }"
+        (click)="onComments()">
         <mat-icon>chat_bubble_outline</mat-icon>
         {{ "common.comments" | translate:{count: commentCount} }}
       </button>
+      
+      <!-- Cancel Button - Always visible -->
       <button mat-button (click)="onCancel()" class="cancel-button">
         <mat-icon>close</mat-icon>
         {{ "common.cancel" | translate }}
       </button>
+      
+      <!-- Save Button - Only enabled for users with edit permission and disabled for signed documents -->
       <button 
         mat-raised-button 
         color="primary"
         (click)="onSubmit()"
         [disabled]="editForm.invalid || isSubmitting"
+        [appPermissionDisable]="{ permission: 'edit', document: currentDocument, inverse: true }"
         class="save-button">
         <mat-icon>check</mat-icon>
         {{ "common.saveChanges" | translate }}
@@ -99,8 +107,9 @@
 
         <!-- Document Description -->
         <div class="description-field">
-          <label class="field-label">{{ "documents.form.description" | translate }} *</label>
+          <label class="field-label" for="description-textarea">{{ "documents.form.description" | translate }} *</label>
           <textarea
+            id="description-textarea"
             class="description-textarea"
             formControlName="description"
             rows="5"

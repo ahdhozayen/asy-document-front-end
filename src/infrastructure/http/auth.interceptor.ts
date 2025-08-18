@@ -11,20 +11,17 @@ import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, switchMap, filter, take, finalize } from 'rxjs/operators';
 import { StorageService } from '../storage/storage.service';
 import { ApiConfig } from './api.config';
+import { inject } from '@angular/core';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   private refreshInProgress = false;
   private refreshTokenSubject: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
 
-  constructor(
-    private storage: StorageService,
-    private httpClient: HttpClient
-  ) {}
+  private storage = inject(StorageService);
+  private httpClient = inject(HttpClient);
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const config = ApiConfig.getInstance();
-
+  intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     // Skip authentication for these endpoints
     const isAuthEndpoint = req.url.includes('/token') || req.url.includes('/auth/login');
 
@@ -52,7 +49,7 @@ export class AuthInterceptor implements HttpInterceptor {
     );
   }
 
-private handle401Error(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+private handle401Error(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
   if (this.refreshInProgress) {
     return this.refreshTokenSubject.pipe(
       filter(token => token !== null),
@@ -90,7 +87,7 @@ private handle401Error(request: HttpRequest<any>, next: HttpHandler): Observable
     );
 }
 
-  private addTokenToRequest(request: HttpRequest<any>, token: string): HttpRequest<any> {
+  private addTokenToRequest(request: HttpRequest<unknown>, token: string): HttpRequest<unknown> {
     return request.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`

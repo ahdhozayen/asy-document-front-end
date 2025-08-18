@@ -14,7 +14,7 @@ export class ToastService {
    * @param message Message key to translate or direct message
    * @param duration Duration in milliseconds (default: 3000)
    */
-  success(message: string, duration: number = 3000): void {
+  success(message: string, duration = 3000): void {
     const translatedMessage = this.translate.instant(message);
     this.snackBar.open(
       translatedMessage,
@@ -33,7 +33,7 @@ export class ToastService {
    * @param message Message key to translate or direct message
    * @param duration Duration in milliseconds (default: 5000)
    */
-  error(message: string, duration: number = 5000): void {
+  error(message: string, duration = 5000): void {
     const translatedMessage = this.translate.instant(message);
     this.snackBar.open(
       translatedMessage,
@@ -52,7 +52,7 @@ export class ToastService {
    * @param message Message key to translate or direct message
    * @param duration Duration in milliseconds (default: 4000)
    */
-  info(message: string, duration: number = 4000): void {
+  info(message: string, duration = 4000): void {
     const translatedMessage = this.translate.instant(message);
     this.snackBar.open(
       translatedMessage,
@@ -71,7 +71,7 @@ export class ToastService {
    * @param message Message key to translate or direct message
    * @param duration Duration in milliseconds (default: 4500)
    */
-  warning(message: string, duration: number = 4500): void {
+  warning(message: string, duration = 4500): void {
     const translatedMessage = this.translate.instant(message);
     this.snackBar.open(
       translatedMessage,

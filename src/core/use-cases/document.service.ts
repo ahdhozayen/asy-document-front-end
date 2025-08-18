@@ -11,7 +11,8 @@ import {
   CreateDocumentMetadata,
   UploadDocumentAttachment,
   ApiResponse,
-  HomeStatsApiResponse
+  HomeStatsApiResponse,
+  DocumentApiResponse
 } from '../entities';
 
 @Injectable({
@@ -40,21 +41,18 @@ export class DocumentService {
    * @param response API response that might be paginated
    * @returns Document instance
    */
-  public extractDocumentFromResponse(response: any): Document {
+  public extractDocumentFromResponse(response: ApiResponse<DocumentApiResponse> | DocumentApiResponse): Document {
     // Handle paginated response structure
-    if (response.results && Array.isArray(response.results) && response.results.length > 0) {
-      return Document.fromApiResponse(response.results[0]);
+    if ((response as ApiResponse<DocumentApiResponse>).results && Array.isArray((response as ApiResponse<DocumentApiResponse>).results) && (response as ApiResponse<DocumentApiResponse>).results.length > 0) {
+      return Document.fromApiResponse((response as ApiResponse<DocumentApiResponse>).results[0]);
     }
-    return Document.fromApiResponse(response);
+    return Document.fromApiResponse(response as DocumentApiResponse);
   }
 
   getDocuments(filters?: DocumentFilters): Observable<Document[]> {
     this.isLoadingSubject.next(true);
 
     let url = this.config.endpoints.documents.list;
-
-    // Check if we have a token before making the request
-    const token = localStorage.getItem('access');
 
     const params = new URLSearchParams();
 
@@ -70,23 +68,20 @@ export class DocumentService {
       url += `?${params.toString()}`;
     }
 
-    return this.httpClient.get<ApiResponse<any>>(url).pipe(
+    return this.httpClient.get<ApiResponse<DocumentApiResponse>>(url).pipe(
       map(response => {
         // Handle both paginated and direct array responses
-        const data = response.results || response;
-        return Array.isArray(data) ? data.map(item => Document.fromApiResponse(item)) : [];
+        const data = (response as ApiResponse<DocumentApiResponse>).results || response;
+        return Array.isArray(data) ? data.map(item => Document.fromApiResponse(item as DocumentApiResponse)) : [];
       }),
       tap(documents => {
         this.documentsSubject.next(documents);
         this.isLoadingSubject.next(false);
       }),
       catchError(error => {
-
-
-        if (error.status === 401) {
-          const currentToken = localStorage.getItem('access');
-        }
-
+        console.error('An error occurred:', error);
+        console.error('Error fetching documents:', error);
+        console.log('Error details:', error); 
         this.isLoadingSubject.next(false);
         return throwError(() => error);
       })
@@ -134,6 +129,9 @@ export class DocumentService {
       }),
       tap(stats => this.statsSubject.next(stats)),
       catchError(error => {
+        console.error('An error occurred:', error);
+        console.error('Error fetching document stats:', error);
+        console.log('Error details:', error); 
         const defaultStats: DocumentStats = {
           total: 0,
           pending: 0,
@@ -151,7 +149,7 @@ export class DocumentService {
   }
 
   getDocument(id: number): Observable<Document> {
-    return this.httpClient.get<any>(this.config.endpoints.documents.detail(id)).pipe(
+    return this.httpClient.get<DocumentApiResponse>(this.config.endpoints.documents.detail(id)).pipe(
       map(response => this.extractDocumentFromResponse(response))
     );
   }
@@ -173,8 +171,6 @@ export class DocumentService {
     return this.createDocumentMetadata(metadata).pipe(
       switchMap(document => {
         // Step 2: Upload file attachment
-        console.log("test the document id")
-        console.log(document);
         
         const attachment: UploadDocumentAttachment = {
           documentId: document.id,
@@ -192,7 +188,7 @@ export class DocumentService {
   }
 
   createDocumentMetadata(metadata: CreateDocumentMetadata): Observable<Document> {
-    return this.httpClient.post<any>(this.config.endpoints.documents.create, metadata).pipe(
+    return this.httpClient.post<DocumentApiResponse>(this.config.endpoints.documents.create, metadata).pipe(
       map(response => this.extractDocumentFromResponse(response))
     );
   }
@@ -203,7 +199,7 @@ export class DocumentService {
     formData.append('file', attachment.file);
     formData.append('original_name', attachment.originalName);
 
-    return this.httpClient.postFormData<any>(this.config.endpoints.documents.attachments.create, formData).pipe(
+    return this.httpClient.postFormData<DocumentApiResponse>(this.config.endpoints.documents.attachments.create, formData).pipe(
       map(response => this.extractDocumentFromResponse(response))
     );
   }
@@ -217,7 +213,7 @@ export class DocumentService {
       status: data.status
     };
 
-    return this.httpClient.put<any>(this.config.endpoints.documents.update(id), updateData).pipe(
+    return this.httpClient.put<DocumentApiResponse>(this.config.endpoints.documents.update(id), updateData).pipe(
       map(response => this.extractDocumentFromResponse(response)),
       tap(updatedDocument => {
         // Update local documents list
@@ -265,7 +261,7 @@ export class DocumentService {
       comments: comments || ''
     };
 
-    return this.httpClient.patch<any>(this.config.endpoints.documents.update(id), reviewData).pipe(
+    return this.httpClient.patch<DocumentApiResponse>(this.config.endpoints.documents.update(id), reviewData).pipe(
       map(response => this.extractDocumentFromResponse(response)),
       tap(updatedDocument => {
         // Update local documents list
@@ -286,7 +282,7 @@ export class DocumentService {
       attachment: data.attachmentId || null
     };
 
-    return this.httpClient.post<any>(this.config.endpoints.documents.sign, signData).pipe(
+    return this.httpClient.post<DocumentApiResponse>(this.config.endpoints.documents.sign, signData).pipe(
       map(response => this.extractDocumentFromResponse(response)),
       tap(updatedDocument => {
         // Update local documents list
@@ -307,7 +303,7 @@ export class DocumentService {
       redirect_department: data.redirectDepartment
     };
 
-    return this.httpClient.post<any>(this.config.endpoints.documents.comment(id), commentData).pipe(
+    return this.httpClient.post<DocumentApiResponse>(this.config.endpoints.documents.comment(id), commentData).pipe(
       map(response => this.extractDocumentFromResponse(response)),
       tap(updatedDocument => {
         // Update local documents list

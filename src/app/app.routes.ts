@@ -28,6 +28,11 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'test/login',
+    loadComponent: () => import('../presentation/pages/test/login-test.component').then(m => m.LoginTestComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: '**',
     redirectTo: '/dashboard'
   }

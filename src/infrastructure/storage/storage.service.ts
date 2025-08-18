@@ -8,14 +8,16 @@ export class StorageService {
   setItem(key: string, value: string): void {
     try {
       localStorage.setItem(key, value);
-    } catch (error) {
+    } catch {
+      // Intentionally ignored
     }
   }
 
   getItem(key: string): string | null {
     try {
       return localStorage.getItem(key);
-    } catch (error) {
+    } catch {
+      // Intentionally ignored
       return null;
     }
   }
@@ -23,14 +25,16 @@ export class StorageService {
   removeItem(key: string): void {
     try {
       localStorage.removeItem(key);
-    } catch (error) {
+    } catch {
+      // Intentionally ignored
     }
   }
 
   clear(): void {
     try {
       localStorage.clear();
-    } catch (error) {
+    } catch {
+      // Intentionally ignored
     }
   }
 
@@ -38,7 +42,8 @@ export class StorageService {
     try {
       const serialized = JSON.stringify(value);
       this.setItem(key, serialized);
-    } catch (error) {
+    } catch {
+      // Intentionally ignored
     }
   }
 
@@ -46,7 +51,8 @@ export class StorageService {
     try {
       const item = this.getItem(key);
       return item ? JSON.parse(item) : null;
-    } catch (error) {
+    } catch {
+      // Intentionally ignored
       return null;
     }
   }

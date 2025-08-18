@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { StorageService } from '../../infrastructure/storage/storage.service';
@@ -15,10 +15,10 @@ export class LanguageService {
   public currentLanguage$ = this.currentLanguageSubject.asObservable();
   public isRTL$ = this.isRTLSubject.asObservable();
 
-  constructor(
-    private translate: TranslateService,
-    private storage: StorageService
-  ) {
+  private translate = inject(TranslateService);
+  private storage = inject(StorageService);
+
+  constructor() {
     this.initializeLanguage();
   }
 

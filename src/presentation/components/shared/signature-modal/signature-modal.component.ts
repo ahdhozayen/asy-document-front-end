@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -33,7 +33,7 @@ export class SignatureModalComponent implements AfterViewInit {
   private lastX = 0;
   private lastY = 0;
 
-  constructor(public dialogRef: MatDialogRef<SignatureModalComponent>) {}
+  public dialogRef = inject(MatDialogRef<SignatureModalComponent>);
 
   ngAfterViewInit(): void {
     this.initializeCanvas();

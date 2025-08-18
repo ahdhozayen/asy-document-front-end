@@ -13,10 +13,14 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LanguageService } from '../../../core/use-cases/language.service';
 import { DocumentService } from '../../../core/use-cases/document.service';
-import { Document } from '../../../core/entities/document.model';
 import { ToastService } from '../../../core/use-cases/toast.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { environment } from '@env/environment';
+import { AuthorizationService } from '../../../core/use-cases/authorization.service';
+import { HasPermissionDirective } from '@presentation/shared/directives/has-permission.directive';
+import { PermissionDisableDirective } from '@presentation/shared/directives/permission-disable.directive';
+import { Document } from '../../../core/entities/document.model';
+import { inject } from '@angular/core';
 
 export interface DocumentEditData {
   title: string;
@@ -41,7 +45,9 @@ export interface DocumentEditData {
     MatDividerModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    TranslateModule
+    TranslateModule,
+    HasPermissionDirective,
+    PermissionDisableDirective
   ],
   templateUrl: './document-edit.component.html',
   styleUrls: ['./document-edit.component.scss']
@@ -52,22 +58,23 @@ export class DocumentEditComponent implements OnInit {
   isSubmitting = false;
   selectedFile: File | null = null;
   fileError: string | null = null;
-  currentDocument: any = null;
+  currentDocument: (Document & { uploadDate?: string | Date }) | null = null;
   commentCount = 0;
   documentId: number | null = null;
   
   private readonly maxFileSize = 10 * 1024 * 1024; // 10MB
   private readonly allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/jpg', 'image/png'];
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private fb: FormBuilder,
-    private languageService: LanguageService,
-    private documentService: DocumentService,
-    private toastService: ToastService,
-    private sanitizer: DomSanitizer
-  ) {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private fb = inject(FormBuilder);
+  private languageService = inject(LanguageService);
+  private documentService = inject(DocumentService);
+  private toastService = inject(ToastService);
+  private sanitizer = inject(DomSanitizer);
+  private authorizationService = inject(AuthorizationService);
+
+  constructor() {
     this.editForm = this.createForm();
     
     this.languageService.isRTL$.subscribe(isRTL => {
@@ -80,6 +87,9 @@ export class DocumentEditComponent implements OnInit {
       this.documentId = +params['id'];
       if (this.documentId) {
         this.loadDocument();
+      } else {
+        // If no document ID, redirect back to dashboard
+        this.router.navigate(['/dashboard']);
       }
     });
   }
@@ -88,29 +98,21 @@ export class DocumentEditComponent implements OnInit {
     if (this.documentId) {
       this.documentService.getDocument(this.documentId).subscribe({
         next: (document) => {
-          this.currentDocument = {
-            ...document,
-            fileName: document.attachments?.[0].original_name || 'No file uploaded',
-            uploadDate: document.attachments?.[0].created_at || new Date()
-          };
+          // Create a proper Document instance with additional properties
+          this.currentDocument = Object.assign(document, {
+            uploadDate: document.attachments?.[0]?.created_at || new Date()
+          });
+          
+          // Check if user has permission to edit this document
+          if (!this.authorizationService.canEditDocumentSync(this.currentDocument)) {
+            this.toastService.errorTranslated('documents.edit.noPermission');
+            this.router.navigate(['/dashboard']);
+            return;
+          }
+          
           this.populateForm();
         },
-        error: (error) => {
-          // Instead of showing error and redirecting, show a warning and allow editing
-          this.toastService.warningTranslated('documents.edit.loadWarning');
-          // Create a minimal document object to allow editing
-          this.currentDocument = {
-            id: this.documentId,
-            title: 'Document',
-            description: '',
-            department: 'unknown',
-            priority: 'medium',
-            status: 'pending',
-            fileName: 'No file uploaded',
-            uploadDate: new Date()
-          };
-          this.populateForm();
-        }
+        error: undefined
       });
     }
   }
@@ -184,10 +186,7 @@ export class DocumentEditComponent implements OnInit {
           this.toastService.successTranslated('documents.edit.success');
           this.router.navigate(['/dashboard']);
         },
-        error: (error) => {
-          this.toastService.errorTranslated('documents.edit.error');
-          this.isSubmitting = false;
-        }
+        error: undefined
       });
     }
   }
@@ -214,17 +213,11 @@ export class DocumentEditComponent implements OnInit {
                 this.toastService.successTranslated('documents.edit.success');
                 this.router.navigate(['/dashboard']);
               },
-              error: (error) => {
-                this.toastService.errorTranslated('documents.edit.error');
-                this.isSubmitting = false;
-              }
+              error: undefined
             });
           }
         },
-        error: (error) => {
-          this.toastService.errorTranslated('documents.edit.error');
-          this.isSubmitting = false;
-        }
+        error: undefined
       });
     }
   }
@@ -286,7 +279,7 @@ export class DocumentEditComponent implements OnInit {
   getFileTypeDisplay(fileType: string): string {
     if (!fileType) return 'Unknown';
     
-    const typeMap: { [key: string]: string } = {
+    const typeMap: Record<string, string> = {
       'pdf': 'PDF Document',
       'doc': 'Word Document',
       'docx': 'Word Document',
@@ -302,7 +295,7 @@ export class DocumentEditComponent implements OnInit {
    * Opens the current document attachment in a new tab
    */
   viewCurrentAttachment(): void {
-    if (this.currentDocument?.attachments?.length > 0) {
+    if (this.currentDocument?.attachments && this.currentDocument.attachments.length > 0) {
       const attachment = this.currentDocument.attachments[0];
       
       // First try to use the attachment ID (preferred method)
@@ -325,5 +318,15 @@ export class DocumentEditComponent implements OnInit {
     } else {
       this.toastService.errorTranslated('documents.view.noAttachment');
     }
+  }
+
+  canEditDocument(): boolean {
+    if (!this.currentDocument) return false;
+    return this.authorizationService.canEditDocumentSync(this.currentDocument);
+  }
+
+  canCommentOnDocument(): boolean {
+    if (!this.currentDocument) return false;
+    return this.authorizationService.canCommentOnDocumentSync(this.currentDocument);
   }
 }

@@ -5,7 +5,7 @@ import { StorageService } from '../../infrastructure/storage/storage.service';
 import { map, filter, take, tap } from 'rxjs/operators';
 import { combineLatest, of } from 'rxjs';
 
-export const authGuard: CanActivateFn = (route, state) => {
+export const authGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const storageService = inject(StorageService);
   const router = inject(Router);
@@ -23,7 +23,8 @@ export const authGuard: CanActivateFn = (route, state) => {
     authService.isAuthenticated$,
     authService.isLoading$
   ]).pipe(
-    tap(([isAuth, isLoading]) => {
+    tap(() => {
+      // No side effects needed
     }),
     filter(([, isLoading]) => !isLoading), // Wait until loading is complete
     take(1), // Take only the first emission after loading completes
@@ -37,7 +38,7 @@ export const authGuard: CanActivateFn = (route, state) => {
   );
 };
 
-export const guestGuard: CanActivateFn = (route, state) => {
+export const guestGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const storageService = inject(StorageService);
   const router = inject(Router);
@@ -52,7 +53,8 @@ export const guestGuard: CanActivateFn = (route, state) => {
       authService.isAuthenticated$,
       authService.isLoading$
     ]).pipe(
-      tap(([isAuth, isLoading]) => {
+      tap(() => {
+        // No side effects needed
       }),
       filter(([, isLoading]) => !isLoading), // Wait until loading is complete
       take(1),

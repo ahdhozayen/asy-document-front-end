@@ -26,7 +26,7 @@ export interface DocumentUser {
   role: string;
 }
 
-interface DocumentApiResponse {
+export interface DocumentApiResponse {
   id?: number;
   title?: string;
   description?: string;
@@ -200,12 +200,6 @@ export class Document {
       if (!dateValue) return new Date();
       const parsed = new Date(dateValue as string);
       return isNaN(parsed.getTime()) ? new Date() : parsed;
-    };
-
-    const parseOptionalDate = (dateValue: unknown): Date | undefined => {
-      if (!dateValue) return undefined;
-      const parsed = new Date(dateValue as string);
-      return isNaN(parsed.getTime()) ? undefined : parsed;
     };
 
     // Handle uploaded_by as either User object or number

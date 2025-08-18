@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -8,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslateModule } from '@ngx-translate/core';
+import { inject } from '@angular/core';
 
 export interface CommentsModalData {
   documentId: number;
@@ -37,14 +38,13 @@ export interface CommentsModalResult {
   styleUrls: ['./comments-modal.component.scss']
 })
 export class CommentsModalComponent {
+  private fb = inject(FormBuilder);
+  public dialogRef = inject(MatDialogRef<CommentsModalComponent>);
+  public data = inject(MAT_DIALOG_DATA) as CommentsModalData;
   commentForm: FormGroup;
   isSubmitting = false;
 
-  constructor(
-    private fb: FormBuilder,
-    public dialogRef: MatDialogRef<CommentsModalComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: CommentsModalData
-  ) {
+  constructor() {
     this.commentForm = this.createForm();
   }
 
