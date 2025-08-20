@@ -14,13 +14,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LanguageService } from '../../../core/use-cases/language.service';
 import { DocumentService } from '../../../core/use-cases/document.service';
 import { ToastService } from '../../../core/use-cases/toast.service';
-import { DomSanitizer } from '@angular/platform-browser';
 import { environment } from '@env/environment';
 import { AuthorizationService } from '../../../core/use-cases/authorization.service';
 import { HasPermissionDirective } from '@presentation/shared/directives/has-permission.directive';
 import { PermissionDisableDirective } from '@presentation/shared/directives/permission-disable.directive';
 import { Document } from '../../../core/entities/document.model';
 import { inject } from '@angular/core';
+import { DepartmentService } from '../../../data/services/department.service';
 
 export interface DocumentEditData {
   title: string;
@@ -29,6 +29,12 @@ export interface DocumentEditData {
   priority: string;
   status: string;
   file?: File;
+}
+
+export interface Department {
+  id: number;
+  name_ar: string;
+  name_en: string;
 }
 
 @Component({
@@ -61,6 +67,7 @@ export class DocumentEditComponent implements OnInit {
   currentDocument: (Document & { uploadDate?: string | Date }) | null = null;
   commentCount = 0;
   documentId: number | null = null;
+  departments: Department[] = [];
   
   private readonly maxFileSize = 10 * 1024 * 1024; // 10MB
   private readonly allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/jpg', 'image/png'];
@@ -71,8 +78,8 @@ export class DocumentEditComponent implements OnInit {
   private languageService = inject(LanguageService);
   private documentService = inject(DocumentService);
   private toastService = inject(ToastService);
-  private sanitizer = inject(DomSanitizer);
   private authorizationService = inject(AuthorizationService);
+  private departmentService = inject(DepartmentService);
 
   constructor() {
     this.editForm = this.createForm();
@@ -83,6 +90,9 @@ export class DocumentEditComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Load departments first
+    this.loadDepartments();
+    
     this.route.params.subscribe(params => {
       this.documentId = +params['id'];
       if (this.documentId) {
@@ -90,6 +100,17 @@ export class DocumentEditComponent implements OnInit {
       } else {
         // If no document ID, redirect back to dashboard
         this.router.navigate(['/dashboard']);
+      }
+    });
+  }
+  
+  private loadDepartments(): void {
+    this.departmentService.getDepartments().subscribe({
+      next: (departments) => {
+        this.departments = departments;
+      },
+      error: (error) => {
+        console.error('Failed to load departments:', error);
       }
     });
   }
@@ -148,7 +169,7 @@ export class DocumentEditComponent implements OnInit {
       this.editForm.patchValue({
         title: this.currentDocument.title,
         description: this.currentDocument.description || '',
-        fromDepartment: this.currentDocument.department,
+        fromDepartment: this.currentDocument.department.toString(),
         priority: this.currentDocument.priority,
         status: this.currentDocument.status
       });
@@ -380,5 +401,14 @@ export class DocumentEditComponent implements OnInit {
   canCommentOnDocument(): boolean {
     if (!this.currentDocument) return false;
     return this.authorizationService.canCommentOnDocumentSync(this.currentDocument);
+  }
+  
+  getDepartmentName(departmentId: string): string {
+    if (!departmentId || !this.departments.length) return departmentId;
+    
+    const department = this.departments.find(d => d.id.toString() === departmentId);
+    if (!department) return departmentId;
+    
+    return this.isRTL ? department.name_ar : department.name_en;
   }
 }

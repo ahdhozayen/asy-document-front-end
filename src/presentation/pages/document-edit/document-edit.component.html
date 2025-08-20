@@ -17,7 +17,7 @@
     <div class="header-tags">
       <span class="tag status-tag">{{ currentDocument?.status | translate }}</span>
       <span class="tag priority-tag">{{ currentDocument?.priority | translate }}</span>
-      <span class="tag department-tag">{{ currentDocument?.department | translate }}</span>
+      <span class="tag department-tag">{{ isRTL ? currentDocument?.department_ar : currentDocument?.department_en | translate }}</span>
     </div>
     
     <div class="header-actions">
@@ -79,12 +79,9 @@
           <mat-form-field appearance="outline" class="form-field mr-2">
             <mat-label>{{ "documents.form.department" | translate }}</mat-label>
             <mat-select formControlName="fromDepartment">
-              <mat-option value="finance">{{ 'departments.finance' | translate }}</mat-option>
-              <mat-option value="hr">{{ 'departments.hr' | translate }}</mat-option>
-              <mat-option value="it">{{ 'departments.it' | translate }}</mat-option>
-              <mat-option value="legal">{{ 'departments.legal' | translate }}</mat-option>
-              <mat-option value="operations">{{ 'departments.operations' | translate }}</mat-option>
-              <mat-option value="marketing">{{ 'departments.marketing' | translate }}</mat-option>
+              <mat-option *ngFor="let dept of departments" [value]="dept.id.toString()">
+                {{ isRTL ? dept.name_ar : dept.name_en }}
+              </mat-option>
             </mat-select>
             <mat-error *ngIf="editForm.get('fromDepartment')?.hasError('required')">
               {{ "documents.create.validation.required" | translate }}
@@ -195,7 +192,7 @@
       <div class="info-content">
         <div class="info-item">
           <span class="info-label">{{ "documents.form.department" | translate }}:</span>
-          <span class="info-value">{{ currentDocument?.department | translate }}</span>
+          <span class="info-value">{{ getDepartmentName(currentDocument?.department) }}</span>
         </div>
         
         <div class="info-item">

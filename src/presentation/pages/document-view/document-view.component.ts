@@ -12,13 +12,18 @@ import { DocumentService } from '../../../core/use-cases/document.service';
 import { Document } from '../../../core/entities/document.model';
 import { ToastService } from '../../../core/use-cases/toast.service';
 import { AuthorizationService } from '../../../core/use-cases/authorization.service';
-import { SignatureModalComponent } from '../../components/shared/signature-modal/signature-modal.component';
-import { CommentsModalComponent } from '../../components/shared/comments-modal/comments-modal.component';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { environment } from '@env/environment';
 import { HasPermissionDirective } from '@presentation/shared/directives/has-permission.directive';
 import { Attachment } from '../../../core/entities/document.model';
 import { SignCommentModalComponent } from '../../components/shared/sign-comment-modal/sign-comment-modal.component';
+import { DepartmentService } from '../../../data/services/department.service';
+
+export interface Department {
+  id: number;
+  name_ar: string;
+  name_en: string;
+}
 
 @Component({
   selector: 'app-document-view',
@@ -44,6 +49,7 @@ export class DocumentViewComponent implements OnInit {
   documentNotFound = false;
   commentCount = 0;
   currentAttachment: Attachment | null = null;
+  departments: Department[] = [];
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -53,6 +59,7 @@ export class DocumentViewComponent implements OnInit {
   private dialog = inject(MatDialog);
   private sanitizer = inject(DomSanitizer);
   private authorizationService = inject(AuthorizationService);
+  private departmentService = inject(DepartmentService);
 
   constructor() {
     this.languageService.isRTL$.subscribe((isRTL) => {
@@ -61,10 +68,24 @@ export class DocumentViewComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Load departments first
+    this.loadDepartments();
+    
     this.route.params.subscribe((params) => {
       this.documentId = +params['id'];
       if (this.documentId) {
         this.loadDocument();
+      }
+    });
+  }
+  
+  private loadDepartments(): void {
+    this.departmentService.getDepartments().subscribe({
+      next: (departments) => {
+        this.departments = departments;
+      },
+      error: (error) => {
+        console.error('Failed to load departments:', error);
       }
     });
   }
@@ -249,5 +270,14 @@ export class DocumentViewComponent implements OnInit {
   canCommentOnDocument(): boolean {
     if (!this.document) return false;
     return this.authorizationService.canCommentOnDocumentSync(this.document);
+  }
+  
+  getDepartmentName(departmentId: string): string {
+    if (!departmentId || !this.departments.length) return departmentId;
+    
+    const department = this.departments.find(d => d.id.toString() === departmentId);
+    if (!department) return departmentId;
+    
+    return this.isRTL ? department.name_ar : department.name_en;
   }
 }

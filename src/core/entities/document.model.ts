@@ -38,14 +38,14 @@ export interface DocumentApiResponse {
   mimeType?: string;
   status?: string;
   priority?: string;
-  department?: string;
+  department?: number;
+  department_ar?: string;
+  department_en?: string;
   uploaded_by?: DocumentUser | number;
   uploaded_by_name?: string;
   uploadedByName?: string;
   created_at?: string;
-  createdAt?: string;
   updated_at?: string;
-  updatedAt?: string;
   file_url?: string;
   fileUrl?: string;
   comments?: string;
@@ -63,10 +63,12 @@ export class Document {
     public readonly mimeType: string,
     public readonly status: DocumentStatus,
     public readonly priority: DocumentPriority,
-    public readonly department: string,
+    public readonly department: number,
+    public readonly department_ar: string,
+    public readonly department_en: string,
     public readonly uploadedByName: string,
-    public readonly createdAt: Date,
-    public readonly updatedAt: Date,
+    public readonly created_at: Date,
+    public readonly updated_at: Date,
     public readonly fileUrl?: string,
     public readonly comments?: string,
     public readonly redirectDepartment?: string,
@@ -159,7 +161,7 @@ export class Document {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     
-    return this.createdAt < thirtyDaysAgo;
+    return this.created_at < thirtyDaysAgo;
   }
 
   get uploadedByUser(): DocumentUser | undefined {
@@ -169,12 +171,12 @@ export class Document {
 
   get daysSinceCreated(): number {
     const now = new Date();
-    const diffTime = Math.abs(now.getTime() - this.createdAt.getTime());
+    const diffTime = Math.abs(now.getTime() - this.created_at.getTime());
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
 
   get formattedCreatedAt(): string {
-    return this.createdAt.toLocaleDateString('en-US', {
+    return this.created_at.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -184,7 +186,7 @@ export class Document {
   }
 
   get formattedUpdatedAt(): string {
-    return this.updatedAt.toLocaleDateString('en-US', {
+    return this.updated_at.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -214,10 +216,12 @@ export class Document {
       data.mime_type || data.mimeType || '',
       (data.status as DocumentStatus) || 'pending',
       (data.priority as DocumentPriority) || 'medium',
-      data.department || '',
+      data.department || 0,
+      data.department_ar || '',
+      data.department_en || '',
       uploadedByName,
-      parseDate(data.created_at || data.createdAt),
-      parseDate(data.updated_at || data.updatedAt),
+      parseDate(data.created_at),
+      parseDate(data.updated_at),
       data.file_url || data.fileUrl,
       data.comments,
       data.redirect_department,
@@ -250,8 +254,10 @@ export class Document {
       status,
       this.priority,
       this.department,
+      this.department_ar,
+      this.department_en,
       this.uploadedByName,
-      this.createdAt,
+      this.created_at,
       new Date(), // Update the updatedAt timestamp
       this.fileUrl,
       this.comments,
@@ -271,8 +277,10 @@ export class Document {
       this.status,
       this.priority,
       this.department,
+      this.department_ar,
+      this.department_en,
       this.uploadedByName,
-      this.createdAt,
+      this.created_at,
       new Date(),
       this.fileUrl,
       comments,

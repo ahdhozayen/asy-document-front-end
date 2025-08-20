@@ -48,7 +48,7 @@
         >
           {{ "priorities." + document.priority | translate }}
         </span>
-        <span class="tag department-tag">{{ document.department }}</span>
+        <span class="tag department-tag">{{ getDepartmentName(document.department) }}</span>
       </div>
 
       <div class="header-actions">
@@ -187,7 +187,7 @@
             <span class="info-label"
               >{{ "documents.fields.department" | translate }}:</span
             >
-            <span class="info-value">{{ document.department }}</span>
+            <span class="info-value">{{ getDepartmentName(document.department) }}</span>
           </div>
           <div class="info-item">
             <span class="info-label"
