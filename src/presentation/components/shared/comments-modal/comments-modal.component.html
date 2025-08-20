@@ -8,12 +8,10 @@
   <div class="modal-content">
     <form [formGroup]="commentForm" class="comment-form">
       <mat-form-field appearance="outline" class="form-field">
-        <mat-label>{{ "documents.comments.comment" | translate }} *</mat-label>
         <textarea
           matInput
           formControlName="comment"
           rows="5"
-          [placeholder]="'documents.comments.commentPlaceholder' | translate"
         ></textarea>
         <mat-error *ngIf="commentForm.get('comment')?.hasError('required')">
           {{ "validation.required" | translate }}

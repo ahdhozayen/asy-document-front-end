@@ -75,8 +75,12 @@ export class DocumentViewComponent implements OnInit {
         next: (response) => {
           // Handle both paginated responses and direct document responses
           let newDocument: Document;
-          
-          if (response && 'results' in response && Array.isArray(response.results)) {
+
+          if (
+            response &&
+            'results' in response &&
+            Array.isArray(response.results)
+          ) {
             // It's a paginated response
             newDocument = response.results[0];
           } else {
@@ -132,19 +136,17 @@ export class DocumentViewComponent implements OnInit {
   }
 
   onSignDocument(): void {
-    if (this.canSignDocument()) {
-      const dialogRef = this.dialog.open(SignatureModalComponent, {
-        width: '500px',
-        maxWidth: '95vw',
-        disableClose: true,
-      });
+    const dialogRef = this.dialog.open(SignatureModalComponent, {
+      width: '500px',
+      maxWidth: '95vw',
+      disableClose: true,
+    });
 
-      dialogRef.afterClosed().subscribe((signatureData) => {
-        if (signatureData && signatureData.signatureBase64) {
-          this.submitSignature(signatureData.signatureBase64);
-        }
-      });
-    }
+    dialogRef.afterClosed().subscribe((signatureData) => {
+      if (signatureData && signatureData.signatureBase64) {
+        this.submitSignature(signatureData.signatureBase64);
+      }
+    });
   }
 
   private submitSignature(signatureBase64: string): void {
@@ -176,7 +178,7 @@ export class DocumentViewComponent implements OnInit {
   onDownload(): void {
     if (this.currentAttachment?.file) {
       // Fallback to direct file path if ID is not available
-      const fileUrl = environment.mediaURL+this.currentAttachment.file;
+      const fileUrl = environment.mediaURL + this.currentAttachment.file;
       // const fileUrl = `${environment.mediaURL}${normalizedPath}`;
       window.open(fileUrl, '_blank');
     } else {
@@ -238,17 +240,17 @@ export class DocumentViewComponent implements OnInit {
       console.error('File path is empty or undefined');
       return this.sanitizer.bypassSecurityTrustResourceUrl('');
     }
-    
+
     // If it's already a full URL, use it directly
     if (file.startsWith('http')) {
       return this.sanitizer.bypassSecurityTrustResourceUrl(file);
     }
-    
+
     // For file paths, ensure they're properly joined with the media URL
     // Remove any leading slash to avoid double slashes
     const normalizedPath = file.startsWith('/') ? file.substring(1) : file;
     const baseUrl = `${environment.mediaURL}${normalizedPath}`;
-    
+
     return this.sanitizer.bypassSecurityTrustResourceUrl(baseUrl);
   }
 
@@ -278,10 +280,5 @@ export class DocumentViewComponent implements OnInit {
   canCommentOnDocument(): boolean {
     if (!this.document) return false;
     return this.authorizationService.canCommentOnDocumentSync(this.document);
-  }
-
-  canSignDocument(): boolean {
-    if (!this.document) return false;
-    return this.authorizationService.canSignDocumentSync(this.document);
   }
 }

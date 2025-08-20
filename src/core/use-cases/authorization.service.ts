@@ -7,18 +7,18 @@ export enum USER_ROLES {
   CEO = 'ceo',
   ADMIN = 'admin',
   USER = 'user',
-  HELPDESK = 'helpdesk'
+  HELPDESK = 'helpdesk',
 }
 
 export enum DOCUMENT_STATUS {
   PENDING = 'pending',
   IN_REVIEW = 'in_review',
   SIGNED = 'signed',
-  REJECTED = 'rejected'
+  REJECTED = 'rejected',
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthorizationService {
   private authService = inject(AuthService);
@@ -29,7 +29,7 @@ export class AuthorizationService {
    */
   canViewDocumentOnDashboard(): Observable<boolean> {
     return this.authService.currentUser$.pipe(
-      map(user => !!user && user.isCEO())
+      map((user) => !!user && user.isCEO())
     );
   }
 
@@ -40,12 +40,12 @@ export class AuthorizationService {
    */
   canEditDocument(document: Document): Observable<boolean> {
     return this.authService.currentUser$.pipe(
-      map(user => {
+      map((user) => {
         if (!user || !document) return false;
-        
+
         // Check if document is signed - signed documents cannot be edited
         if (document.status === DOCUMENT_STATUS.SIGNED) return false;
-        
+
         // Only helpdesk users can edit documents
         return user.isHelpdesk();
       })
@@ -58,9 +58,9 @@ export class AuthorizationService {
    */
   canCommentOnDocument(document: Document): Observable<boolean> {
     return this.authService.currentUser$.pipe(
-      map(user => {
+      map((user) => {
         if (!user || !document) return false;
-        
+
         // Signed documents cannot be commented on
         return document.status !== DOCUMENT_STATUS.SIGNED;
       })
@@ -73,9 +73,9 @@ export class AuthorizationService {
    */
   canDeleteDocument(document: Document): Observable<boolean> {
     return this.authService.currentUser$.pipe(
-      map(user => {
+      map((user) => {
         if (!user || !document) return false;
-        
+
         // Check if document can be deleted (not signed)
         return document.canBeDeleted;
       })
@@ -88,14 +88,10 @@ export class AuthorizationService {
    */
   canSignDocument(document: Document): Observable<boolean> {
     return this.authService.currentUser$.pipe(
-      map(user => {
+      map((user) => {
         if (!user || !document) return false;
-        
-        // Only CEO can sign documents
-        if (!user.isCEO()) return false;
-        
-        // Only documents in review can be signed
-        return document.isInReview;
+
+        return document.status === DOCUMENT_STATUS.PENDING && user.isCEO();
       })
     );
   }
@@ -106,12 +102,12 @@ export class AuthorizationService {
    */
   canReviewDocument(document: Document): Observable<boolean> {
     return this.authService.currentUser$.pipe(
-      map(user => {
+      map((user) => {
         if (!user || !document) return false;
-        
+
         // Check if user can review documents
         if (!user.canReviewDocuments()) return false;
-        
+
         // Check if document can be reviewed
         return document.canBeReviewed;
       })
@@ -124,15 +120,15 @@ export class AuthorizationService {
    */
   canEditDocumentSync(document: Document, userRole?: UserRole): boolean {
     if (!document) return false;
-    
+
     // Check if document is signed - signed documents cannot be edited
     if (document.status === DOCUMENT_STATUS.SIGNED) return false;
-    
+
     // If no user role is provided, use the current user from auth service
     if (!userRole && this.authService.currentUser) {
       return this.authService.currentUser.isHelpdesk();
     }
-    
+
     // Only helpdesk users can edit documents
     return userRole === USER_ROLES.HELPDESK;
   }
@@ -146,7 +142,7 @@ export class AuthorizationService {
     if (!userRole && this.authService.currentUser) {
       return this.authService.currentUser.isCEO();
     }
-    
+
     // Only CEO users can view documents on dashboard
     return userRole === USER_ROLES.CEO;
   }
@@ -157,7 +153,7 @@ export class AuthorizationService {
    */
   canCommentOnDocumentSync(document: Document): boolean {
     if (!document) return false;
-    
+
     // Signed documents cannot be commented on
     return document.status !== DOCUMENT_STATUS.SIGNED;
   }
@@ -168,16 +164,16 @@ export class AuthorizationService {
    */
   canSignDocumentSync(document: Document): boolean {
     if (!document) return false;
-    
+
     // If no user role is provided, use the current user from auth service
     if (this.authService.currentUser) {
       // Only CEO can sign documents
       if (!this.authService.currentUser.isCEO()) return false;
-      
+
       // Only documents in review can be signed
       return document.isInReview;
     }
-    
+
     return false;
   }
 }

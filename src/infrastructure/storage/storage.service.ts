@@ -101,7 +101,7 @@ export class StorageService {
     }
   }
 
-  private parseJwt(token: string): any {
+  private parseJwt(token: string) {
     try {
       const base64Url = token.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');

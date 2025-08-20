@@ -22,6 +22,7 @@ import { AuthorizationService } from '../../../core/use-cases/authorization.serv
 })
 export class HasPermissionDirective implements OnDestroy {
   private authorizationService = inject(AuthorizationService);
+
   private templateRef = inject(TemplateRef<unknown>);
   private viewContainer = inject(ViewContainerRef);
   private destroy$ = new Subject<void>();
@@ -46,15 +47,18 @@ export class HasPermissionDirective implements OnDestroy {
           this.hasView = false;
           return;
         }
+
         this.authorizationService.canEditDocument(document)
           .pipe(takeUntil(this.destroy$))
           .subscribe(canEdit => this.updateView(canEdit));
+
         break;
 
       case 'viewOnDashboard':
         this.authorizationService.canViewDocumentOnDashboard()
           .pipe(takeUntil(this.destroy$))
           .subscribe(canView => this.updateView(canView));
+
         break;
 
       case 'comment':
@@ -63,9 +67,11 @@ export class HasPermissionDirective implements OnDestroy {
           this.hasView = false;
           return;
         }
+        
         this.authorizationService.canCommentOnDocument(document)
           .pipe(takeUntil(this.destroy$))
-          .subscribe(canComment => this.updateView(canComment));
+          .subscribe(canComment => {console.log(canComment); this.updateView(canComment)});
+
         break;
 
       case 'delete':
@@ -77,6 +83,7 @@ export class HasPermissionDirective implements OnDestroy {
         this.authorizationService.canDeleteDocument(document)
           .pipe(takeUntil(this.destroy$))
           .subscribe(canDelete => this.updateView(canDelete));
+
         break;
 
       case 'sign':
@@ -88,6 +95,7 @@ export class HasPermissionDirective implements OnDestroy {
         this.authorizationService.canSignDocument(document)
           .pipe(takeUntil(this.destroy$))
           .subscribe(canSign => this.updateView(canSign));
+
         break;
 
       case 'review':
@@ -99,6 +107,7 @@ export class HasPermissionDirective implements OnDestroy {
         this.authorizationService.canReviewDocument(document)
           .pipe(takeUntil(this.destroy$))
           .subscribe(canReview => this.updateView(canReview));
+
         break;
 
       default:
@@ -106,6 +115,7 @@ export class HasPermissionDirective implements OnDestroy {
         this.hasView = false;
     }
   }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
