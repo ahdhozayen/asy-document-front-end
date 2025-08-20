@@ -9,20 +9,19 @@ import { MatInputModule } from '@angular/material/input';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-sign-comment-modal',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
-    MatFormFieldModule,
-    MatInputModule,
-    TranslateModule
-  ],
-  templateUrl: './sign-comment-modal.component.html',
-  styleUrls: ['./sign-comment-modal.component.scss']
+    selector: 'app-sign-comment-modal',
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatDialogModule,
+        MatButtonModule,
+        MatIconModule,
+        MatFormFieldModule,
+        MatInputModule,
+        TranslateModule
+    ],
+    templateUrl: './sign-comment-modal.component.html',
+    styleUrls: ['./sign-comment-modal.component.scss']
 })
 export class SignCommentModalComponent {
   @ViewChild('signatureCanvas', { static: false }) signatureCanvas!: ElementRef<HTMLCanvasElement>;

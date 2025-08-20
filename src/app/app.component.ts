@@ -10,16 +10,15 @@ import { AuthService } from '../core/use-cases/auth.service';
 import { LanguageService } from '../core/use-cases/language.service';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterOutlet,
-    MatProgressSpinnerModule,
-    TranslateModule
-  ],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+    selector: 'app-root',
+    imports: [
+        CommonModule,
+        RouterOutlet,
+        MatProgressSpinnerModule,
+        TranslateModule
+    ],
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = 'document-management-angular';

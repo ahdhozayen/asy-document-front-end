@@ -21,20 +21,19 @@ import { Attachment } from '../../../core/entities/document.model';
 import { SignCommentModalComponent } from '../../components/shared/sign-comment-modal/sign-comment-modal.component';
 
 @Component({
-  selector: 'app-document-view',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatButtonModule,
-    MatIconModule,
-    MatDialogModule,
-    MatTooltipModule,
-    MatProgressSpinnerModule,
-    TranslateModule,
-    HasPermissionDirective,
-  ],
-  templateUrl: './document-view.component.html',
-  styleUrls: ['./document-view.component.scss'],
+    selector: 'app-document-view',
+    imports: [
+        CommonModule,
+        MatButtonModule,
+        MatIconModule,
+        MatDialogModule,
+        MatTooltipModule,
+        MatProgressSpinnerModule,
+        TranslateModule,
+        HasPermissionDirective,
+    ],
+    templateUrl: './document-view.component.html',
+    styleUrls: ['./document-view.component.scss']
 })
 export class DocumentViewComponent implements OnInit {
   document: Document | null = null;

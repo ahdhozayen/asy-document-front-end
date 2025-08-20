@@ -13,17 +13,16 @@ import { Document } from '../../../core/entities';
 import { User } from '../../../core/entities/user.model';
 
 @Component({
-  selector: 'app-login-test',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatCardModule,
-    MatButtonModule,
-    MatDividerModule,
-    MatProgressSpinnerModule,
-    MatIconModule
-  ],
-  template: `
+    selector: 'app-login-test',
+    imports: [
+        CommonModule,
+        MatCardModule,
+        MatButtonModule,
+        MatDividerModule,
+        MatProgressSpinnerModule,
+        MatIconModule
+    ],
+    template: `
     <div class="test-container">
       <mat-card>
         <mat-card-header>
@@ -84,7 +83,7 @@ import { User } from '../../../core/entities/user.model';
       </mat-card>
     </div>
   `,
-  styles: [`
+    styles: [`
     .test-container {
       max-width: 800px;
       margin: 2rem auto;

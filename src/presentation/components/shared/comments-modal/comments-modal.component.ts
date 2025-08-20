@@ -20,21 +20,20 @@ export interface CommentsModalResult {
 }
 
 @Component({
-  selector: 'app-comments-modal',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    TranslateModule
-  ],
-  templateUrl: './comments-modal.component.html',
-  styleUrls: ['./comments-modal.component.scss']
+    selector: 'app-comments-modal',
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatDialogModule,
+        MatButtonModule,
+        MatIconModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSelectModule,
+        TranslateModule
+    ],
+    templateUrl: './comments-modal.component.html',
+    styleUrls: ['./comments-modal.component.scss']
 })
 export class CommentsModalComponent {
   private fb = inject(FormBuilder);

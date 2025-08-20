@@ -11,18 +11,17 @@ export interface SignatureModalResult {
 }
 
 @Component({
-  selector: 'app-signature-modal',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
-    MatTooltipModule,
-    TranslateModule
-  ],
-  templateUrl: './signature-modal.component.html',
-  styleUrls: ['./signature-modal.component.scss']
+    selector: 'app-signature-modal',
+    imports: [
+        CommonModule,
+        MatDialogModule,
+        MatButtonModule,
+        MatIconModule,
+        MatTooltipModule,
+        TranslateModule
+    ],
+    templateUrl: './signature-modal.component.html',
+    styleUrls: ['./signature-modal.component.scss']
 })
 export class SignatureModalComponent implements AfterViewInit {
   @ViewChild('signatureCanvas', { static: false }) signatureCanvas!: ElementRef<HTMLCanvasElement>;

@@ -17,16 +17,15 @@ export interface ConfirmationDialogData {
 }
 
 @Component({
-  selector: 'app-confirmation-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
-    TranslateModule
-  ],
-  template: `
+    selector: 'app-confirmation-dialog',
+    imports: [
+        CommonModule,
+        MatDialogModule,
+        MatButtonModule,
+        MatIconModule,
+        TranslateModule
+    ],
+    template: `
     <div class="confirmation-dialog" [class.rtl]="isRTL" [attr.dir]="isRTL ? 'rtl' : 'ltr'">
       <div mat-dialog-title class="dialog-title" [class.arabic-font]="isRTL">
         <mat-icon [class]="getIconClass()">{{ getIcon() }}</mat-icon>
@@ -60,7 +59,7 @@ export interface ConfirmationDialogData {
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     .confirmation-dialog {
       min-width: 400px;
       max-width: 500px;
