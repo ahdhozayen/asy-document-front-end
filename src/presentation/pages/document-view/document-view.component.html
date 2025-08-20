@@ -74,27 +74,16 @@
           {{ "common.openInNew" | translate }}
         </button>
 
-        <!-- Comments Button - Only visible for users with comment permission and disabled for signed documents -->
-        <button
-          mat-button
-          class="sign-button"
-          *appHasPermission="{ permission: 'comment', document: document }"
-          (click)="onComments()"
-        >
-          <mat-icon>chat_bubble_outline</mat-icon>
-          {{ "common.comments" | translate : { count: commentCount } }}
-        </button>
-
-        <!-- Sign Button - Only visible for users with sign permission and disabled for already signed documents -->
+        <!-- Sign and Comment Button - Only visible for users with sign permission and disabled for already signed documents -->
         <button
           mat-raised-button
           color="accent"
-          class="sign-button"
+          class="sign-comment-button"
           *appHasPermission="{ permission: 'sign', document: document }"
-          (click)="onSignDocument()"
+          (click)="onSignAndComment()"
         >
           <mat-icon>draw</mat-icon>
-          {{ "documents.view.signDocument" | translate }}
+          {{ 'documents.view.signAndComment' | translate }}
         </button>
       </div>
     </div>
@@ -186,7 +175,6 @@
             </div>
           </div>
         </div>
-      </div>
 
       <!-- Right Panel - Document Information -->
       <div class="document-info-panel">
@@ -201,17 +189,6 @@
             >
             <span class="info-value">{{ document.department }}</span>
           </div>
-
-          <div class="info-item">
-            <span class="info-label"
-              >{{ "documents.fields.uploadedBy" | translate }}:</span
-            >
-            <span class="info-value"
-              >{{ document.uploaded_by?.first_name }}
-              {{ document.uploaded_by?.last_name }}</span
-            >
-          </div>
-
           <div class="info-item">
             <span class="info-label"
               >{{ "documents.fields.attachmentName" | translate }}:</span

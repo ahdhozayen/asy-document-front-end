@@ -18,6 +18,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { environment } from '@env/environment';
 import { HasPermissionDirective } from '@presentation/shared/directives/has-permission.directive';
 import { Attachment } from '../../../core/entities/document.model';
+import { SignCommentModalComponent } from '../../components/shared/sign-comment-modal/sign-comment-modal.component';
 
 @Component({
   selector: 'app-document-view',
@@ -115,63 +116,31 @@ export class DocumentViewComponent implements OnInit {
     }
   }
 
-  onComments(): void {
-    if (this.canCommentOnDocument()) {
-      const dialogRef = this.dialog.open(CommentsModalComponent, {
+  onSignAndComment(): void {
+    if (this.documentId && this.document && this.document.attachments && this.document.attachments.length > 0) {
+      const dialogRef = this.dialog.open(SignCommentModalComponent, {
         width: '500px',
         maxWidth: '95vw',
-        data: {
-          documentId: this.documentId,
-          commentCount: this.commentCount,
-        },
+        disableClose: true,
       });
-
       dialogRef.afterClosed().subscribe((result) => {
-        if (result) {
-          // Handle comment submission
-          this.toastService.successTranslated('documents.comments.success');
+        if (result && result.signature_data && result.comments) {
+          const attachmentId = this.document!.attachments![0].id;
+          this.documentService.signDocumentWithComment({
+            attachment: attachmentId,
+            comments: result.comments, // Ensure comments are included
+            signature_data: result.signature_data
+          }).subscribe({
+            next: () => {
+              this.toastService.successTranslated('documents.signAndComment.success');
+              this.loadDocument();
+            },
+            error: () => {
+              this.toastService.errorTranslated('documents.signAndComment.error');
+            }
+          });
         }
       });
-    }
-  }
-
-  onSignDocument(): void {
-    const dialogRef = this.dialog.open(SignatureModalComponent, {
-      width: '500px',
-      maxWidth: '95vw',
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((signatureData) => {
-      if (signatureData && signatureData.signatureBase64) {
-        this.submitSignature(signatureData.signatureBase64);
-      }
-    });
-  }
-
-  private submitSignature(signatureBase64: string): void {
-    if (
-      this.documentId &&
-      this.document &&
-      this.document.attachments &&
-      this.document.attachments.length > 0
-    ) {
-      // Send signature to backend
-      this.documentService
-        .signDocument(this.documentId, {
-          signature_data: signatureBase64,
-          attachmentId: this.document.attachments[0].id,
-        })
-        .subscribe({
-          next: () => {
-            this.toastService.successTranslated('documents.sign.success');
-            // Refresh document data
-            this.loadDocument();
-          },
-          error: () => {
-            this.toastService.errorTranslated('documents.sign.error');
-          },
-        });
     }
   }
 

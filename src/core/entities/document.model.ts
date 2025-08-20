@@ -40,7 +40,6 @@ export interface DocumentApiResponse {
   priority?: string;
   department?: string;
   uploaded_by?: DocumentUser | number;
-  uploadedBy?: number;
   uploaded_by_name?: string;
   uploadedByName?: string;
   created_at?: string;
@@ -65,7 +64,6 @@ export class Document {
     public readonly status: DocumentStatus,
     public readonly priority: DocumentPriority,
     public readonly department: string,
-    public readonly uploadedBy: number,
     public readonly uploadedByName: string,
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
@@ -203,7 +201,6 @@ export class Document {
     };
 
     // Handle uploaded_by as either User object or number
-    const uploadedBy = typeof data.uploaded_by === 'object' ? data.uploaded_by.id : (data.uploaded_by || data.uploadedBy || 0);
     const uploadedByName = typeof data.uploaded_by === 'object' 
       ? `${data.uploaded_by.first_name} ${data.uploaded_by.last_name}`.trim()
       : (data.uploaded_by_name || data.uploadedByName || '');
@@ -218,7 +215,6 @@ export class Document {
       (data.status as DocumentStatus) || 'pending',
       (data.priority as DocumentPriority) || 'medium',
       data.department || '',
-      uploadedBy,
       uploadedByName,
       parseDate(data.created_at || data.createdAt),
       parseDate(data.updated_at || data.updatedAt),
@@ -254,7 +250,6 @@ export class Document {
       status,
       this.priority,
       this.department,
-      this.uploadedBy,
       this.uploadedByName,
       this.createdAt,
       new Date(), // Update the updatedAt timestamp
@@ -276,7 +271,6 @@ export class Document {
       this.status,
       this.priority,
       this.department,
-      this.uploadedBy,
       this.uploadedByName,
       this.createdAt,
       new Date(),

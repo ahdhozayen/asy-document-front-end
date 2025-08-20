@@ -78,7 +78,6 @@ export interface DocumentFilters {
   department?: string | number;
   status?: string;
   priority?: string;
-  uploadedBy?: number;
 }
 
 export interface CreateDocumentData {

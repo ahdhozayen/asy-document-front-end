@@ -116,7 +116,6 @@
     "department": "Department",
     "priority": "Priority",
     "status": "Status",
-    "uploadedBy": "Uploaded By",
     "createdAt": "Created At",
     "updatedAt": "Updated At",
     "actions": "Actions",
@@ -146,7 +145,6 @@
       "priority": "Priority",
       "status": "Status",
       "createdAt": "Created Date",
-      "uploadedBy": "Uploaded By",
       "reviewedAt": "Reviewed Date",
       "redirectDepartment": "Redirect Department",
       "attachmentName": "Attachment Name",
@@ -175,7 +173,8 @@
       "notFoundMessage": "The requested document could not be found or you don't have permission to view it.",
       "fileNotFound": "File not found",
       "noAttachment": "No attachment available",
-      "legacyAttachment": "Using legacy file path. Authentication may be required."
+      "legacyAttachment": "Using legacy file path. Authentication may be required.",
+      "signAndComment": "Sign & Comment"
     },
     "signature": {
       "title": "Sign Document",
@@ -192,6 +191,17 @@
     "comment": {
       "success": "Comment added successfully",
       "error": "Failed to add comment"
+    },
+    "signAndComment": {
+      "title": "Sign & Comment",
+      "clearSignature": "Clear Signature",
+      "signatureLabel": "Your Signature",
+      "signatureRequired": "Signature is required",
+      "commentsLabel": "Comments",
+      "commentsRequired": "Comments are required",
+      "commentsMinLength": "Comments must be at least {min} characters",
+      "success": "Document signed and commented successfully",
+      "error": "Failed to sign and comment on document"
     },
     "upload": {
       "title": "Upload Document",

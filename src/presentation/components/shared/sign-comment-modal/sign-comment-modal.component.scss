@@ -1,0 +1,38 @@
+.signature-section {
+  margin-bottom: 24px;
+}
+
+.signature-pad-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.signature-canvas {
+  border: 1px solid #bdbdbd;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  margin-bottom: 8px;
+  touch-action: none;
+}
+
+.clear-btn {
+  margin-left: 0;
+  margin-bottom: 8px;
+}
+
+.comments-field {
+  width: 100%;
+}
+
+.error-message {
+  color: #f44336;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+:host ::ng-deep .mat-dialog-content {
+  overflow: visible !important;
+}

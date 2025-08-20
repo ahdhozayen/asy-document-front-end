@@ -116,7 +116,6 @@
     "department": "القسم",
     "priority": "الأولوية",
     "status": "الحالة",
-    "uploadedBy": "رفع بواسطة",
     "createdAt": "تاريخ الإنشاء",
     "updatedAt": "تاريخ التحديث",
     "actions": "الإجراءات",
@@ -146,7 +145,6 @@
       "priority": "الأولوية",
       "status": "الحالة",
       "createdAt": "تاريخ الإنشاء",
-      "uploadedBy": "رفع بواسطة",
       "reviewedAt": "تاريخ المراجعة",
       "redirectDepartment": "إعادة توجيه إلى قسم",
       "attachmentName": "اسم المرفق",
@@ -172,7 +170,8 @@
       "documentInformation": "معلومات المكاتبة",
       "attachmentInfo": "معلومات المرفق",
       "notFound": "المكاتبة غير موجودة",
-      "notFoundMessage": "لم يتم العثور على المكاتبة المطلوبة أو ليس لديك صلاحية لعرضها."
+      "notFoundMessage": "لم يتم العثور على المكاتبة المطلوبة أو ليس لديك صلاحية لعرضها.",
+      "signAndComment": "توقيع وتعليق"
     },
     "signature": {
       "title": "توقيع المكاتبة",
@@ -189,6 +188,17 @@
     "comment": {
       "success": "تمت إضافة التعليق بنجاح",
       "error": "فشل في إضافة التعليق"
+    },
+    "signAndComment": {
+      "title": "توقيع وتعليق",
+      "clearSignature": "مسح التوقيع",
+      "signatureLabel": "توقيعك",
+      "signatureRequired": "التوقيع مطلوب",
+      "commentsLabel": "التعليقات",
+      "commentsRequired": "التعليقات مطلوبة",
+      "commentsMinLength": "يجب أن تكون التعليقات على الأقل {min} أحرف",
+      "success": "تم توقيع المستند والتعليق عليه بنجاح",
+      "error": "فشل في توقيع المستند والتعليق عليه"
     },
     "upload": {
       "title": "رفع مكاتبة جديدة",

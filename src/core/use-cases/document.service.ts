@@ -61,7 +61,6 @@ export class DocumentService {
       if (filters.department) params.append('department', filters.department.toString());
       if (filters.status) params.append('status', filters.status);
       if (filters.priority) params.append('priority', filters.priority);
-      if (filters.uploadedBy) params.append('uploaded_by', filters.uploadedBy.toString());
     }
 
     if (params.toString()) {
@@ -288,6 +287,22 @@ export class DocumentService {
         // Update local documents list
         const currentDocs = this.documentsSubject.value;
         const index = currentDocs.findIndex(doc => doc.id === id);
+        if (index !== -1) {
+          const updatedDocs = [...currentDocs];
+          updatedDocs[index] = updatedDocument;
+          this.documentsSubject.next(updatedDocs);
+        }
+      })
+    );
+  }
+
+  signDocumentWithComment(data: { attachment: number, signature_data: string, comments: string }): Observable<Document> {
+    return this.httpClient.post<DocumentApiResponse>(this.config.endpoints.documents.sign, data).pipe(
+      map(response => this.extractDocumentFromResponse(response)),
+      tap(updatedDocument => {
+        // Update local documents list
+        const currentDocs = this.documentsSubject.value;
+        const index = currentDocs.findIndex(doc => doc.id === data.attachment);
         if (index !== -1) {
           const updatedDocs = [...currentDocs];
           updatedDocs[index] = updatedDocument;
