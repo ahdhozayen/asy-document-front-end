@@ -36,3 +36,20 @@
 :host ::ng-deep .mat-dialog-content {
   overflow: visible !important;
 }
+
+:host-context([dir="rtl"]) .mat-form-field {
+  direction: rtl;
+  text-align: right;
+}
+
+:host-context([dir="rtl"]) .mat-form-field label,
+:host-context([dir="rtl"]) .mat-form-field .mat-form-field-label {
+  right: 0;
+  left: auto;
+  text-align: right;
+}
+
+:host-context([dir="rtl"]) textarea {
+  direction: rtl;
+  text-align: right;
+}

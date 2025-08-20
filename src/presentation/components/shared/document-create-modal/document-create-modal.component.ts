@@ -14,11 +14,13 @@ import { LanguageService } from '../../../../core/use-cases/language.service';
 import { AuthorizationService } from '../../../../core/use-cases/authorization.service';
 import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
 import { PermissionDisableDirective } from '../../../shared/directives/permission-disable.directive';
+import { DepartmentService } from '../../../../data/services/department.service';
+import { Department } from '../../../../domain/models/department.model';
 
 export interface DocumentCreateData {
   title: string;
   description?: string;
-  fromDepartment: string;
+  fromDepartment: number;
   priority: string;
   file: File;
 }
@@ -47,7 +49,7 @@ export class DocumentCreateModalComponent implements OnInit {
   documentForm: FormGroup;
   isRTL = false;
   selectedFile: File | null = null;
-  departments: string[] = ['HR', 'IT', 'Finance', 'Marketing', 'Operations'];
+  departments: Department[] = [];
   priorities: string[] = ['High', 'Medium', 'Low'];
   
   private dialogRef = inject(MatDialogRef<DocumentCreateModalComponent>);
@@ -55,6 +57,7 @@ export class DocumentCreateModalComponent implements OnInit {
   private languageService = inject(LanguageService);
   private translate = inject(TranslateService);
   private authorizationService = inject(AuthorizationService);
+  private departmentService = inject(DepartmentService);
 
   constructor() {
     this.documentForm = this.fb.group({
@@ -69,6 +72,17 @@ export class DocumentCreateModalComponent implements OnInit {
   ngOnInit(): void {
     this.languageService.isRTL$.subscribe(isRTL => {
       this.isRTL = isRTL;
+    });
+
+    // Load departments from API
+    this.departmentService.getDepartments().subscribe({
+      next: (departments) => {
+        this.departments = departments;
+      },
+      error: (error) => {
+        console.error('Failed to load departments:', error);
+        this.departments = [];
+      }
     });
   }
 

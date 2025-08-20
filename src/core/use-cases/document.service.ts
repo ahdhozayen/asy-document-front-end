@@ -50,7 +50,8 @@ export class DocumentService {
   }
 
   getDocuments(filters?: DocumentFilters): Observable<Document[]> {
-    this.isLoadingSubject.next(true);
+    // Set loading state asynchronously to avoid ExpressionChangedAfterItHasBeenCheckedError
+    Promise.resolve().then(() => this.isLoadingSubject.next(true));
 
     let url = this.config.endpoints.documents.list;
 
@@ -61,6 +62,8 @@ export class DocumentService {
       if (filters.department) params.append('department', filters.department.toString());
       if (filters.status) params.append('status', filters.status);
       if (filters.priority) params.append('priority', filters.priority);
+      if (filters.page) params.append('page', filters.page.toString());
+      if (filters.pageSize) params.append('page_size', filters.pageSize.toString());
     }
 
     if (params.toString()) {
@@ -75,6 +78,58 @@ export class DocumentService {
       }),
       tap(documents => {
         this.documentsSubject.next(documents);
+        this.isLoadingSubject.next(false);
+      }),
+      catchError(error => {
+        console.error('An error occurred:', error);
+        console.error('Error fetching documents:', error);
+        console.log('Error details:', error); 
+        this.isLoadingSubject.next(false);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  getDocumentsWithPagination(filters?: DocumentFilters): Observable<{ documents: Document[]; total: number; currentPage: number; pageSize: number }> {
+    // Set loading state asynchronously to avoid ExpressionChangedAfterItHasBeenCheckedError
+    Promise.resolve().then(() => this.isLoadingSubject.next(true));
+
+    let url = this.config.endpoints.documents.list;
+
+    const params = new URLSearchParams();
+
+    if (filters) {
+      if (filters.search) params.append('search', filters.search);
+      if (filters.department) params.append('department', filters.department.toString());
+      if (filters.status) params.append('status', filters.status);
+      if (filters.priority) params.append('priority', filters.priority);
+      if (filters.page) params.append('page', filters.page.toString());
+      if (filters.pageSize) params.append('page_size', filters.pageSize.toString());
+      if (filters.sortBy && filters.sort) {
+        const ordering = filters.sort === 'desc' ? `-${filters.sortBy}` : filters.sortBy;
+        params.append('ordering', ordering);
+      }
+    }
+
+    if (params.toString()) {
+      url += `?${params.toString()}`;
+    }
+
+    return this.httpClient.get<ApiResponse<DocumentApiResponse>>(url).pipe(
+      map(response => {
+        const documents = Array.isArray(response.results) 
+          ? response.results.map(item => Document.fromApiResponse(item as DocumentApiResponse)) 
+          : [];
+        
+        return {
+          documents,
+          total: response.count || 0,
+          currentPage: filters?.page || 1,
+          pageSize: filters?.pageSize || 10
+        };
+      }),
+      tap(result => {
+        this.documentsSubject.next(result.documents);
         this.isLoadingSubject.next(false);
       }),
       catchError(error => {

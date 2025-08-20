@@ -1,10 +1,10 @@
 <h2 mat-dialog-title>{{ "documents.signAndComment.title" | translate }}</h2>
 <form [formGroup]="form">
-  <div mat-dialog-content>
+  <div mat-dialog-content [class.rtl]="isRTL" [attr.dir]="isRTL ? 'rtl' : 'ltr'">
     <div class="signature-section">
       <label>{{ "documents.signAndComment.commentsLabel" | translate }}</label>
       <mat-form-field   appearance="outline" class="form-field">
-        <textarea style="background-color: #fff;" matInput formControlName="comments" rows="4" cols="60"></textarea>
+        <textarea style="background-color: #fff;" matInput formControlName="comments" rows="4" cols="60" ></textarea>
         <mat-error *ngIf="form.get('comments')?.hasError('required') && form.get('comments')?.touched">
           {{ "documents.signAndComment.commentsRequired" | translate }}
         </mat-error>

@@ -78,12 +78,16 @@ export interface DocumentFilters {
   department?: string | number;
   status?: string;
   priority?: string;
+  page?: number;
+  pageSize?: number;
+  sort?: string;
+  sortBy?: string;
 }
 
 export interface CreateDocumentData {
   title: string;
   description: string;
-  department: string;
+  department: string | number;
   priority: string;
   file: File;
 }
@@ -91,7 +95,7 @@ export interface CreateDocumentData {
 export interface CreateDocumentMetadata {
   title: string;
   description: string;
-  department: string;
+  department: string | number;
   priority: string;
 }
 

@@ -8,7 +8,7 @@
   </div>
 
   <!-- Login Card -->
-  <mat-card class="login-card">
+  <mat-card class="login-card" [class.rtl]="isRTL" [attr.dir]="isRTL ? 'rtl' : 'ltr'">
     <div class="logo-container">
       <img 
         src="assets/images/logo/company-logo.png" 
@@ -24,11 +24,11 @@
     </mat-card-header>
 
     <!-- Form Content -->
-    <mat-card-content>
+    <mat-card-content [class.rtl]="isRTL" [attr.dir]="isRTL ? 'rtl' : 'ltr'">
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <!-- Username Field -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label [class.font-arabic]="isRTL">{{ 'auth.login.username' | translate }}</mat-label>
+        <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+          
           <input 
             matInput
             type="text"
@@ -43,8 +43,8 @@
         </mat-form-field>
 
         <!-- Password Field -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label [class.font-arabic]="isRTL">{{ 'auth.login.password' | translate }}</mat-label>
+        <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+          
           <input 
             matInput
             [type]="hidePassword ? 'password' : 'text'"

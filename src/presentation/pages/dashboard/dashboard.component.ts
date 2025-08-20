@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, ViewChildren, QueryList, ENVIRONMENT_INITIALIZER } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ViewChildren, QueryList, ENVIRONMENT_INITIALIZER, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatSelect } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
@@ -11,9 +11,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
+import {MatTableModule} from '@angular/material/table';
+import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSortModule, MatSort, Sort } from '@angular/material/sort';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -69,8 +69,10 @@ import { DocumentCreateModalComponent } from '../../components/shared/document-c
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChildren(MatSelect) matSelects!: QueryList<MatSelect>;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   currentUser: User | null = null;
   documents: Document[] = [];
@@ -84,6 +86,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   isLoading = false;
   isRTL = false;
+
+  // Pagination properties
+  totalItems = 0;
+  currentPage = 0;
+  pageSize = 10;
+  pageSizeOptions = [5, 10, 20, 50];
 
   filterForm: FormGroup;
   displayedColumns: string[] = ['title', 'department', 'priority', 'status', 'createdAt', 'actions'];
@@ -100,6 +108,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private departmentService = inject(DepartmentService);
   private router = inject(Router);
   private authorizationService = inject(AuthorizationService);
+  private cdr = inject(ChangeDetectorRef);
   
   departments: Department[] = [];
 
@@ -163,7 +172,6 @@ ngOnInit(): void {
     .pipe(takeUntil(this.destroy$))
     .subscribe(loading => {
       if (!loading) {
-        this.loadData();
         // Load departments from the service
         this.departmentService.getDepartments().subscribe({
           next: (departments) => {
@@ -177,28 +185,108 @@ ngOnInit(): void {
     });
 }
 
+  onPageChange(event: PageEvent): void {
+    this.currentPage = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadData();
+  }
+
+  onSortChange(_event: Sort): void {
+    // Reset to first page when sorting changes
+    this.currentPage = 0;
+    this.loadData();
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
+  ngAfterViewInit(): void {
+    // This method is called after the view has been initialized.
+    // It's a good place to set initial values for the paginator and sort.
+    if (this.paginator) {
+      this.paginator.pageIndex = 0; // Set initial page to 0
+    }
+    
+    // Use setTimeout instead of Promise.resolve to avoid ExpressionChangedAfterItHasBeenCheckedError
+    // This ensures the sort operation happens in a new change detection cycle
+    setTimeout(() => {
+      if (this.sort) {
+        this.sort.sort({ id: 'createdAt', start: 'desc', disableClear: false });
+      }
+      this.loadData();
+    });
+  }
+
   private loadData(): void {
     // Load documents and stats using the observable methods
     // Errors are handled by the observables in the service
-    this.documentService.getDocuments().subscribe();
-    this.documentService.getDocumentStats().subscribe();
+    const filters: DocumentFilters = {
+      page: this.currentPage + 1, // API uses 1-based indexing
+      pageSize: this.pageSize
+    };
+
+    // Add sort parameters only if sort is initialized
+    if (this.sort && this.sort.active && this.sort.direction) {
+      filters.sort = this.sort.direction;
+      filters.sortBy = this.sort.active;
+    }
+
+    this.documentService.getDocumentsWithPagination(filters).subscribe({
+      next: (result) => {
+        this.totalItems = result.total;
+        // Update paginator if it exists
+        if (this.paginator) {
+          this.paginator.length = this.totalItems;
+          this.paginator.pageIndex = this.currentPage;
+        }
+      },
+      error: (error) => {
+        console.error('Error loading documents:', error);
+      }
+    });
+    
+    this.documentService.getDocumentStats().subscribe({
+      error: (error) => {
+        console.error('Error loading stats:', error);
+      }
+    });
   }
 
   private applyFilters(formFilters: { search?: string; department?: string | number; priority?: string; status?: string }): void {
+    // Reset to first page when filters change
+    this.currentPage = 0;
+    
     const filters: DocumentFilters = {
       search: formFilters.search || undefined,
       department: formFilters.department === 'all' ? undefined : formFilters.department,
       priority: formFilters.priority === 'all' ? undefined : formFilters.priority,
-      status: formFilters.status === 'all' ? undefined : formFilters.status
+      status: formFilters.status === 'all' ? undefined : formFilters.status,
+      page: 1, // Reset to first page
+      pageSize: this.pageSize
     };
 
+    // Add sort parameters only if sort is initialized
+    if (this.sort && this.sort.active && this.sort.direction) {
+      filters.sort = this.sort.direction;
+      filters.sortBy = this.sort.active;
+    }
+
     // Apply filters by calling getDocuments with the filters
-    this.documentService.getDocuments(filters).subscribe();
+    this.documentService.getDocumentsWithPagination(filters).subscribe({
+      next: (result) => {
+        this.totalItems = result.total;
+        // Update paginator if it exists
+        if (this.paginator) {
+          this.paginator.length = this.totalItems;
+          this.paginator.pageIndex = 0;
+        }
+      },
+      error: (error) => {
+        console.error('Error applying filters:', error);
+      }
+    });
   }
 
   onLogout(): void {
@@ -368,6 +456,9 @@ ngOnInit(): void {
       priority: 'all',
       status: 'all'
     });
+    
+    // Reset pagination
+    this.currentPage = 0;
     
     // Reload data with reset filters
     this.loadData();

@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, inject } from '@angular/core';
+import { Component, ViewChild, ElementRef, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -24,16 +24,22 @@ import { TranslateModule } from '@ngx-translate/core';
   templateUrl: './sign-comment-modal.component.html',
   styleUrls: ['./sign-comment-modal.component.scss']
 })
-export class SignCommentModalComponent {
+export class SignCommentModalComponent implements OnInit {
   @ViewChild('signatureCanvas', { static: false }) signatureCanvas!: ElementRef<HTMLCanvasElement>;
   form: FormGroup;
   isDrawing = false;
   lastX = 0;
   lastY = 0;
+  isRTL = false;
   private canvas!: HTMLCanvasElement;
   private ctx!: CanvasRenderingContext2D;
   public dialogRef = inject(MatDialogRef<SignCommentModalComponent>);
   private fb = inject(FormBuilder);
+
+  ngOnInit(): void {
+    // Try to detect RTL from document or use a service if available
+    this.isRTL = document.dir === 'rtl' || document.documentElement.dir === 'rtl';
+  }
 
   constructor() {
     this.form = this.fb.group({

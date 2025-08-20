@@ -33,9 +33,9 @@
           <mat-select formControlName="fromDepartment">
             <mat-option
               *ngFor="let department of departments"
-              [value]="department.toLowerCase()"
+              [value]="department.id"
             >
-              {{ "departments." + department.toLowerCase() | translate }}
+              {{ isRTL ? department.name_ar : department.name_en }}
             </mat-option>
           </mat-select>
           <mat-error

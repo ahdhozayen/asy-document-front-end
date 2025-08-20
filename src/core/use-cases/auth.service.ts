@@ -76,27 +76,23 @@ export class AuthService {
       // Try to refresh user data from API
       this.getCurrentUser().subscribe({
         next: (user) => {
-          console.log('User profile loaded successfully:', user);
           this.currentUserSubject.next(user);
           this.storage.setObject('current-user', user);
           this.isAuthenticatedSubject.next(true);
           this.isLoadingSubject.next(false);
         },
         error: (error) => {
-          console.error('Failed to fetch user profile:', error);
           // If profile fetch fails, check if we need to refresh token
           if (error.status === 401) {
             console.log('Profile fetch returned 401, attempting token refresh...');
             this.handleTokenRefresh();
           } else {
             // For other errors, keep the stored user but mark as loaded
-            console.log('Non-401 error, keeping stored user');
             this.isLoadingSubject.next(false);
           }
         }
       });
     } else {
-      console.log('No valid tokens found, clearing user data');
       this.storage.removeItem('current-user');
       this.currentUserSubject.next(null);
       this.isAuthenticatedSubject.next(false);
@@ -105,40 +101,32 @@ export class AuthService {
   }
 
   private handleTokenRefresh(): void {
-    console.log('Handling token refresh...');
     const refreshToken = this.storage.getRefreshToken();
     if (!refreshToken) {
-      console.log('No refresh token available, logging out');
       this.logout('session_expired');
       return;
     }
 
-    console.log('Attempting to refresh token...');
     this.refreshToken(refreshToken).subscribe({
       next: (tokens) => {
-        console.log('Token refresh successful, updating storage');
         // Update stored tokens
         this.storage.setAuthTokens(tokens.access, tokens.refresh || refreshToken);
         
         // Try to get user profile again with new token
-        console.log('Fetching user profile with new token...');
         this.getCurrentUser().subscribe({
           next: (user) => {
-            console.log('User profile loaded after token refresh:', user);
             this.currentUserSubject.next(user);
             this.storage.setObject('current-user', user);
             this.isAuthenticatedSubject.next(true);
             this.isLoadingSubject.next(false);
           },
           error: (error) => {
-            console.error('Failed to fetch user profile after token refresh:', error);
             // If still fails, logout
             this.logout('session_expired');
           }
         });
       },
       error: (error) => {
-        console.error('Token refresh failed:', error);
         // Refresh failed, logout
         this.logout('session_expired');
       }
