@@ -85,30 +85,18 @@
     <!-- Filters Section -->
     <mat-card class="filters-card">
       <mat-card-content>
-        <form [formGroup]="filterForm" class="filters-form" style="
-            display: flex;
-            gap: 16px;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-          ">
-          <div style="display: flex; gap: 16px; align-items: center; flex: 1">
-            <!-- Search (25% wider) -->
-            <mat-form-field appearance="outline" style="flex: 1.25">
-              <mat-label>{{
-                "dashboard.filters.search" | translate
-                }}</mat-label>
-              <input matInput formControlName="search" placeholder="{{
-                  'dashboard.filters.searchPlaceholder' | translate
-                }}" />
+        <form [formGroup]="filterForm" class="filters-form">
+          <div class="filters-row">
+            <!-- Search Input -->
+            <mat-form-field appearance="outline" class="filter-input search-input">
+              <mat-label>{{ "dashboard.filters.search" | translate }}</mat-label>
+              <input matInput formControlName="search" placeholder="{{ 'dashboard.filters.searchPlaceholder' | translate }}" />
               <mat-icon matSuffix>search</mat-icon>
             </mat-form-field>
 
             <!-- Department Filter -->
-            <mat-form-field appearance="outline" style="flex: 1">
-              <mat-label>{{
-                "dashboard.filters.department" | translate
-                }}</mat-label>
+            <mat-form-field appearance="outline" class="filter-input">
+              <mat-label>{{ "dashboard.filters.department" | translate }}</mat-label>
               <mat-select formControlName="department" placeholder="{{ 'dashboard.filters.department' | translate }}">
                 <mat-option value="all">{{ "dashboard.filters.all_departments" | translate }}</mat-option>
                 <mat-option *ngFor="let dept of departments" [value]="dept.id">
@@ -118,10 +106,8 @@
             </mat-form-field>
 
             <!-- Priority Filter -->
-            <mat-form-field appearance="outline" style="flex: 1">
-              <mat-label>{{
-                "dashboard.filters.priority" | translate
-                }}</mat-label>
+            <mat-form-field appearance="outline" class="filter-input">
+              <mat-label>{{ "dashboard.filters.priority" | translate }}</mat-label>
               <mat-select formControlName="priority" placeholder="{{ 'dashboard.filters.priority' | translate }}">
                 <mat-option value="all">{{ "dashboard.filters.all_priorities" | translate }}</mat-option>
                 <mat-option value="high">{{ "priorities.high" | translate }}</mat-option>
@@ -130,9 +116,20 @@
               </mat-select>
             </mat-form-field>
 
-            <!-- Reset button aligned with form fields -->
+            <!-- Status Filter -->
+            <mat-form-field appearance="outline" class="filter-input">
+              <mat-label>{{ "dashboard.filters.status" | translate }}</mat-label>
+              <mat-select formControlName="status" placeholder="{{ 'dashboard.filters.status' | translate }}">
+                <mat-option value="all">{{ "dashboard.filters.all_statuses" | translate }}</mat-option>
+                <mat-option value="pending">{{ "statuses.pending" | translate }}</mat-option>
+                <mat-option value="inProgress">{{ "statuses.inProgress" | translate }}</mat-option>
+                <mat-option value="completed">{{ "statuses.completed" | translate }}</mat-option>
+                <mat-option value="signed">{{ "statuses.signed" | translate }}</mat-option>
+              </mat-select>
+            </mat-form-field>
 
-            <button mat-raised-button color="primary" (click)="resetFilters()" style="">
+            <!-- Reset Button -->
+            <button mat-raised-button color="primary" (click)="resetFilters()" class="reset-button">
               {{ "dashboard.filters.reset" | translate }}
             </button>
           </div>

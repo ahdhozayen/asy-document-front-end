@@ -191,22 +191,34 @@
 
 .filters-card {
   .filters-row {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr auto;
     gap: 1rem;
-    // align-items: center;
+    align-items: end;
+    flex-wrap: wrap;
   }
 
   .filter-input {
-    flex: 1 1 200px; // Flex-grow, flex-shrink, and basis
+    min-width: 0; // Allow shrinking
+  }
+
+  .search-input {
+    grid-column: 1;
+  }
+
+  .reset-button {
+    height: 56px; // Match form field height
+    align-self: end;
+    white-space: nowrap;
+    min-width: 100px;
   }
 
   .filters-form {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
-    // align-items: center;
-    // justify-content: center;
+    align-items: center;
+    justify-content: center;
 
     ::ng-deep .mat-mdc-form-field {
       .mdc-text-field--outlined {
@@ -217,13 +229,6 @@
         --mdc-outlined-text-field-focus-outline-color: #3b82f6;
         background-color: #ffffff;
         border-radius: 12px;
-        // transition: all 0.3s ease;
-        // box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-
-        // &:hover {
-        //   background-color: #f9fafb;
-        //   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        // }
       }
 
       .mdc-notched-outline__leading,
@@ -282,14 +287,52 @@
     }
   }
 
-  // &:hover {
-  //   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-  //   transform: translateY(-2px);
-  // }
-
   .mat-mdc-card-content {
     padding: 2rem !important;
     background: transparent;
+  }
+}
+
+// Responsive design for filters
+@media (max-width: 1200px) {
+  .filters-card .filters-row {
+    grid-template-columns: 2fr 1fr 1fr auto;
+    gap: 0.75rem;
+  }
+  
+  .filters-card .filter-input:nth-child(4) {
+    display: none; // Hide status filter on medium screens
+  }
+}
+
+@media (max-width: 900px) {
+  .filters-card .filters-row {
+    grid-template-columns: 1fr 1fr auto;
+    gap: 0.75rem;
+  }
+  
+  .filters-card .filter-input:nth-child(3),
+  .filters-card .filter-input:nth-child(4) {
+    display: none; // Hide priority and status filters on small screens
+  }
+}
+
+@media (max-width: 600px) {
+  .filters-card .filters-row {
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem;
+  }
+  
+  .filters-card .filter-input:nth-child(2),
+  .filters-card .filter-input:nth-child(3),
+  .filters-card .filter-input:nth-child(4) {
+    display: none; // Only show search and reset button on mobile
+  }
+  
+  .filters-card .reset-button {
+    min-width: 80px;
+    height: 48px;
+    font-size: 0.875rem;
   }
 }
 

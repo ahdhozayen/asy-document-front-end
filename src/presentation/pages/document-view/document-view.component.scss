@@ -460,6 +460,8 @@
 
       .header-tags {
         order: 2;
+        flex-wrap: wrap;
+        justify-content: center;
       }
 
       .header-actions {
@@ -467,27 +469,139 @@
         width: 100%;
         justify-content: center;
         flex-wrap: wrap;
+        gap: 0.5rem;
         
+        .edit-button,
+        .comments-button,
+        .download-button,
         .sign-button {
-          background-color: #28a745;
-          color: white;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.5rem 1rem;
-          border-radius: 4px;
-          font-weight: 500;
-          margin: 0.5rem 0.25rem;
-          
-          &:hover {
-            background-color: #218838;
-          }
+          margin: 0.25rem;
+          min-width: 120px;
         }
       }
     }
 
     .page-content {
       padding: 1rem;
+      gap: 1rem;
+    }
+
+    .document-preview-panel,
+    .document-info-panel {
+      padding: 1rem;
+    }
+
+    .pdf-viewer {
+      .pdf-toolbar {
+        flex-wrap: wrap;
+        gap: 0.25rem;
+        padding: 0.5rem;
+
+        .toolbar-btn {
+          width: 28px;
+          height: 28px;
+          line-height: 28px;
+        }
+
+        .page-info {
+          margin: 0 0.5rem;
+          font-size: 0.75rem;
+        }
+      }
+
+      .pdf-content {
+        min-height: 400px;
+
+        .pdf-iframe-container {
+          height: 400px;
+        }
+
+        .document-not-found {
+          height: 400px;
+
+          .not-found-content {
+            padding: 1rem;
+
+            .not-found-icon {
+              font-size: 3rem;
+              width: 3rem;
+              height: 3rem;
+            }
+
+            h3 {
+              font-size: 1rem;
+            }
+
+            p {
+              font-size: 0.875rem;
+            }
+          }
+        }
+      }
+    }
+
+    .attachment-info {
+      .attachment-details {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .page-header {
+      padding: 0.75rem;
+
+      .page-title {
+        font-size: 1.25rem;
+      }
+    }
+
+    .page-content {
+      padding: 0.75rem;
+    }
+
+    .document-preview-panel,
+    .document-info-panel {
+      padding: 1rem;
+      border-radius: 6px;
+    }
+
+    .panel-title {
+      font-size: 1.125rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .pdf-viewer {
+      .pdf-content {
+        min-height: 300px;
+
+        .pdf-iframe-container {
+          height: 300px;
+        }
+
+        .document-not-found {
+          height: 300px;
+        }
+      }
+    }
+
+    .info-content {
+      .info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+        padding: 0.75rem 0;
+
+        .info-label {
+          font-size: 0.75rem;
+        }
+
+        .info-value {
+          font-size: 0.875rem;
+        }
+      }
     }
   }
 }

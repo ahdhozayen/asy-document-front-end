@@ -97,10 +97,22 @@ export class DocumentEditComponent implements OnInit {
   private loadDocument(): void {
     if (this.documentId) {
       this.documentService.getDocument(this.documentId).subscribe({
-        next: (document) => {
+        next: (response) => {
+          // Handle both paginated responses and direct document responses
+          let newDocument: Document;
+          
+          if (response && 'results' in response && Array.isArray(response.results)) {
+            // It's a paginated response
+            newDocument = response.results[0];
+          } else {
+            // It's a direct document response
+            newDocument = response as Document;
+          }
+
           // Create a proper Document instance with additional properties
-          this.currentDocument = Object.assign(document, {
-            uploadDate: document.attachments?.[0]?.created_at || new Date()
+          this.currentDocument = Object.assign(newDocument, {
+            uploadDate: newDocument.attachments?.[0]?.created_at || new Date(),
+            fileName: newDocument.attachments?.[0]?.original_name || 'No file uploaded'
           });
           
           // Check if user has permission to edit this document
@@ -112,7 +124,11 @@ export class DocumentEditComponent implements OnInit {
           
           this.populateForm();
         },
-        error: undefined
+        error: (error) => {
+          console.error('Error loading document:', error);
+          this.toastService.errorTranslated('documents.edit.loadError');
+          this.router.navigate(['/dashboard']);
+        }
       });
     }
   }
@@ -276,8 +292,30 @@ export class DocumentEditComponent implements OnInit {
     return null;
   }
 
-  getFileTypeDisplay(fileType: string): string {
-    if (!fileType) return 'Unknown';
+  getFileIcon(fileName: string): string {
+    if (!fileName) return 'cloud_off';
+    
+    const extension = fileName.split('.').pop()?.toLowerCase();
+    
+    switch (extension) {
+      case 'pdf':
+        return 'picture_as_pdf';
+      case 'doc':
+      case 'docx':
+        return 'description';
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+        return 'image';
+      default:
+        return 'insert_drive_file';
+    }
+  }
+
+  getFileTypeDisplay(fileName: string): string {
+    if (!fileName) return 'Unknown';
+    
+    const extension = fileName.split('.').pop()?.toLowerCase();
     
     const typeMap: Record<string, string> = {
       'pdf': 'PDF Document',
@@ -288,7 +326,7 @@ export class DocumentEditComponent implements OnInit {
       'png': 'PNG Image'
     };
     
-    return typeMap[fileType.toLowerCase()] || `${fileType.toUpperCase()} Document`;
+    return typeMap[extension || ''] || `${(extension || 'Unknown').toUpperCase()} Document`;
   }
 
   /**
@@ -298,23 +336,37 @@ export class DocumentEditComponent implements OnInit {
     if (this.currentDocument?.attachments && this.currentDocument.attachments.length > 0) {
       const attachment = this.currentDocument.attachments[0];
       
-      // First try to use the attachment ID (preferred method)
-      if (attachment.id) {
-        const fileUrl = environment.mediaURL+attachment.file;
-        // const fileUrl = `${environment.apiUrl}/documents/attachments/${attachment.id}`;
-        window.open(fileUrl, '_blank');
-        return;
-      }
-      
-      // Fallback to using the file path if ID is not available
       if (attachment.file) {
-        const normalizedPath = attachment.file.startsWith('/') ? attachment.file : `/${attachment.file}`;
-        const fileUrl = `${environment.mediaURL}${normalizedPath}`;
+        const fileUrl = environment.mediaURL + attachment.file;
         window.open(fileUrl, '_blank');
         return;
       }
       
       this.toastService.errorTranslated('documents.view.fileNotFound');
+    } else {
+      this.toastService.errorTranslated('documents.view.noAttachment');
+    }
+  }
+
+  /**
+   * Downloads the current document attachment
+   */
+  downloadCurrentAttachment(): void {
+    if (this.currentDocument?.attachments && this.currentDocument.attachments.length > 0) {
+      const attachment = this.currentDocument.attachments[0];
+      
+      if (attachment.file) {
+        const fileUrl = environment.mediaURL + attachment.file;
+        const link = document.createElement('a');
+        link.href = fileUrl;
+        link.download = attachment.original_name || 'document';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        return;
+      }
+      
+      this.toastService.errorTranslated('documents.download.error');
     } else {
       this.toastService.errorTranslated('documents.view.noAttachment');
     }

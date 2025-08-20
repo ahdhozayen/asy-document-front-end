@@ -82,7 +82,7 @@
     },
 
     "documentsTable": {
-      "title": "الوثائق",
+      "title": "المكاتبات",
       "department": "القسم",
       "priority": "الأولوية",
       "status": "الحالة",
@@ -90,8 +90,8 @@
       "actions": "الإجراءات"
     },
     "filters": {
-      "search": "البحث في الوثائق...",
-      "searchPlaceholder": "البحث في الوثائق...",
+      "search": "البحث في المكاتبات...",
+      "searchPlaceholder": "البحث في المكاتبات...",
       "department": "القسم",
       "priority": "الأولوية",
       "status": "الحالة",
@@ -109,9 +109,9 @@
   },
 
   "documents": {
-    "title": "الوثائق",
-    "noDocuments": "لا توجد وثائق",
-    "documentName": "اسم الوثيقة",
+    "title": "المكاتبات",
+    "noDocuments": "لا توجد مكاتبات",
+    "documentName": "اسم المكاتبة",
     "department": "القسم",
     "priority": "الأولوية",
     "status": "الحالة",
@@ -156,8 +156,8 @@
       "fileType": "نوع الملف"
     },
     "view": {
-      "title": "عرض الوثيقة",
-      "details": "تفاصيل الوثيقة",
+      "title": "عرض المكاتبة",
+      "details": "تفاصيل المكاتبة",
       "attachments": "المرفقات",
       "addComment": "إضافة تعليق",
       "commentPlaceholder": "أدخل تعليقك هنا",
@@ -167,14 +167,14 @@
       "signDocument": "توقيع الوثيقة",
       "viewAttachment": "عرض المرفق",
       "downloadAttachment": "تنزيل المرفق",
-      "documentPreview": "معاينة الوثيقة",
-      "documentInformation": "معلومات الوثيقة",
+      "documentPreview": "معاينة المكاتبة",
+      "documentInformation": "معلومات المكاتبة",
       "attachmentInfo": "معلومات المرفق",
-      "notFound": "الوثيقة غير موجودة",
-      "notFoundMessage": "لم يتم العثور على الوثيقة المطلوبة أو ليس لديك صلاحية لعرضها."
+      "notFound": "المكاتبة غير موجودة",
+      "notFoundMessage": "لم يتم العثور على المكاتبة المطلوبة أو ليس لديك صلاحية لعرضها."
     },
     "signature": {
-      "title": "توقيع الوثيقة",
+      "title": "توقيع المكاتبة",
       "drawSignature": "ارسم توقيعك",
       "instructions": "ارسم توقيعك أدناه باستخدام الماوس أو اللمس",
       "clear": "مسح",
@@ -182,26 +182,26 @@
       "submit": "إرسال التوقيع"
     },
     "sign": {
-      "success": "تم توقيع الوثيقة بنجاح",
-      "error": "فشل في توقيع الوثيقة"
+      "success": "تم توقيع المكاتبة بنجاح",
+      "error": "فشل في توقيع المكاتبة"
     },
     "comment": {
       "success": "تمت إضافة التعليق بنجاح",
       "error": "فشل في إضافة التعليق"
     },
     "upload": {
-      "title": "رفع وثيقة جديدة",
+      "title": "رفع مكاتبة جديدة",
       "selectFile": "اختر ملف",
       "dragDrop": "اسحب وأفلت الملف هنا أو انقر للاختيار",
       "fileSelected": "تم اختيار الملف",
       "uploading": "جاري الرفع...",
-      "success": "تم رفع الوثيقة بنجاح",
-      "error": "فشل في رفع الوثيقة"
+      "success": "تم رفع المكاتبة بنجاح",
+      "error": "فشل في رفع المكاتبة"
     },
     "create": {
-      "title": "إنشاء وثيقة جديدة",
-      "modalTitle": "إنشاء وثيقة جديدة",
-      "button": "إنشاء وثيقة جديدة",
+      "title": "إنشاء مكاتبة جديدة",
+      "modalTitle": "إنشاء مكاتبة جديدة",
+      "button": "إنشاء مكاتبة جديدة",
       "selectFile": "اختر ملف PDF",
       "dragDrop": "اسحب وأفلت ملف PDF هنا أو انقر للاختيار",
       "fileSelected": "تم اختيار الملف:",
@@ -217,9 +217,9 @@
     },
     "edit": {
       "title": "تعديل الوثيقة",
-      "details": "تعديل تفاصيل الوثيقة",
-      "success": "تم تحديث الوثيقة بنجاح",
-      "error": "فشل في تحديث الوثيقة",
+      "details": "تعديل تفاصيل المكاتبة",
+      "success": "تم تحديث المكاتبة بنجاح",
+      "error": "فشل في تحديث المكاتبة",
       "editDocument": "تعديل الوثيقة",
       "documentInformation": "معلومات الوثيقة",
       "uploadDate": "تاريخ الرفع:",

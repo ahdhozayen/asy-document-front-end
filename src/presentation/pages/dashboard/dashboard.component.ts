@@ -127,51 +127,55 @@ ngOnInit(): void {
       this.currentUser = user;
     });
 
-  if (!this.currentUser) {
-    this.authService.loadStoredUser();
-  }
-  
-  // Load departments from the service
-  this.departmentService.getDepartments().subscribe({
-    next: (departments) => {
-      this.departments = departments;
-    },
-    error: undefined
-  });
+  // Subscribe to documents
+  this.documentService.documents$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(documents => {
+      this.documents = documents;
+    });
 
-    // Subscribe to documents
-    this.documentService.documents$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(documents => {
-        this.documents = documents;
-      });
+  // Subscribe to document stats
+  this.documentService.stats$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((stats: DocumentStats) => {
+      this.documentStats = stats;
+    });
 
-    // Subscribe to document stats
-    this.documentService.stats$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((stats: DocumentStats) => {
-        this.documentStats = stats;
-      });
+  // Subscribe to loading state - only show loading when both auth and documents are loading
+  combineLatest([
+    this.documentService.isLoading$,
+    this.authService.isLoading$
+  ]).pipe(takeUntil(this.destroy$))
+    .subscribe(([docLoading, authLoading]) => {
+      // Only show loading if documents are loading AND we're not in initial auth loading
+      this.isLoading = docLoading && !authLoading;
+    });
 
-    // Subscribe to loading state
-    combineLatest([
-      this.documentService.isLoading$,
-      this.authService.isLoading$
-    ]).pipe(takeUntil(this.destroy$))
-      .subscribe(([docLoading, authLoading]) => {
-        this.isLoading = docLoading || authLoading;
-      });
+  // Subscribe to filter changes
+  this.filterForm.valueChanges
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(filters => {
+      this.applyFilters(filters);
+    });
 
-    // Subscribe to filter changes
-    this.filterForm.valueChanges
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(filters => {
-        this.applyFilters(filters);
-      });
-
-    // Load initial data
-    this.loadData();
-  }
+  // Load initial data only after auth is complete
+  this.authService.isLoading$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(loading => {
+      if (!loading) {
+        this.loadData();
+        // Load departments from the service
+        this.departmentService.getDepartments().subscribe({
+          next: (departments) => {
+            this.departments = departments;
+          },
+          error: (error) => {
+            console.error('Failed to load departments:', error);
+          }
+        });
+      }
+    });
+}
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -327,7 +331,7 @@ ngOnInit(): void {
   getStatusColor(status: string): string {
     switch (status) {
       case 'pending': return 'warn';
-      case 'in_progress': return 'accent';
+      case 'inProgress': return 'accent';
       case 'completed': return 'primary';
       case 'signed': return 'primary';
       default: return '';
@@ -365,7 +369,7 @@ ngOnInit(): void {
       status: 'all'
     });
     
-    // Reload the page to reset all filters and data
-    window.location.reload();
+    // Reload data with reset filters
+    this.loadData();
   }
 }

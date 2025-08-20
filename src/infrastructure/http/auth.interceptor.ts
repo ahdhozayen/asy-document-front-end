@@ -49,43 +49,47 @@ export class AuthInterceptor implements HttpInterceptor {
     );
   }
 
-private handle401Error(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-  if (this.refreshInProgress) {
-    return this.refreshTokenSubject.pipe(
-      filter(token => token !== null),
-      take(1),
-      switchMap(token => next.handle(this.addTokenToRequest(request, token!)))
-    );
+  private handle401Error(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    if (this.refreshInProgress) {
+      return this.refreshTokenSubject.pipe(
+        filter(token => token !== null),
+        take(1),
+        switchMap(token => next.handle(this.addTokenToRequest(request, token!)))
+      );
+    }
+
+    this.refreshInProgress = true;
+    this.refreshTokenSubject.next(null);
+
+    const refreshToken = this.storage.getRefreshToken();
+    if (!refreshToken) {
+      this.refreshInProgress = false;
+      this.storage.clearAuthTokens();
+      return throwError(() => new Error('No refresh token available'));
+    }
+
+    return this.httpClient
+      .post<{ access: string; refresh?: string }>(ApiConfig.getInstance().endpoints.auth.refresh, { refresh: refreshToken })
+      .pipe(
+        switchMap((tokens: { access: string; refresh?: string }) => {
+          this.refreshInProgress = false;
+          // Update storage with new access token, keep existing refresh token if not provided
+          this.storage.setAuthTokens(tokens.access, tokens.refresh || refreshToken);
+          this.refreshTokenSubject.next(tokens.access);
+          return next.handle(this.addTokenToRequest(request, tokens.access));
+        }),
+        catchError(error => {
+          this.refreshInProgress = false;
+          this.refreshTokenSubject.next(null);
+          // Clear tokens on refresh failure
+          this.storage.clearAuthTokens();
+          return throwError(() => error);
+        }),
+        finalize(() => {
+          this.refreshInProgress = false;
+        })
+      );
   }
-
-  this.refreshInProgress = true;
-  this.refreshTokenSubject.next(null);
-
-  const refreshToken = this.storage.getRefreshToken();
-  if (!refreshToken) {
-    this.refreshInProgress = false;
-    this.storage.clearAuthTokens();
-    return throwError(() => new Error('No refresh token available'));
-  }
-
-  return this.httpClient
-    .post<{ access: string; refresh: string }>(ApiConfig.getInstance().endpoints.auth.refresh, { refresh: refreshToken })
-    .pipe(
-      switchMap((tokens: { access: string; refresh: string }) => {
-        this.refreshInProgress = false;
-        this.storage.setAuthTokens(tokens.access, tokens.refresh);
-        this.refreshTokenSubject.next(tokens.access);
-        return next.handle(this.addTokenToRequest(request, tokens.access));
-      }),
-      catchError(error => {
-        this.refreshInProgress = false;
-        return throwError(() => error);
-      }),
-      finalize(() => {
-        this.refreshInProgress = false;
-      })
-    );
-}
 
   private addTokenToRequest(request: HttpRequest<unknown>, token: string): HttpRequest<unknown> {
     return request.clone({

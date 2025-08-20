@@ -122,18 +122,22 @@
           <h4 class="section-title" [class.arabic-font]="isRTL">
             {{ "documents.edit.currentFile" | translate }}
           </h4>
-          <div class="current-file-display" [ngClass]="{'no-file': !currentDocument?.fileName || currentDocument?.fileName === 'No file uploaded'}">
-            <mat-icon class="file-icon" [ngClass]="{'no-file-icon': !currentDocument?.fileName || currentDocument?.fileName === 'No file uploaded'}">
-              {{ (!currentDocument?.fileName || currentDocument?.fileName === 'No file uploaded') ? 'cloud_off' : 'picture_as_pdf' }}
+          <div class="current-file-display" [ngClass]="{'no-file': !currentDocument?.attachments?.length || !currentDocument?.attachments?.[0]?.file}">
+            <mat-icon class="file-icon" [ngClass]="{'no-file-icon': !currentDocument?.attachments?.length || !currentDocument?.attachments?.[0]?.file}">
+              {{ getFileIcon(currentDocument?.attachments?.[0]?.original_name) }}
             </mat-icon>
             <div class="file-info">
-              <span class="file-name" [ngClass]="{'no-file-text': !currentDocument?.fileName || currentDocument?.fileName === 'No file uploaded'}">
-                {{ currentDocument?.fileName || 'No file uploaded' }}
+              <span class="file-name" [ngClass]="{'no-file-text': !currentDocument?.attachments?.length || !currentDocument?.attachments?.[0]?.file}">
+                {{ currentDocument?.attachments?.[0]?.original_name || 'No file uploaded' }}
               </span>
-              <div class="file-actions" *ngIf="currentDocument?.attachments?.length">
+              <div class="file-actions" *ngIf="currentDocument?.attachments?.length && currentDocument?.attachments?.[0]?.file">
                 <button mat-button color="primary" (click)="viewCurrentAttachment()" class="view-file-button">
                   <mat-icon>visibility</mat-icon>
                   {{ 'documents.edit.viewFile' | translate }}
+                </button>
+                <button mat-button color="accent" (click)="downloadCurrentAttachment()" class="download-file-button">
+                  <mat-icon>download</mat-icon>
+                  {{ 'common.download' | translate }}
                 </button>
               </div>
             </div>

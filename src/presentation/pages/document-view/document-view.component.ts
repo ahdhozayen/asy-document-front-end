@@ -244,15 +244,9 @@ export class DocumentViewComponent implements OnInit {
       return this.sanitizer.bypassSecurityTrustResourceUrl(file);
     }
     
-    // For attachment IDs, use the document attachment endpoint
-    if (!isNaN(Number(file))) {
-      const attachmentUrl = `${environment.apiUrl}/documents/attachments/${file}`;
-      return this.sanitizer.bypassSecurityTrustResourceUrl(attachmentUrl);
-    }
-    
     // For file paths, ensure they're properly joined with the media URL
     // Remove any leading slash to avoid double slashes
-    const normalizedPath = file.startsWith('/') ? file : `/${file}`;
+    const normalizedPath = file.startsWith('/') ? file.substring(1) : file;
     const baseUrl = `${environment.mediaURL}${normalizedPath}`;
     
     return this.sanitizer.bypassSecurityTrustResourceUrl(baseUrl);

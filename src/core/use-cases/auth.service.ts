@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
-import { map, tap, catchError } from 'rxjs/operators';
+import { map, tap, catchError, finalize } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { HttpClientService } from '../../infrastructure/http/http-client.service';
 import { StorageService } from '../../infrastructure/storage/storage.service';
@@ -24,16 +24,15 @@ export interface UpdateProfileData {
 interface LoginResponse {
   access: string;
   refresh: string;
-  user?: {
+  user: {
     id: number;
-    username: string;
     email: string;
     first_name: string;
     last_name: string;
     role: string;
-    avatar?: string;
-    created_at: string;
-    updated_at: string;
+    is_active: boolean;
+    date_joined: string;
+    last_login: string;
   };
 }
 
@@ -65,27 +64,85 @@ export class AuthService {
   }
 
   private initializeAuth(): void {
+    console.log('Initializing auth service...');
     this.isLoadingSubject.next(true);
     const hasTokens = this.storage.hasValidTokens();
 
     if (hasTokens) {
+      console.log('Valid tokens found, loading stored user...');
+      // Load stored user first for immediate display
       this.loadStoredUser();
-      if (hasTokens && !this.currentUserSubject.value?.displayName) {
-  const placeholderUser = this.createPlaceholderUser(this.storage.getItem('username') || 'User');
-  this.currentUserSubject.next(placeholderUser);
-  this.storage.setObject('current-user', placeholderUser);
-}
-      this.isAuthenticatedSubject.next(true);
-
+      
+      // Try to refresh user data from API
       this.getCurrentUser().subscribe({
-        next: (user) => this.currentUserSubject.next(user)
+        next: (user) => {
+          console.log('User profile loaded successfully:', user);
+          this.currentUserSubject.next(user);
+          this.storage.setObject('current-user', user);
+          this.isAuthenticatedSubject.next(true);
+          this.isLoadingSubject.next(false);
+        },
+        error: (error) => {
+          console.error('Failed to fetch user profile:', error);
+          // If profile fetch fails, check if we need to refresh token
+          if (error.status === 401) {
+            console.log('Profile fetch returned 401, attempting token refresh...');
+            this.handleTokenRefresh();
+          } else {
+            // For other errors, keep the stored user but mark as loaded
+            console.log('Non-401 error, keeping stored user');
+            this.isLoadingSubject.next(false);
+          }
+        }
       });
     } else {
+      console.log('No valid tokens found, clearing user data');
       this.storage.removeItem('current-user');
       this.currentUserSubject.next(null);
       this.isAuthenticatedSubject.next(false);
       this.isLoadingSubject.next(false);
     }
+  }
+
+  private handleTokenRefresh(): void {
+    console.log('Handling token refresh...');
+    const refreshToken = this.storage.getRefreshToken();
+    if (!refreshToken) {
+      console.log('No refresh token available, logging out');
+      this.logout('session_expired');
+      return;
+    }
+
+    console.log('Attempting to refresh token...');
+    this.refreshToken(refreshToken).subscribe({
+      next: (tokens) => {
+        console.log('Token refresh successful, updating storage');
+        // Update stored tokens
+        this.storage.setAuthTokens(tokens.access, tokens.refresh || refreshToken);
+        
+        // Try to get user profile again with new token
+        console.log('Fetching user profile with new token...');
+        this.getCurrentUser().subscribe({
+          next: (user) => {
+            console.log('User profile loaded after token refresh:', user);
+            this.currentUserSubject.next(user);
+            this.storage.setObject('current-user', user);
+            this.isAuthenticatedSubject.next(true);
+            this.isLoadingSubject.next(false);
+          },
+          error: (error) => {
+            console.error('Failed to fetch user profile after token refresh:', error);
+            // If still fails, logout
+            this.logout('session_expired');
+          }
+        });
+      },
+      error: (error) => {
+        console.error('Token refresh failed:', error);
+        // Refresh failed, logout
+        this.logout('session_expired');
+      }
+    });
   }
 
   login(credentials: LoginCredentials): Observable<AuthResult> {
@@ -94,48 +151,29 @@ export class AuthService {
       password: credentials.password
     }).pipe(
       map(response => {
-
-
-        const user = response.user ?
-          User.fromApiResponse(response.user) :
-          this.createPlaceholderUser(credentials.username);
-
+        const user = User.fromApiResponse(response.user);
+        
         const result = {
           user,
           accessToken: response.access,
           refreshToken: response.refresh
         };
 
-
-
         return result;
       }),
       tap(result => {
-
-
+        // Store tokens and user data
         this.storage.setAuthTokens(result.accessToken, result.refreshToken);
-
-        // Store user for faster initialization on refresh
         this.storage.setObject('current-user', result.user);
         this.storage.setItem('username', credentials.username);
 
-        // Verify tokens were stored
-
-
+        // Update service state
         this.currentUserSubject.next(result.user);
         this.isAuthenticatedSubject.next(true);
-
-        // If we have a placeholder user, try to fetch real user data
-        if (result.user.email === credentials.username && !result.user.firstName) {
-          this.getCurrentUser().subscribe({
-            next: (user) => this.currentUserSubject.next(user),
-            error: () => {
-              // Ignore errors, keep placeholder user
-            }
-          });
-        }
+        this.isLoadingSubject.next(false);
       }),
       catchError(error => {
+        this.isLoadingSubject.next(false);
         return throwError(() => error);
       })
     );
@@ -151,6 +189,7 @@ export class AuthService {
     this.clearTokens();
     this.currentUserSubject.next(null);
     this.isAuthenticatedSubject.next(false);
+    this.isLoadingSubject.next(false);
 
     // Handle session expiration notification
     if (reason === 'session_expired') {
@@ -175,12 +214,12 @@ export class AuthService {
 
   /**
    * Attempts to refresh the access token using the refresh token.
-   * Returns Observable<{ access: string, refresh: string }>
+   * Returns Observable<{ access: string, refresh?: string }>
    */
-  refreshToken(refreshToken: string): Observable<{ access: string; refresh: string }> {
+  refreshToken(refreshToken: string): Observable<{ access: string; refresh?: string }> {
     const config = ApiConfig.getInstance();
     const refreshEndpoint = config.endpoints.auth.refresh;
-    return this.httpClient.post<{ access: string; refresh: string }>(refreshEndpoint, {
+    return this.httpClient.post<{ access: string; refresh?: string }>(refreshEndpoint, {
       refresh: refreshToken
     });
   }
@@ -211,10 +250,19 @@ export class AuthService {
           return User.fromApiResponse(response as UserApiResponse);
         }
       }),
-      tap(user => this.currentUserSubject.next(user)),
+      tap(user => {
+        this.currentUserSubject.next(user);
+        this.storage.setObject('current-user', user);
+      }),
       catchError(error => {
         console.error('Error fetching user profile:', error);
         return throwError(() => error);
+      }),
+      finalize(() => {
+        // Ensure loading state is properly managed
+        if (this.isLoadingSubject.value) {
+          this.isLoadingSubject.next(false);
+        }
       })
     );
   }
