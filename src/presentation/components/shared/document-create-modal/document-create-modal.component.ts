@@ -12,8 +12,6 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { LanguageService } from '../../../../core/use-cases/language.service';
 import { AuthorizationService } from '../../../../core/use-cases/authorization.service';
-import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
-import { PermissionDisableDirective } from '../../../shared/directives/permission-disable.directive';
 
 export interface DocumentCreateData {
   title: string;
@@ -36,8 +34,6 @@ export interface DocumentCreateData {
         MatSelectModule,
         MatDividerModule,
         TranslateModule,
-        HasPermissionDirective,
-        PermissionDisableDirective
     ],
     templateUrl: './document-create-modal.component.html',
     styleUrls: ['./document-create-modal.component.scss']
