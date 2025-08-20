@@ -24,7 +24,8 @@
     "refresh": "Refresh",
     "all": "All",
     "saveChanges": "Save Changes",
-    "comments": "Comments ({{count}})"
+    "comments": "Comments",
+    "openInNew": "Open in New"
   },
   "departments": {
     "finance": "Finance",

@@ -20,36 +20,6 @@
           {{ "validation.minLength" | translate }}
         </mat-error>
       </mat-form-field>
-
-      <mat-form-field appearance="outline" class="form-field">
-        <mat-label
-          >{{
-            "documents.comments.redirectDepartment" | translate
-          }}
-          *</mat-label
-        >
-        <mat-select formControlName="redirectDepartment">
-          <mat-option value="finance">{{
-            "departments.finance" | translate
-          }}</mat-option>
-          <mat-option value="hr">{{ "departments.hr" | translate }}</mat-option>
-          <mat-option value="it">{{ "departments.it" | translate }}</mat-option>
-          <mat-option value="legal">{{
-            "departments.legal" | translate
-          }}</mat-option>
-          <mat-option value="operations">{{
-            "departments.operations" | translate
-          }}</mat-option>
-          <mat-option value="marketing">{{
-            "departments.marketing" | translate
-          }}</mat-option>
-        </mat-select>
-        <mat-error
-          *ngIf="commentForm.get('redirectDepartment')?.hasError('required')"
-        >
-          {{ "validation.required" | translate }}
-        </mat-error>
-      </mat-form-field>
     </form>
   </div>
 

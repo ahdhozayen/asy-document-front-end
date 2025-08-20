@@ -24,7 +24,8 @@
     "refresh": "تحديث",
     "all": "الكل",
     "saveChanges": "حفظ التغييرات",
-    "comments": "التعليقات ({{count}})"
+    "comments": "ملاحظات التوقيع",
+    "openInNew": "فتح في نافذة جديدة"
   },
   "departments": {
     "finance": "المالية",

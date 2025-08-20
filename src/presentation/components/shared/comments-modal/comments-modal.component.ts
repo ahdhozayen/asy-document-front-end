@@ -17,7 +17,6 @@ export interface CommentsModalData {
 
 export interface CommentsModalResult {
   comment: string;
-  redirectDepartment: string;
 }
 
 @Component({
@@ -51,7 +50,6 @@ export class CommentsModalComponent {
   private createForm(): FormGroup {
     return this.fb.group({
       comment: ['', [Validators.required, Validators.minLength(10)]],
-      redirectDepartment: ['', [Validators.required]]
     });
   }
 
@@ -62,7 +60,6 @@ export class CommentsModalComponent {
       const formValue = this.commentForm.value;
       const result: CommentsModalResult = {
         comment: formValue.comment.trim(),
-        redirectDepartment: formValue.redirectDepartment
       };
 
       this.dialogRef.close(result);
