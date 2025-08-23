@@ -15,8 +15,8 @@
     </div>
     
     <div class="header-tags">
-      <span class="tag status-tag">{{ currentDocument?.status | translate }}</span>
-      <span class="tag priority-tag">{{ currentDocument?.priority | translate }}</span>
+      <span class="tag status-tag">{{ "statuses." + currentDocument?.status | translate }}</span>
+      <span class="tag priority-tag">{{ "priorities." + currentDocument?.priority | translate }}</span>
       <span class="tag department-tag">{{ isRTL ? currentDocument?.department_ar : currentDocument?.department_en | translate }}</span>
     </div>
     

@@ -69,7 +69,7 @@ export class AuthorizationService {
   canCommentOnDocument(document: Document): Observable<boolean> {
     return this.authService.currentUser$.pipe(
       map((user) => {
-        if (!user || !document) return false;
+        if (!user || !document && !user.isCEO()) return false;
 
         // Signed documents cannot be commented on
         return document.status !== DOCUMENT_STATUS.SIGNED;
