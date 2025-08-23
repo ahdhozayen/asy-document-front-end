@@ -7,7 +7,9 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { OverlayModule } from '@angular/cdk/overlay';
 import { MatSelectModule } from '@angular/material/select';
+import {MatDividerModule} from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
@@ -21,6 +23,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil, combineLatest } from 'rxjs';
+import { MatMenuTrigger } from '@angular/material/menu';
 
 import { AuthService } from '../../../core/use-cases/auth.service';
 import { DocumentService } from '../../../core/use-cases/document.service';
@@ -35,6 +38,7 @@ import { HasPermissionDirective } from '../../shared/directives/has-permission.d
 // Import dialog components that will be loaded dynamically
 import { ConfirmationDialogComponent, ConfirmationDialogData } from '../../components/shared/confirmation-dialog/confirmation-dialog.component';
 import { DocumentCreateModalComponent } from '../../components/shared/document-create-modal/document-create-modal.component';
+import { ChangePasswordModalComponent } from '../../../app/presentation/components/shared/change-password-modal.component';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -45,6 +49,8 @@ import { DocumentCreateModalComponent } from '../../components/shared/document-c
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
+    OverlayModule,
+    MatDividerModule,
     MatSelectModule,
     MatFormFieldModule,
     MatInputModule,
@@ -59,7 +65,8 @@ import { DocumentCreateModalComponent } from '../../components/shared/document-c
     MatDialogModule,
     TranslateModule,
     LanguageSwitcherComponent,
-    HasPermissionDirective
+    HasPermissionDirective,
+    ChangePasswordModalComponent
   ],
   providers: [
     // Register dialog components for dynamic loading without lint warnings
@@ -73,6 +80,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChildren(MatSelect) matSelects!: QueryList<MatSelect>;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild('profileMenu') profileMenuTrigger!: MatMenuTrigger;
 
   currentUser: User | null = null;
   documents: Document[] = [];
@@ -121,8 +129,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-ngOnInit(): void {
-  // Subscribe to language changes
+  ngOnInit(): void {
+    // Subscribe to language changes
   this.languageService.isRTL$
     .pipe(takeUntil(this.destroy$))
     .subscribe(isRTL => {
@@ -208,6 +216,8 @@ ngOnInit(): void {
     if (this.paginator) {
       this.paginator.pageIndex = 0; // Set initial page to 0
     }
+    
+
     
     // Use setTimeout instead of Promise.resolve to avoid ExpressionChangedAfterItHasBeenCheckedError
     // This ensures the sort operation happens in a new change detection cycle
@@ -462,5 +472,31 @@ ngOnInit(): void {
     
     // Reload data with reset filters
     this.loadData();
+  }
+
+  openChangePasswordModal(): void {
+    const dialogRef = this.dialog.open(ChangePasswordModalComponent, {
+      width: '400px',
+      disableClose: true
+    });
+    dialogRef.afterClosed().subscribe((result: { oldPassword: string, newPassword: string, confirmPassword: string }) => {
+      if (result) {
+        this.changePassword(result);
+      }
+    });
+  }
+
+
+
+  changePassword(data: { oldPassword: string, newPassword: string, confirmPassword: string }): void {
+    this.authService.changePassword(data).subscribe({
+      next: () => {
+        this.toastService.success(this.translate.instant('auth.changePassword.success'));
+        this.onLogout();
+      },
+      error: (err) => {
+        this.toastService.error(this.translate.instant('auth.changePassword.error'));
+      }
+    });
   }
 }

@@ -68,7 +68,16 @@
     "loginToAccount": "Sign in to your account",
     "invalidCredentials": "Invalid credentials",
     "loginFailed": "Login failed",
-    "loginSuccess": "Login successful"
+    "loginSuccess": "Login successful",
+    "changePassword": {
+      "title": "Change Password",
+      "oldPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "submit": "Change Password",
+      "success": "Password changed successfully. Please log in with your new password.",
+      "error": "Failed to change password. Please try again."
+    }
   },
   "dashboard": {
     "title": "Dashboard",
@@ -333,6 +342,10 @@
     "email": "Please enter a valid email",
     "minLength": "Must be more than {min} characters",
     "maxLength": "Must be less than {max} characters",
-    "pattern": "Please enter a valid format"
+    "pattern": "Please enter a valid format",
+    "password": {
+      "minLength": "Password must be at least 6 characters",
+      "mismatch": "Passwords do not match"
+    }
   }
 }

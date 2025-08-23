@@ -136,6 +136,110 @@ html, body {
   background: transparent !important;
 }
 
+/* Material Menu Fix - Ensure visibility */
+.cdk-overlay-container {
+  z-index: 1000 !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: none !important;
+}
+
+.cdk-overlay-pane {
+  pointer-events: auto !important;
+}
+
+.mat-mdc-menu-panel {
+  background: white !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  min-width: 200px !important;
+  max-width: 300px !important;
+  overflow: visible !important;
+  z-index: 1001 !important;
+  
+  .mat-mdc-menu-content {
+    padding: 8px 0 !important;
+    
+    .mat-mdc-menu-item {
+      height: 48px !important;
+      padding: 0 16px !important;
+      display: flex !important;
+      align-items: center !important;
+      font-size: 14px !important;
+      color: #333 !important;
+      
+      mat-icon {
+        margin-right: 12px !important;
+        color: #666 !important;
+        font-size: 18px !important;
+        width: 18px !important;
+        height: 18px !important;
+      }
+      
+      span {
+        color: #333 !important;
+        font-size: 14px !important;
+        font-weight: 400 !important;
+      }
+      
+      &:hover {
+        background-color: #f5f5f5 !important;
+      }
+    }
+    
+    .mat-divider {
+      margin: 8px 0 !important;
+      border-top: 1px solid #e0e0e0 !important;
+    }
+  }
+}
+
+/* RTL Support for Material Menu */
+[dir="rtl"] .mat-mdc-menu-panel {
+  .mat-mdc-menu-content {
+    .mat-mdc-menu-item {
+      text-align: right !important;
+      
+      mat-icon {
+        margin-right: 0 !important;
+        margin-left: 12px !important;
+      }
+      
+      span {
+        font-family: 'Cairo', 'Noto Sans Arabic', sans-serif !important;
+      }
+    }
+  }
+}
+
+/* Additional RTL Menu Styling */
+.rtl .mat-mdc-menu-panel {
+  .mat-mdc-menu-content {
+    direction: rtl !important;
+    text-align: right !important;
+    
+    .mat-mdc-menu-item {
+      text-align: right !important;
+      direction: rtl !important;
+      justify-content: flex-start !important;
+      
+      mat-icon {
+        margin-right: 0 !important;
+        margin-left: 12px !important;
+        order: 2 !important;
+      }
+      
+      span {
+        order: 1 !important;
+        font-family: 'Cairo', 'Noto Sans Arabic', sans-serif !important;
+      }
+    }
+  }
+}
+
 
 
 .rtl .mat-mdc-chip .mat-icon {
