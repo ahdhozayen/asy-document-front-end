@@ -41,10 +41,10 @@
     "high": "عالية"
   },
   "statuses": {
-    "pending": "معلقة",
-    "inProgress": "قيد التنفيذ",
-    "completed": "مكتملة",
-    "signed": "موقعة"
+    "pending": "غير موقعة",
+    "in_review": "قيد المراجعة",
+    "signed": "موقعة",
+    "rejected": "مرفوضة"
   },
   "auth": {
     "login": {
@@ -85,10 +85,10 @@
     "logout": "تسجيل الخروج",
     "stats": {
       "total": "المجموع",
-      "pending": "معلق",
-      "inProgress": "قيد التنفيذ",
-      "completed": "مكتمل",
-      "signed": "موقع"
+      "pending": "غير موقعة",
+      "in_review": "قيد المراجعة",
+      "signed": "موقعة",
+      "rejected": "مرفوضة"
     },
 
     "documentsTable": {
@@ -278,7 +278,7 @@
       "error": "فشل في تحديث حالة الوثيقة"
     },
     "statuses": {
-      "pending": "معلقة",
+      "pending": "غير موقعة",
       "in_review": "قيد المراجعة",
       "signed": "موقعة",
       "rejected": "مرفوضة"

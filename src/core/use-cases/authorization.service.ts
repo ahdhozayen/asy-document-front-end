@@ -53,6 +53,16 @@ export class AuthorizationService {
   }
 
   /**
+   * Checks if the current user can create a document
+   * Only helpdesk users can create documents
+   */
+  canCreateDocument(): Observable<boolean> {
+    return this.authService.currentUser$.pipe(
+      map((user) => !!user && user.isHelpdesk())
+    );
+  }
+
+  /**
    * Checks if the current user can comment on a document
    * Signed documents cannot be commented on
    */

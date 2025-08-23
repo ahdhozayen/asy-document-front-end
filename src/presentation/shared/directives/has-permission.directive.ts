@@ -29,7 +29,7 @@ export class HasPermissionDirective implements OnDestroy {
   private hasView = false;
 
   @Input() set appHasPermission(options: {
-    permission: 'edit' | 'viewOnDashboard' | 'comment' | 'delete' | 'sign' | 'review';
+    permission: 'edit' | 'viewOnDashboard' | 'comment' | 'delete' | 'sign' | 'review' | 'createDocument';
     document?: Document;
   }) {
     if (!options) {
@@ -51,6 +51,13 @@ export class HasPermissionDirective implements OnDestroy {
         this.authorizationService.canEditDocument(document)
           .pipe(takeUntil(this.destroy$))
           .subscribe(canEdit => this.updateView(canEdit));
+
+        break;
+
+      case 'createDocument':
+        this.authorizationService.canCreateDocument()
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(canCreate => this.updateView(canCreate));
 
         break;
 

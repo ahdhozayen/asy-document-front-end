@@ -226,6 +226,7 @@
           <button
             mat-raised-button
             color="primary"
+            *appHasPermission="{ permission: 'createDocument' }"
             (click)="onCreateDocument()"
             class="create-document-btn"
           >
