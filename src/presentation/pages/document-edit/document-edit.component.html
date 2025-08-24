@@ -13,13 +13,13 @@
         {{ "documents.edit.title" | translate }}
       </h2>
     </div>
-    
+
     <div class="header-tags">
       <span class="tag status-tag">{{ "statuses." + currentDocument?.status | translate }}</span>
       <span class="tag priority-tag">{{ "priorities." + currentDocument?.priority | translate }}</span>
-      <span class="tag department-tag">{{ isRTL ? currentDocument?.department_ar : currentDocument?.department_en | translate }}</span>
+      <span class="tag department-tag">{{ "departments." + (isRTL ? currentDocument?.department_ar! : currentDocument?.department_en! | translate) }}</span>
     </div>
-    
+
     <div class="header-actions">
       <!-- Comments Button - Only visible for users with comment permission and disabled for signed documents -->
       <button mat-button class="comments-button"
@@ -28,16 +28,16 @@
         <mat-icon>chat_bubble_outline</mat-icon>
         {{ "common.comments" | translate:{count: commentCount} }}
       </button>
-      
+
       <!-- Cancel Button - Always visible -->
       <button mat-button (click)="onCancel()" class="cancel-button">
         <mat-icon>close</mat-icon>
         {{ "common.cancel" | translate }}
       </button>
-      
+
       <!-- Save Button - Only enabled for users with edit permission and disabled for signed documents -->
-      <button 
-        mat-raised-button 
+      <button
+        mat-raised-button
         color="primary"
         (click)="onSubmit()"
         [disabled]="editForm.invalid || isSubmitting"
@@ -56,7 +56,7 @@
       <h3 class="panel-title" [class.arabic-font]="isRTL">
         {{ "documents.edit.editDocument" | translate }}
       </h3>
-      
+
       <form [formGroup]="editForm" class="document-form">
         <!-- Document Title -->
         <mat-form-field appearance="outline" class="form-field">
@@ -120,9 +120,9 @@
             {{ "documents.edit.currentFile" | translate }}
           </h4>
           <div class="current-file-display" [ngClass]="{'no-file': !currentDocument?.attachments?.length || !currentDocument?.attachments?.[0]?.file}">
-            <mat-icon class="file-icon" [ngClass]="{'no-file-icon': !currentDocument?.attachments?.length || !currentDocument?.attachments?.[0]?.file}">
-              {{ getFileIcon(currentDocument?.attachments?.[0]?.original_name) }}
-            </mat-icon>
+          <mat-icon class="file-icon" [ngClass]="{'no-file-icon': !currentDocument?.attachments?.length || !currentDocument?.attachments?.[0]?.file}">
+  {{ getFileIcon(currentDocument?.attachments?.[0]?.original_name || '') }}
+</mat-icon>
             <div class="file-info">
               <span class="file-name" [ngClass]="{'no-file-text': !currentDocument?.attachments?.length || !currentDocument?.attachments?.[0]?.file}">
                 {{ currentDocument?.attachments?.[0]?.original_name || 'No file uploaded' }}
@@ -188,13 +188,13 @@
       <h3 class="panel-title" [class.arabic-font]="isRTL">
         {{ "documents.edit.documentInformation" | translate }}
       </h3>
-      
+
       <div class="info-content">
         <div class="info-item">
           <span class="info-label">{{ "documents.form.department" | translate }}:</span>
-          <span class="info-value">{{ getDepartmentName(currentDocument?.department) }}</span>
+          <span class="info-value">{{ getDepartmentName(currentDocument?.department?.toString() || '') }}</span>
         </div>
-        
+
         <div class="info-item">
           <span class="info-label">{{ "documents.edit.uploadDate" | translate }}:</span>
           <span class="info-value">{{ currentDocument?.uploadDate | date:'M/d/yyyy, h:mm:ss a' }}</span>

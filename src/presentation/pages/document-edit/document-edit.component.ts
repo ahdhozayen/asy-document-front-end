@@ -64,11 +64,11 @@ export class DocumentEditComponent implements OnInit {
   isSubmitting = false;
   selectedFile: File | null = null;
   fileError: string | null = null;
-  currentDocument: (Document & { uploadDate?: string | Date }) | null = null;
+currentDocument: (Document & { uploadDate?: string | Date }) | undefined = undefined;
   commentCount = 0;
   documentId: number | null = null;
   departments: Department[] = [];
-  
+
   private readonly maxFileSize = 10 * 1024 * 1024; // 10MB
   private readonly allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/jpg', 'image/png'];
 
@@ -83,7 +83,7 @@ export class DocumentEditComponent implements OnInit {
 
   constructor() {
     this.editForm = this.createForm();
-    
+
     this.languageService.isRTL$.subscribe(isRTL => {
       this.isRTL = isRTL;
     });
@@ -92,7 +92,7 @@ export class DocumentEditComponent implements OnInit {
   ngOnInit(): void {
     // Load departments first
     this.loadDepartments();
-    
+
     this.route.params.subscribe(params => {
       this.documentId = +params['id'];
       if (this.documentId) {
@@ -103,7 +103,7 @@ export class DocumentEditComponent implements OnInit {
       }
     });
   }
-  
+
   private loadDepartments(): void {
     this.departmentService.getDepartments().subscribe({
       next: (departments) => {
@@ -121,7 +121,7 @@ export class DocumentEditComponent implements OnInit {
         next: (response) => {
           // Handle both paginated responses and direct document responses
           let newDocument: Document;
-          
+
           if (response && 'results' in response && Array.isArray(response.results)) {
             // It's a paginated response
             newDocument = response.results[0];
@@ -135,14 +135,14 @@ export class DocumentEditComponent implements OnInit {
             uploadDate: newDocument.attachments?.[0]?.created_at || new Date(),
             fileName: newDocument.attachments?.[0]?.original_name || 'No file uploaded'
           });
-          
+
           // Check if user has permission to edit this document
           if (!this.authorizationService.canEditDocumentSync(this.currentDocument)) {
             this.toastService.errorTranslated('documents.edit.noPermission');
             this.router.navigate(['/dashboard']);
             return;
           }
-          
+
           this.populateForm();
         },
         error: (error) => {
@@ -183,7 +183,7 @@ export class DocumentEditComponent implements OnInit {
   onSubmit(): void {
     if (this.editForm.valid && !this.isSubmitting) {
       this.isSubmitting = true;
-      
+
       const formValue = this.editForm.value;
       const editData: DocumentEditData = {
         title: formValue.title.trim(),
@@ -292,11 +292,11 @@ export class DocumentEditComponent implements OnInit {
 
   formatFileSize(bytes: number): string {
     if (bytes === 0) return '0 Bytes';
-    
+
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    
+
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 
@@ -315,9 +315,9 @@ export class DocumentEditComponent implements OnInit {
 
   getFileIcon(fileName: string): string {
     if (!fileName) return 'cloud_off';
-    
+
     const extension = fileName.split('.').pop()?.toLowerCase();
-    
+
     switch (extension) {
       case 'pdf':
         return 'picture_as_pdf';
@@ -335,9 +335,9 @@ export class DocumentEditComponent implements OnInit {
 
   getFileTypeDisplay(fileName: string): string {
     if (!fileName) return 'Unknown';
-    
+
     const extension = fileName.split('.').pop()?.toLowerCase();
-    
+
     const typeMap: Record<string, string> = {
       'pdf': 'PDF Document',
       'doc': 'Word Document',
@@ -346,7 +346,7 @@ export class DocumentEditComponent implements OnInit {
       'jpeg': 'JPEG Image',
       'png': 'PNG Image'
     };
-    
+
     return typeMap[extension || ''] || `${(extension || 'Unknown').toUpperCase()} Document`;
   }
 
@@ -356,13 +356,13 @@ export class DocumentEditComponent implements OnInit {
   viewCurrentAttachment(): void {
     if (this.currentDocument?.attachments && this.currentDocument.attachments.length > 0) {
       const attachment = this.currentDocument.attachments[0];
-      
+
       if (attachment.file) {
         const fileUrl = environment.mediaURL + attachment.file;
         window.open(fileUrl, '_blank');
         return;
       }
-      
+
       this.toastService.errorTranslated('documents.view.fileNotFound');
     } else {
       this.toastService.errorTranslated('documents.view.noAttachment');
@@ -375,7 +375,7 @@ export class DocumentEditComponent implements OnInit {
   downloadCurrentAttachment(): void {
     if (this.currentDocument?.attachments && this.currentDocument.attachments.length > 0) {
       const attachment = this.currentDocument.attachments[0];
-      
+
       if (attachment.file) {
         const fileUrl = environment.mediaURL + attachment.file;
         const link = document.createElement('a');
@@ -386,7 +386,7 @@ export class DocumentEditComponent implements OnInit {
         document.body.removeChild(link);
         return;
       }
-      
+
       this.toastService.errorTranslated('documents.download.error');
     } else {
       this.toastService.errorTranslated('documents.view.noAttachment');
@@ -402,13 +402,20 @@ export class DocumentEditComponent implements OnInit {
     if (!this.currentDocument) return false;
     return this.authorizationService.canCommentOnDocumentSync(this.currentDocument);
   }
-  
+
   getDepartmentName(departmentId: string): string {
     if (!departmentId || !this.departments.length) return departmentId;
-    
+
     const department = this.departments.find(d => d.id.toString() === departmentId);
     if (!department) return departmentId;
-    
+
     return this.isRTL ? department.name_ar : department.name_en;
   }
+  onComments(): void {
+  if (this.documentId && this.canCommentOnDocument()) {
+    this.router.navigate(['/document/comments', this.documentId]);
+  } else {
+    this.toastService.errorTranslated('documents.comments.noPermission');
+  }
+}
 }

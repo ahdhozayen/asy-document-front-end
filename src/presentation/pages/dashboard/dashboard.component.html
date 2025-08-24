@@ -22,7 +22,7 @@
       <div class="navbar-center" *ngIf="currentUser">
         <span class="welcome-text" [class.arabic-font]="isRTL">
           {{ "dashboard.welcome" | translate }},
-          {{ currentUser?.displayName || "User" }}
+          {{ currentUser.displayName || "User" }}
         </span>
       </div>
 
