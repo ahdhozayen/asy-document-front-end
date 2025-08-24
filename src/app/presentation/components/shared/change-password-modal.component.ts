@@ -32,6 +32,9 @@ export class ChangePasswordModalComponent {
   isSubmitting = false;
   isRTL = false;
   passwordForm: FormGroup;
+  isOldPasswordVisible = false;
+  isNewPasswordVisible = false;
+  isConfirmPasswordVisible = false;
 
   constructor() {
     this.passwordForm = this.fb.group({
@@ -78,5 +81,15 @@ export class ChangePasswordModalComponent {
       return 'validation.password.mismatch';
     }
     return null;
+  }
+
+  toggleOldPasswordVisibility() {
+    this.isOldPasswordVisible = !this.isOldPasswordVisible;
+  }
+  toggleNewPasswordVisibility() {
+    this.isNewPasswordVisible = !this.isNewPasswordVisible;
+  }
+  toggleConfirmPasswordVisibility() {
+    this.isConfirmPasswordVisible = !this.isConfirmPasswordVisible;
   }
 }
