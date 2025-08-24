@@ -157,10 +157,10 @@ export class Document {
   get isOverdue(): boolean {
     // Consider documents older than 30 days as overdue if still pending
     if (this.status !== 'pending') return false;
-    
+
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    
+
     return this.created_at < thirtyDaysAgo;
   }
 
@@ -203,7 +203,7 @@ export class Document {
     };
 
     // Handle uploaded_by as either User object or number
-    const uploadedByName = typeof data.uploaded_by === 'object' 
+    const uploadedByName = typeof data.uploaded_by === 'object'
       ? `${data.uploaded_by.first_name} ${data.uploaded_by.last_name}`.trim()
       : (data.uploaded_by_name || data.uploadedByName || '');
 

@@ -48,7 +48,7 @@
         >
           {{ "priorities." + document.priority | translate }}
         </span>
-        <span class="tag department-tag">{{ isRTL ? document?.department_ar : document?.department_en | translate }}</span>
+        <span class="tag department-tag">{{ isRTL ? document.department_ar! : document.department_en! | translate }}</span>
       </div>
 
       <div class="header-actions">
@@ -155,14 +155,13 @@
 
             <div class="pdf-content">
               <!-- PDF Content - Show actual document if available -->
-              <div *ngIf="currentAttachment?.file" class="pdf-iframe-container">
-                <iframe
-                  [src]="getFileUrl(currentAttachment?.file)"
-                  class="pdf-iframe"
-                  title="Document Preview"
-                >
-                </iframe>
-              </div>
+    <div *ngIf="currentAttachment && currentAttachment.file" class="pdf-iframe-container">
+  <iframe
+    [src]="getFileUrl(currentAttachment.file)"
+    class="pdf-iframe"
+    title="Document Preview"
+  ></iframe>
+</div>
 
               <!-- Document Not Found Message -->
               <div *ngIf="!currentAttachment?.file" class="document-not-found">
@@ -187,7 +186,7 @@
             <span class="info-label"
               >{{ "documents.fields.department" | translate }}:</span
             >
-            <span class="info-value">{{ getDepartmentName(document.department) }}</span>
+            <span class="info-value">{{ getDepartmentName(document.department.toString()) }}</span>
           </div>
           <div class="info-item">
             <span class="info-label"
