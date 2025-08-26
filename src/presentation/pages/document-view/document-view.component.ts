@@ -17,8 +17,9 @@ import { Attachment } from '../../../core/entities/document.model';
 import { SignCommentModalComponent } from '../../components/shared/sign-comment-modal/sign-comment-modal.component';
 import { DepartmentService } from '../../../data/services/department.service';
 
-import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { TranslatePipe } from '@ngx-translate/core';
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
+
 export interface Department {
   id: number;
   name_ar: string;
@@ -34,8 +35,8 @@ export interface Department {
     MatDialogModule,
     HasPermissionDirective,
     MatProgressSpinner,
-    PdfViewerModule,
     TranslatePipe,
+    NgxExtendedPdfViewerModule,
   ],
   templateUrl: './document-view.component.html',
   styleUrls: ['./document-view.component.scss'],
