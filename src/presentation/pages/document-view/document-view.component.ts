@@ -18,6 +18,7 @@ import { HasPermissionDirective } from '@presentation/shared/directives/has-perm
 import { Attachment } from '../../../core/entities/document.model';
 import { SignCommentModalComponent } from '../../components/shared/sign-comment-modal/sign-comment-modal.component';
 import { DepartmentService } from '../../../data/services/department.service';
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 
 export interface Department {
   id: number;
@@ -29,12 +30,14 @@ export interface Department {
   selector: 'app-document-view',
   standalone: true,
   imports: [
+    NgxExtendedPdfViewerModule,
     CommonModule,
     MatButtonModule,
     MatIconModule,
     MatDialogModule,
     TranslateModule,
     HasPermissionDirective,
+    MatProgressSpinnerModule
   ],
   templateUrl: './document-view.component.html',
   styleUrls: ['./document-view.component.scss'],
@@ -48,6 +51,8 @@ export class DocumentViewComponent implements OnInit {
   commentCount = 0;
   currentAttachment: Attachment | null = null;
   departments: Department[] = [];
+
+  mediaURL = environment.mediaURL;
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);

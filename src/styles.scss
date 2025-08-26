@@ -489,3 +489,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     line-height: 20px !important;
   }
 }
+
+ngx-extended-pdf-viewer .textLayer .highlight.selected {
+  opacity: 0.25;
+}

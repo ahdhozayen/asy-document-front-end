@@ -163,11 +163,9 @@
                 *ngIf="currentAttachment && currentAttachment.file"
                 class="pdf-iframe-container"
               >
-                <iframe
-                  [src]="getFileUrl(currentAttachment.file)"
-                  class="pdf-iframe"
-                  title="Document Preview"
-                ></iframe>
+                <ngx-extended-pdf-viewer
+                  [src]="'https://docs.alexyard.com.eg/asydms/media/documents/2025/08/26/ADV_S1.pdf'"
+                />
               </div>
 
               <!-- Document Not Found Message -->
