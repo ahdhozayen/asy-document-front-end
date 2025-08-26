@@ -33,8 +33,6 @@ export interface Department {
     MatButtonModule,
     MatIconModule,
     MatDialogModule,
-    MatTooltipModule,
-    MatProgressSpinnerModule,
     TranslateModule,
     HasPermissionDirective,
   ],

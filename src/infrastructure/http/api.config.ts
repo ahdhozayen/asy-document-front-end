@@ -1,8 +1,10 @@
+import { environment } from "../../environments/environment";
+
 export class ApiConfig {
   private static instance: ApiConfig;
 
   private constructor(
-    public readonly baseUrl = 'http://localhost:8000/api',
+    public readonly baseUrl = environment.apiUrl,
     public readonly timeout = 30000,
     public readonly retryAttempts = 3,
     public readonly retryDelay = 1000
@@ -24,7 +26,7 @@ export class ApiConfig {
     }>
   ): void {
     ApiConfig.instance = new ApiConfig(
-      config.baseUrl || 'http://localhost:8000/api',
+      config.baseUrl || environment.apiUrl,
       config.timeout || 30000,
       config.retryAttempts || 3,
       config.retryDelay || 1000

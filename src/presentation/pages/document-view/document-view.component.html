@@ -48,7 +48,11 @@
         >
           {{ "priorities." + document.priority | translate }}
         </span>
-        <span class="tag department-tag">{{ isRTL ? document.department_ar! : document.department_en! | translate }}</span>
+        <span class="tag department-tag">{{
+          isRTL
+            ? document.department_ar!
+            : (document.department_en! | translate)
+        }}</span>
       </div>
 
       <div class="header-actions">
@@ -83,7 +87,7 @@
           (click)="onSignAndComment()"
         >
           <mat-icon>draw</mat-icon>
-          {{ 'documents.view.signAndComment' | translate }}
+          {{ "documents.view.signAndComment" | translate }}
         </button>
       </div>
     </div>
@@ -155,13 +159,16 @@
 
             <div class="pdf-content">
               <!-- PDF Content - Show actual document if available -->
-    <div *ngIf="currentAttachment && currentAttachment.file" class="pdf-iframe-container">
-  <iframe
-    [src]="getFileUrl(currentAttachment.file)"
-    class="pdf-iframe"
-    title="Document Preview"
-  ></iframe>
-</div>
+              <div
+                *ngIf="currentAttachment && currentAttachment.file"
+                class="pdf-iframe-container"
+              >
+                <iframe
+                  [src]="getFileUrl(currentAttachment.file)"
+                  class="pdf-iframe"
+                  title="Document Preview"
+                ></iframe>
+              </div>
 
               <!-- Document Not Found Message -->
               <div *ngIf="!currentAttachment?.file" class="document-not-found">
@@ -175,54 +182,57 @@
           </div>
         </div>
 
-      <!-- Right Panel - Document Information -->
-      <div class="document-info-panel">
-        <h3 class="panel-title" [class.arabic-font]="isRTL">
-          {{ "documents.view.documentInformation" | translate }}
-        </h3>
+        <!-- Right Panel - Document Information -->
+        <div class="document-info-panel">
+          <h3 class="panel-title" [class.arabic-font]="isRTL">
+            {{ "documents.view.documentInformation" | translate }}
+          </h3>
 
-        <div class="info-content">
-          <div class="info-item">
-            <span class="info-label"
-              >{{ "documents.fields.department" | translate }}:</span
-            >
-            <span class="info-value">{{ getDepartmentName(document.department.toString()) }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label"
-              >{{ "documents.fields.attachmentName" | translate }}:</span
-            >
-            <span class="info-value">{{
-              currentAttachment?.original_name || "No attachment"
-            }}</span>
-          </div>
+          <div class="info-content">
+            <div class="info-item">
+              <span class="info-label"
+                >{{ "documents.fields.department" | translate }}:</span
+              >
+              <span class="info-value">{{
+                getDepartmentName(document.department.toString())
+              }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label"
+                >{{ "documents.fields.attachmentName" | translate }}:</span
+              >
+              <span class="info-value">{{
+                currentAttachment?.original_name || "No attachment"
+              }}</span>
+            </div>
 
-          <div class="info-item">
-            <span class="info-label"
-              >{{ "documents.fields.attachmentDate" | translate }}:</span
-            >
-            <span class="info-value">{{
-              formatDate(currentAttachment?.created_at)
-            }}</span>
-          </div>
+            <div class="info-item">
+              <span class="info-label"
+                >{{ "documents.fields.attachmentDate" | translate }}:</span
+              >
+              <span class="info-value">{{
+                formatDate(currentAttachment?.created_at)
+              }}</span>
+            </div>
 
-          <div class="info-item">
-            <span class="info-label"
-              >{{ "documents.fields.isSigned" | translate }}:</span
-            >
-            <span
-              class="info-value"
-              [ngClass]="{
-                signed: currentAttachment?.is_signed,
-                'not-signed': !currentAttachment?.is_signed
-              }"
-            >
-              {{
-                currentAttachment?.is_signed
-                  ? ("common.yes" | translate)
-                  : ("common.no" | translate)
-              }}
-            </span>
+            <div class="info-item">
+              <span class="info-label"
+                >{{ "documents.fields.isSigned" | translate }}:</span
+              >
+              <span
+                class="info-value"
+                [ngClass]="{
+                  signed: currentAttachment?.is_signed,
+                  'not-signed': !currentAttachment?.is_signed
+                }"
+              >
+                {{
+                  currentAttachment?.is_signed
+                    ? ("common.yes" | translate)
+                    : ("common.no" | translate)
+                }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
