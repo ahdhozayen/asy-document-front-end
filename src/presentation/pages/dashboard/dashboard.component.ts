@@ -40,41 +40,40 @@ import { ConfirmationDialogComponent, ConfirmationDialogData } from '../../compo
 import { DocumentCreateModalComponent } from '../../components/shared/document-create-modal/document-create-modal.component';
 import { ChangePasswordModalComponent } from '../../../app/presentation/components/shared/change-password-modal.component';
 @Component({
-  selector: 'app-dashboard',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatMenuModule,
-    OverlayModule,
-    MatDividerModule,
-    MatSelectModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatCardModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatProgressSpinnerModule,
-    MatChipsModule,
-    MatTooltipModule,
-    MatSnackBarModule,
-    MatDialogModule,
-    TranslateModule,
-    LanguageSwitcherComponent,
-    HasPermissionDirective,
-    ChangePasswordModalComponent
-  ],
-  providers: [
-    // Register dialog components for dynamic loading without lint warnings
-    // This is the recommended way to register components for dynamic loading in Angular
-    { provide: ENVIRONMENT_INITIALIZER, multi: true, useValue: () => {/* no-op */} }
-  ],
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+    selector: 'app-dashboard',
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatToolbarModule,
+        MatButtonModule,
+        MatIconModule,
+        MatMenuModule,
+        OverlayModule,
+        MatDividerModule,
+        MatSelectModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatCardModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatSortModule,
+        MatProgressSpinnerModule,
+        MatChipsModule,
+        MatTooltipModule,
+        MatSnackBarModule,
+        MatDialogModule,
+        TranslateModule,
+        LanguageSwitcherComponent,
+        HasPermissionDirective,
+        ChangePasswordModalComponent
+    ],
+    providers: [
+        // Register dialog components for dynamic loading without lint warnings
+        // This is the recommended way to register components for dynamic loading in Angular
+        { provide: ENVIRONMENT_INITIALIZER, multi: true, useValue: () => { } }
+    ],
+    templateUrl: './dashboard.component.html',
+    styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChildren(MatSelect) matSelects!: QueryList<MatSelect>;

@@ -38,25 +38,24 @@ export interface Department {
 }
 
 @Component({
-  selector: 'app-document-edit',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatButtonModule,
-    MatIconModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatDividerModule,
-    MatProgressSpinnerModule,
-    MatTooltipModule,
-    TranslateModule,
-    HasPermissionDirective,
-    PermissionDisableDirective
-  ],
-  templateUrl: './document-edit.component.html',
-  styleUrls: ['./document-edit.component.scss']
+    selector: 'app-document-edit',
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatButtonModule,
+        MatIconModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSelectModule,
+        MatDividerModule,
+        MatProgressSpinnerModule,
+        MatTooltipModule,
+        TranslateModule,
+        HasPermissionDirective,
+        PermissionDisableDirective
+    ],
+    templateUrl: './document-edit.component.html',
+    styleUrls: ['./document-edit.component.scss']
 })
 export class DocumentEditComponent implements OnInit {
   editForm: FormGroup;

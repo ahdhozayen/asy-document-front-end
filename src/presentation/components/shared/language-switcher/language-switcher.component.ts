@@ -8,15 +8,14 @@ import { Subject, takeUntil } from 'rxjs';
 import { LanguageService, SupportedLanguage } from '../../../../core/use-cases/language.service';
 
 @Component({
-  selector: 'app-language-switcher',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatButtonModule,
-    MatMenuModule,
-    MatIconModule
-  ],
-  template: `
+    selector: 'app-language-switcher',
+    imports: [
+        CommonModule,
+        MatButtonModule,
+        MatMenuModule,
+        MatIconModule
+    ],
+    template: `
     <div class="language-switcher" [class.rtl]="isRTL">
       <button
         mat-button
@@ -42,7 +41,7 @@ import { LanguageService, SupportedLanguage } from '../../../../core/use-cases/l
       </mat-menu>
     </div>
   `,
-  styles: [`
+    styles: [`
     .language-switcher {
       position: relative;
 

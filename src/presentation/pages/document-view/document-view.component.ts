@@ -26,18 +26,17 @@ export interface Department {
 }
 
 @Component({
-  selector: 'app-document-view',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatButtonModule,
-    MatIconModule,
-    MatDialogModule,
-    TranslateModule,
-    HasPermissionDirective,
-  ],
-  templateUrl: './document-view.component.html',
-  styleUrls: ['./document-view.component.scss'],
+    selector: 'app-document-view',
+    imports: [
+        CommonModule,
+        MatButtonModule,
+        MatIconModule,
+        MatDialogModule,
+        TranslateModule,
+        HasPermissionDirective,
+    ],
+    templateUrl: './document-view.component.html',
+    styleUrls: ['./document-view.component.scss']
 })
 export class DocumentViewComponent implements OnInit {
   document: Document | null = null;

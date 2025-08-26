@@ -26,24 +26,23 @@ export interface DocumentCreateData {
 }
 
 @Component({
-  selector: 'app-document-create-modal',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatDividerModule,
-    TranslateModule,
-    HasPermissionDirective,
-    PermissionDisableDirective
-  ],
-  templateUrl: './document-create-modal.component.html',
-  styleUrls: ['./document-create-modal.component.scss']
+    selector: 'app-document-create-modal',
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatDialogModule,
+        MatButtonModule,
+        MatIconModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSelectModule,
+        MatDividerModule,
+        TranslateModule,
+        HasPermissionDirective,
+        PermissionDisableDirective
+    ],
+    templateUrl: './document-create-modal.component.html',
+    styleUrls: ['./document-create-modal.component.scss']
 })
 export class DocumentCreateModalComponent implements OnInit {
   documentForm: FormGroup;

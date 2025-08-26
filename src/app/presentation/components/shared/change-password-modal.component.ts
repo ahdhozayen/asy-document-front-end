@@ -10,20 +10,19 @@ import { TranslateModule } from '@ngx-translate/core';
 import { LanguageService } from '../../../../core/use-cases/language.service';
 
 @Component({
-  selector: 'app-change-password-modal',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
-    MatFormFieldModule,
-    MatInputModule,
-    TranslateModule
-  ],
-  templateUrl: './change-password-modal.component.html',
-  styleUrl: './change-password-modal.component.scss'
+    selector: 'app-change-password-modal',
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatDialogModule,
+        MatButtonModule,
+        MatIconModule,
+        MatFormFieldModule,
+        MatInputModule,
+        TranslateModule
+    ],
+    templateUrl: './change-password-modal.component.html',
+    styleUrl: './change-password-modal.component.scss'
 })
 export class ChangePasswordModalComponent {
   private fb = inject(FormBuilder);
