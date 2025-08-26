@@ -2,7 +2,7 @@
 @if (isLoading) {
   <div class="loading-container" [class.rtl]="isRTL">
     <div class="loading-content">
-      <mat-spinner diameter="50"></mat-spinner>
+      <mat-spinner diameter="50" />
       <p class="loading-text" [class.arabic-font]="isRTL">
         {{ 'common.loading' | translate }}
       </p>
@@ -13,6 +13,6 @@
 <!-- Main Application -->
 @if (!isLoading) {
   <div class="app-container" [class.rtl]="isRTL">
-    <router-outlet></router-outlet>
+    <router-outlet />
   </div>
 }

@@ -4,7 +4,7 @@
 
   <!-- Language Switcher -->
   <div class="language-switcher-container">
-    <app-language-switcher></app-language-switcher>
+    <app-language-switcher />
   </div>
 
   <!-- Login Card -->
@@ -88,7 +88,7 @@
                 [disabled]="isLoading || loginForm.invalid"
                 [class.font-arabic]="isRTL">
                 @if (isLoading) {
-                  <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
+                  <mat-spinner diameter="20" class="button-spinner" />
                 }
                 @if (!isLoading) {
                   <span>{{ 'auth.login.submit' | translate }}</span>
