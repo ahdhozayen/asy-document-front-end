@@ -18,7 +18,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(withInterceptorsFromDi()),
     provideTranslateService({
-      loader: provideTranslateHttpLoader({ prefix: '/src/assets/i18n/' }),
+      loader: provideTranslateHttpLoader({ prefix: '/assets/i18n/' }),
       fallbackLang: 'ar',
     }),
     {
