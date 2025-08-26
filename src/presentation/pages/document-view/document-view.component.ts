@@ -3,12 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import {
-  MatProgressSpinner,
-  MatProgressSpinnerModule,
-} from '@angular/material/progress-spinner';
-import { TranslateModule } from '@ngx-translate/core';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LanguageService } from '../../../core/use-cases/language.service';
 import { DocumentService } from '../../../core/use-cases/document.service';
@@ -22,6 +17,8 @@ import { Attachment } from '../../../core/entities/document.model';
 import { SignCommentModalComponent } from '../../components/shared/sign-comment-modal/sign-comment-modal.component';
 import { DepartmentService } from '../../../data/services/department.service';
 
+import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { TranslatePipe } from '@ngx-translate/core';
 export interface Department {
   id: number;
   name_ar: string;
@@ -35,9 +32,10 @@ export interface Department {
     MatButtonModule,
     MatIconModule,
     MatDialogModule,
-    TranslateModule,
     HasPermissionDirective,
     MatProgressSpinner,
+    PdfViewerModule,
+    TranslatePipe,
   ],
   templateUrl: './document-view.component.html',
   styleUrls: ['./document-view.component.scss'],
@@ -51,6 +49,8 @@ export class DocumentViewComponent implements OnInit {
   commentCount = 0;
   currentAttachment: Attachment | null = null;
   departments: Department[] = [];
+
+  mediaURL = environment.mediaURL;
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);

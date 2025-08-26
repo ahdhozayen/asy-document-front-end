@@ -163,11 +163,18 @@
                 *ngIf="currentAttachment && currentAttachment.file"
                 class="pdf-iframe-container"
               >
-                <iframe
-                  [src]="getFileUrl(currentAttachment.file)"
+                <!-- <iframe
+                  [src]="mediaURL + currentAttachment.file"
                   class="pdf-iframe"
                   title="Document Preview"
-                ></iframe>
+                ></iframe> -->
+
+                <pdf-viewer
+                  [src]="mediaURL + currentAttachment.file"
+                  [render-text]="true"
+                  [show-all]="true"
+                  style="width: 100%; height: 100%"
+                ></pdf-viewer>
               </div>
 
               <!-- Document Not Found Message -->
