@@ -235,11 +235,11 @@
 
     ::ng-deep .mat-mdc-form-field {
       .mdc-text-field--outlined {
-        --mdc-outlined-text-field-container-shape: 12px;
-        --mdc-outlined-text-field-outline-width: 1px;
-        --mdc-outlined-text-field-outline-color: #d1d5db;
-        --mdc-outlined-text-field-hover-outline-color: #9ca3af;
-        --mdc-outlined-text-field-focus-outline-color: #3b82f6;
+        --mat-form-field-outlined-container-shape: 12px;
+        --mat-form-field-outlined-outline-width: 1px;
+        --mat-form-field-outlined-outline-color: #d1d5db;
+        --mat-form-field-outlined-hover-outline-color: #9ca3af;
+        --mat-form-field-outlined-focus-outline-color: #3b82f6;
         background-color: #ffffff;
         border-radius: 12px;
       }
@@ -247,7 +247,7 @@
       .mdc-notched-outline__leading,
       .mdc-notched-outline__trailing,
       .mdc-notched-outline__notch {
-        border-color: var(--mdc-outlined-text-field-outline-color) !important;
+        border-color: var(--mat-form-field-outlined-outline-color) !important;
         transition: border-color 0.3s ease;
       }
 
@@ -256,7 +256,7 @@
         .mdc-notched-outline__trailing,
         .mdc-notched-outline__notch {
           border-color: var(
-            --mdc-outlined-text-field-hover-outline-color
+            --mat-form-field-outlined-hover-outline-color
           ) !important;
         }
       }
@@ -267,11 +267,11 @@
         .mdc-notched-outline__notch {
           border-width: 1.5px !important;
           border-color: var(
-            --mdc-outlined-text-field-focus-outline-color
+            --mat-form-field-outlined-focus-outline-color
           ) !important;
         }
         .mat-mdc-floating-label {
-          color: var(--mdc-outlined-text-field-focus-outline-color);
+          color: var(--mat-form-field-outlined-focus-outline-color);
           font-weight: 500;
         }
       }
