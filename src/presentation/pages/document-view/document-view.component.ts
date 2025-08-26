@@ -4,7 +4,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import {
+  MatProgressSpinner,
+  MatProgressSpinnerModule,
+} from '@angular/material/progress-spinner';
 import { TranslateModule } from '@ngx-translate/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LanguageService } from '../../../core/use-cases/language.service';
@@ -26,17 +29,18 @@ export interface Department {
 }
 
 @Component({
-    selector: 'app-document-view',
-    imports: [
-        CommonModule,
-        MatButtonModule,
-        MatIconModule,
-        MatDialogModule,
-        TranslateModule,
-        HasPermissionDirective,
-    ],
-    templateUrl: './document-view.component.html',
-    styleUrls: ['./document-view.component.scss']
+  selector: 'app-document-view',
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDialogModule,
+    TranslateModule,
+    HasPermissionDirective,
+    MatProgressSpinner,
+  ],
+  templateUrl: './document-view.component.html',
+  styleUrls: ['./document-view.component.scss'],
 })
 export class DocumentViewComponent implements OnInit {
   document: Document | null = null;
@@ -67,7 +71,7 @@ export class DocumentViewComponent implements OnInit {
   ngOnInit(): void {
     // Load departments first
     this.loadDepartments();
-    
+
     this.route.params.subscribe((params) => {
       this.documentId = +params['id'];
       if (this.documentId) {
@@ -75,7 +79,7 @@ export class DocumentViewComponent implements OnInit {
       }
     });
   }
-  
+
   private loadDepartments(): void {
     this.departmentService.getDepartments().subscribe({
       next: (departments) => {
@@ -83,7 +87,7 @@ export class DocumentViewComponent implements OnInit {
       },
       error: (error) => {
         console.error('Failed to load departments:', error);
-      }
+      },
     });
   }
 
@@ -135,7 +139,12 @@ export class DocumentViewComponent implements OnInit {
   }
 
   onSignAndComment(): void {
-    if (this.documentId && this.document && this.document.attachments && this.document.attachments.length > 0) {
+    if (
+      this.documentId &&
+      this.document &&
+      this.document.attachments &&
+      this.document.attachments.length > 0
+    ) {
       const dialogRef = this.dialog.open(SignCommentModalComponent, {
         width: '500px',
         maxWidth: '95vw',
@@ -144,19 +153,25 @@ export class DocumentViewComponent implements OnInit {
       dialogRef.afterClosed().subscribe((result) => {
         if (result && result.signature_data && result.comments) {
           const attachmentId = this.document!.attachments![0].id;
-          this.documentService.signDocumentWithComment({
-            attachment: attachmentId,
-            comments: result.comments, // Ensure comments are included
-            signature_data: result.signature_data
-          }).subscribe({
-            next: () => {
-              this.toastService.successTranslated('documents.signAndComment.success');
-              this.loadDocument();
-            },
-            error: () => {
-              this.toastService.errorTranslated('documents.signAndComment.error');
-            }
-          });
+          this.documentService
+            .signDocumentWithComment({
+              attachment: attachmentId,
+              comments: result.comments, // Ensure comments are included
+              signature_data: result.signature_data,
+            })
+            .subscribe({
+              next: () => {
+                this.toastService.successTranslated(
+                  'documents.signAndComment.success'
+                );
+                this.loadDocument();
+              },
+              error: () => {
+                this.toastService.errorTranslated(
+                  'documents.signAndComment.error'
+                );
+              },
+            });
         }
       });
     }
@@ -268,13 +283,15 @@ export class DocumentViewComponent implements OnInit {
     if (!this.document) return false;
     return this.authorizationService.canCommentOnDocumentSync(this.document);
   }
-  
+
   getDepartmentName(departmentId: string): string {
     if (!departmentId || !this.departments.length) return departmentId;
-    
-    const department = this.departments.find(d => d.id.toString() === departmentId);
+
+    const department = this.departments.find(
+      (d) => d.id.toString() === departmentId
+    );
     if (!department) return departmentId;
-    
+
     return this.isRTL ? department.name_ar : department.name_en;
   }
 }

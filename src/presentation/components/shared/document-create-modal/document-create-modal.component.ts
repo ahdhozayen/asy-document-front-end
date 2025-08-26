@@ -1,6 +1,11 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,8 +17,6 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { LanguageService } from '../../../../core/use-cases/language.service';
 import { AuthorizationService } from '../../../../core/use-cases/authorization.service';
-import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
-import { PermissionDisableDirective } from '../../../shared/directives/permission-disable.directive';
 import { DepartmentService } from '../../../../data/services/department.service';
 import { Department } from '../../../../domain/models/department.model';
 
@@ -26,23 +29,21 @@ export interface DocumentCreateData {
 }
 
 @Component({
-    selector: 'app-document-create-modal',
-    imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        MatDialogModule,
-        MatButtonModule,
-        MatIconModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatSelectModule,
-        MatDividerModule,
-        TranslateModule,
-        HasPermissionDirective,
-        PermissionDisableDirective
-    ],
-    templateUrl: './document-create-modal.component.html',
-    styleUrls: ['./document-create-modal.component.scss']
+  selector: 'app-document-create-modal',
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatDividerModule,
+    TranslateModule,
+  ],
+  templateUrl: './document-create-modal.component.html',
+  styleUrls: ['./document-create-modal.component.scss'],
 })
 export class DocumentCreateModalComponent implements OnInit {
   documentForm: FormGroup;
@@ -50,7 +51,7 @@ export class DocumentCreateModalComponent implements OnInit {
   selectedFile: File | null = null;
   departments: Department[] = [];
   priorities: string[] = ['High', 'Medium', 'Low'];
-  
+
   private dialogRef = inject(MatDialogRef<DocumentCreateModalComponent>);
   private fb = inject(FormBuilder);
   private languageService = inject(LanguageService);
@@ -64,12 +65,12 @@ export class DocumentCreateModalComponent implements OnInit {
       description: [''],
       fromDepartment: ['', Validators.required],
       priority: ['', Validators.required],
-      file: [null, Validators.required]
+      file: [null, Validators.required],
     });
   }
 
   ngOnInit(): void {
-    this.languageService.isRTL$.subscribe(isRTL => {
+    this.languageService.isRTL$.subscribe((isRTL) => {
       this.isRTL = isRTL;
     });
 
@@ -81,7 +82,7 @@ export class DocumentCreateModalComponent implements OnInit {
       error: (error) => {
         console.error('Failed to load departments:', error);
         this.departments = [];
-      }
+      },
     });
   }
 
@@ -101,9 +102,9 @@ export class DocumentCreateModalComponent implements OnInit {
         description: this.documentForm.get('description')?.value,
         fromDepartment: this.documentForm.get('fromDepartment')?.value,
         priority: this.documentForm.get('priority')?.value,
-        file: this.selectedFile
+        file: this.selectedFile,
       };
-      
+
       this.dialogRef.close(formData);
     } else {
       // Mark all fields as touched to trigger validation messages
@@ -116,7 +117,7 @@ export class DocumentCreateModalComponent implements OnInit {
   }
 
   private markFormGroupTouched(formGroup: FormGroup): void {
-    Object.values(formGroup.controls).forEach(control => {
+    Object.values(formGroup.controls).forEach((control) => {
       control.markAsTouched();
       if (Object.prototype.hasOwnProperty.call(control, 'controls')) {
         this.markFormGroupTouched(control as FormGroup);
