@@ -1,5 +1,5 @@
 import { Component, ViewChild, ElementRef, AfterViewInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,13 +14,12 @@ export interface SignatureModalResult {
   selector: 'app-signature-modal',
   standalone: true,
   imports: [
-    CommonModule,
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
     TranslateModule
-  ],
+],
   templateUrl: './signature-modal.component.html',
   styleUrls: ['./signature-modal.component.scss']
 })

@@ -1,5 +1,5 @@
 import { Component, ViewChild, ElementRef, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,15 +11,14 @@ import { TranslateModule } from '@ngx-translate/core';
 @Component({
     selector: 'app-sign-comment-modal',
     imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        MatDialogModule,
-        MatButtonModule,
-        MatIconModule,
-        MatFormFieldModule,
-        MatInputModule,
-        TranslateModule
-    ],
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    TranslateModule
+],
     templateUrl: './sign-comment-modal.component.html',
     styleUrls: ['./sign-comment-modal.component.scss']
 })

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,11 +10,10 @@ import { LanguageService, SupportedLanguage } from '../../../../core/use-cases/l
 @Component({
     selector: 'app-language-switcher',
     imports: [
-        CommonModule,
-        MatButtonModule,
-        MatMenuModule,
-        MatIconModule
-    ],
+    MatButtonModule,
+    MatMenuModule,
+    MatIconModule
+],
     template: `
     <div class="language-switcher" [class.rtl]="isRTL">
       <button
