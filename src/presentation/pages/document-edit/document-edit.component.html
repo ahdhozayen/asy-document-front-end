@@ -2,7 +2,7 @@
   class="document-edit-page"
   [class.rtl]="isRTL"
   [attr.dir]="isRTL ? 'rtl' : 'ltr'"
->
+  >
   <!-- Header with back arrow, title, tags, and action buttons -->
   <div class="page-header">
     <div class="header-left">
@@ -65,141 +65,154 @@
             matInput
             formControlName="title"
             [placeholder]="'documents.form.titlePlaceholder' | translate"
-          />
-          <mat-error *ngIf="editForm.get('title')?.hasError('required')">
-            {{ "documents.create.validation.required" | translate }}
-          </mat-error>
-          <mat-error *ngIf="editForm.get('title')?.hasError('maxlength')">
-            {{ "documents.create.validation.maxLength" | translate }}
-          </mat-error>
-        </mat-form-field>
-
-        <!-- Department and Priority in one row -->
-        <div class="flex-row-container">
-          <mat-form-field appearance="outline" class="form-field mr-2">
-            <mat-label>{{ "documents.form.department" | translate }}</mat-label>
-            <mat-select formControlName="fromDepartment">
-              <mat-option *ngFor="let dept of departments" [value]="dept.id.toString()">
-                {{ isRTL ? dept.name_ar : dept.name_en }}
-              </mat-option>
-            </mat-select>
-            <mat-error *ngIf="editForm.get('fromDepartment')?.hasError('required')">
-              {{ "documents.create.validation.required" | translate }}
-            </mat-error>
+            />
+            @if (editForm.get('title')?.hasError('required')) {
+              <mat-error>
+                {{ "documents.create.validation.required" | translate }}
+              </mat-error>
+            }
+            @if (editForm.get('title')?.hasError('maxlength')) {
+              <mat-error>
+                {{ "documents.create.validation.maxLength" | translate }}
+              </mat-error>
+            }
           </mat-form-field>
 
-          <!-- Priority -->
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>{{ "documents.form.priority" | translate }}</mat-label>
-            <mat-select formControlName="priority">
-              <mat-option value="low">{{ 'priorities.low' | translate }}</mat-option>
-              <mat-option value="medium">{{ 'priorities.medium' | translate }}</mat-option>
-              <mat-option value="high">{{ 'priorities.high' | translate }}</mat-option>
-            </mat-select>
-            <mat-error *ngIf="editForm.get('priority')?.hasError('required')">
-              {{ "documents.create.validation.required" | translate }}
-            </mat-error>
-          </mat-form-field>
-        </div>
+          <!-- Department and Priority in one row -->
+          <div class="flex-row-container">
+            <mat-form-field appearance="outline" class="form-field mr-2">
+              <mat-label>{{ "documents.form.department" | translate }}</mat-label>
+              <mat-select formControlName="fromDepartment">
+                @for (dept of departments; track dept) {
+                  <mat-option [value]="dept.id.toString()">
+                    {{ isRTL ? dept.name_ar : dept.name_en }}
+                  </mat-option>
+                }
+              </mat-select>
+              @if (editForm.get('fromDepartment')?.hasError('required')) {
+                <mat-error>
+                  {{ "documents.create.validation.required" | translate }}
+                </mat-error>
+              }
+            </mat-form-field>
 
-        <!-- Document Description -->
-        <div class="description-field">
-          <label class="field-label" for="description-textarea">{{ "documents.form.description" | translate }} *</label>
-          <textarea
-            id="description-textarea"
-            class="description-textarea"
-            formControlName="description"
-            rows="5"
-            [placeholder]="'documents.form.descriptionPlaceholder' | translate"
-          ></textarea>
-        </div>
-
-        <!-- Current File Section -->
-        <div class="current-file-section">
-          <h4 class="section-title" [class.arabic-font]="isRTL">
-            {{ "documents.edit.currentFile" | translate }}
-          </h4>
-          <div class="current-file-display" [ngClass]="{'no-file': !currentDocument?.attachments?.length || !currentDocument?.attachments?.[0]?.file}">
-          <mat-icon class="file-icon" [ngClass]="{'no-file-icon': !currentDocument?.attachments?.length || !currentDocument?.attachments?.[0]?.file}">
-  {{ getFileIcon(currentDocument?.attachments?.[0]?.original_name || '') }}
-</mat-icon>
-            <div class="file-info">
-              <span class="file-name" [ngClass]="{'no-file-text': !currentDocument?.attachments?.length || !currentDocument?.attachments?.[0]?.file}">
-                {{ currentDocument?.attachments?.[0]?.original_name || 'No file uploaded' }}
-              </span>
-              <div class="file-actions" *ngIf="currentDocument?.attachments?.length && currentDocument?.attachments?.[0]?.file">
-                <button mat-button color="primary" (click)="viewCurrentAttachment()" class="view-file-button">
-                  <mat-icon>visibility</mat-icon>
-                  {{ 'documents.edit.viewFile' | translate }}
-                </button>
-                <button mat-button color="accent" (click)="downloadCurrentAttachment()" class="download-file-button">
-                  <mat-icon>download</mat-icon>
-                  {{ 'common.download' | translate }}
-                </button>
-              </div>
-            </div>
+            <!-- Priority -->
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>{{ "documents.form.priority" | translate }}</mat-label>
+              <mat-select formControlName="priority">
+                <mat-option value="low">{{ 'priorities.low' | translate }}</mat-option>
+                <mat-option value="medium">{{ 'priorities.medium' | translate }}</mat-option>
+                <mat-option value="high">{{ 'priorities.high' | translate }}</mat-option>
+              </mat-select>
+              @if (editForm.get('priority')?.hasError('required')) {
+                <mat-error>
+                  {{ "documents.create.validation.required" | translate }}
+                </mat-error>
+              }
+            </mat-form-field>
           </div>
-        </div>
 
-        <!-- Upload New File Section -->
-        <div class="upload-new-file-section">
-          <h4 class="section-title" [class.arabic-font]="isRTL">
-            {{ "documents.edit.uploadNewFile" | translate }}
-          </h4>
-          <div class="file-upload-container">
-            <div class="file-upload-area">
-              <input
-                type="file"
-                #fileInput
-                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                class="file-input"
-                (change)="onFileSelected($event)"
-              />
-              <div class="upload-content">
-                <button
-                  type="button"
-                  mat-stroked-button
-                  color="primary"
-                  (click)="fileInput.click()"
-                  class="choose-file-btn">
-                  {{ "documents.edit.chooseFile" | translate }}
-                </button>
-                <span class="no-file-text" [class.arabic-font]="isRTL">
-                  {{ selectedFile ? selectedFile.name : ('documents.edit.noFileChosen' | translate) }}
+          <!-- Document Description -->
+          <div class="description-field">
+            <label class="field-label" for="description-textarea">{{ "documents.form.description" | translate }} *</label>
+            <textarea
+              id="description-textarea"
+              class="description-textarea"
+              formControlName="description"
+              rows="5"
+              [placeholder]="'documents.form.descriptionPlaceholder' | translate"
+            ></textarea>
+          </div>
+
+          <!-- Current File Section -->
+          <div class="current-file-section">
+            <h4 class="section-title" [class.arabic-font]="isRTL">
+              {{ "documents.edit.currentFile" | translate }}
+            </h4>
+            <div class="current-file-display" [ngClass]="{'no-file': !currentDocument?.attachments?.length || !currentDocument?.attachments?.[0]?.file}">
+              <mat-icon class="file-icon" [ngClass]="{'no-file-icon': !currentDocument?.attachments?.length || !currentDocument?.attachments?.[0]?.file}">
+                {{ getFileIcon(currentDocument?.attachments?.[0]?.original_name || '') }}
+              </mat-icon>
+              <div class="file-info">
+                <span class="file-name" [ngClass]="{'no-file-text': !currentDocument?.attachments?.length || !currentDocument?.attachments?.[0]?.file}">
+                  {{ currentDocument?.attachments?.[0]?.original_name || 'No file uploaded' }}
                 </span>
+                @if (currentDocument?.attachments?.length && currentDocument?.attachments?.[0]?.file) {
+                  <div class="file-actions">
+                    <button mat-button color="primary" (click)="viewCurrentAttachment()" class="view-file-button">
+                      <mat-icon>visibility</mat-icon>
+                      {{ 'documents.edit.viewFile' | translate }}
+                    </button>
+                    <button mat-button color="accent" (click)="downloadCurrentAttachment()" class="download-file-button">
+                      <mat-icon>download</mat-icon>
+                      {{ 'common.download' | translate }}
+                    </button>
+                  </div>
+                }
               </div>
             </div>
+          </div>
 
-            <!-- File Validation Error -->
-            <div
-              *ngIf="fileError"
-              class="error-message"
-              [class.arabic-font]="isRTL"
-            >
-              {{ fileError }}
+          <!-- Upload New File Section -->
+          <div class="upload-new-file-section">
+            <h4 class="section-title" [class.arabic-font]="isRTL">
+              {{ "documents.edit.uploadNewFile" | translate }}
+            </h4>
+            <div class="file-upload-container">
+              <div class="file-upload-area">
+                <input
+                  type="file"
+                  #fileInput
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                  class="file-input"
+                  (change)="onFileSelected($event)"
+                  />
+                  <div class="upload-content">
+                    <button
+                      type="button"
+                      mat-stroked-button
+                      color="primary"
+                      (click)="fileInput.click()"
+                      class="choose-file-btn">
+                      {{ "documents.edit.chooseFile" | translate }}
+                    </button>
+                    <span class="no-file-text" [class.arabic-font]="isRTL">
+                      {{ selectedFile ? selectedFile.name : ('documents.edit.noFileChosen' | translate) }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- File Validation Error -->
+                @if (fileError) {
+                  <div
+                    class="error-message"
+                    [class.arabic-font]="isRTL"
+                    >
+                    {{ fileError }}
+                  </div>
+                }
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Right Panel - Document Information -->
+        <div class="document-info-panel">
+          <h3 class="panel-title" [class.arabic-font]="isRTL">
+            {{ "documents.edit.documentInformation" | translate }}
+          </h3>
+
+          <div class="info-content">
+            <div class="info-item">
+              <span class="info-label">{{ "documents.form.department" | translate }}:</span>
+              <span class="info-value">{{ getDepartmentName(currentDocument?.department?.toString() || '') }}</span>
+            </div>
+
+            <div class="info-item">
+              <span class="info-label">{{ "documents.edit.uploadDate" | translate }}:</span>
+              <span class="info-value">{{ currentDocument?.uploadDate | date:'M/d/yyyy, h:mm:ss a' }}</span>
             </div>
           </div>
-        </div>
-      </form>
-    </div>
-
-    <!-- Right Panel - Document Information -->
-    <div class="document-info-panel">
-      <h3 class="panel-title" [class.arabic-font]="isRTL">
-        {{ "documents.edit.documentInformation" | translate }}
-      </h3>
-
-      <div class="info-content">
-        <div class="info-item">
-          <span class="info-label">{{ "documents.form.department" | translate }}:</span>
-          <span class="info-value">{{ getDepartmentName(currentDocument?.department?.toString() || '') }}</span>
-        </div>
-
-        <div class="info-item">
-          <span class="info-label">{{ "documents.edit.uploadDate" | translate }}:</span>
-          <span class="info-value">{{ currentDocument?.uploadDate | date:'M/d/yyyy, h:mm:ss a' }}</span>
         </div>
       </div>
     </div>
-  </div>
-</div>

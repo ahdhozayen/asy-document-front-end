@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   FormBuilder,
   FormGroup,
@@ -31,7 +31,6 @@ export interface DocumentCreateData {
 @Component({
   selector: 'app-document-create-modal',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
@@ -40,8 +39,8 @@ export interface DocumentCreateData {
     MatInputModule,
     MatSelectModule,
     MatDividerModule,
-    TranslateModule,
-  ],
+    TranslateModule
+],
   templateUrl: './document-create-modal.component.html',
   styleUrls: ['./document-create-modal.component.scss'],
 })

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -19,37 +19,38 @@ export interface ConfirmationDialogData {
 @Component({
     selector: 'app-confirmation-dialog',
     imports: [
-        CommonModule,
-        MatDialogModule,
-        MatButtonModule,
-        MatIconModule,
-        TranslateModule
-    ],
+    MatDialogModule,
+    MatButtonModule,
+    MatIconModule,
+    TranslateModule
+],
     template: `
     <div class="confirmation-dialog" [class.rtl]="isRTL" [attr.dir]="isRTL ? 'rtl' : 'ltr'">
       <div mat-dialog-title class="dialog-title" [class.arabic-font]="isRTL">
         <mat-icon [class]="getIconClass()">{{ getIcon() }}</mat-icon>
         <span>{{ data.title }}</span>
       </div>
-      
+    
       <div mat-dialog-content class="dialog-content" [class.arabic-font]="isRTL">
         <p class="dialog-message">{{ data.message }}</p>
-        <div class="document-info" *ngIf="data.documentTitle">
-          <strong>{{ 'dialogs.confirmation.documentTitle' | translate }}:</strong>
-          <span class="document-title">{{ data.documentTitle }}</span>
-        </div>
+        @if (data.documentTitle) {
+          <div class="document-info">
+            <strong>{{ 'dialogs.confirmation.documentTitle' | translate }}:</strong>
+            <span class="document-title">{{ data.documentTitle }}</span>
+          </div>
+        }
       </div>
-      
+    
       <div mat-dialog-actions class="dialog-actions" [class.rtl]="isRTL">
-        <button 
-          mat-button 
+        <button
+          mat-button
           (click)="onCancel()"
           class="cancel-button"
           [class.arabic-font]="isRTL">
           {{ data.cancelText || ('common.cancel' | translate) }}
         </button>
-        <button 
-          mat-raised-button 
+        <button
+          mat-raised-button
           [color]="getButtonColor()"
           (click)="onConfirm()"
           class="confirm-button"
@@ -58,7 +59,7 @@ export interface ConfirmationDialogData {
         </button>
       </div>
     </div>
-  `,
+    `,
     styles: [`
     .confirmation-dialog {
       min-width: 400px;

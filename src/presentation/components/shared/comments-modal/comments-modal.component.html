@@ -13,12 +13,16 @@
           formControlName="comment"
           rows="3"
         ></textarea>
-        <mat-error *ngIf="commentForm.get('comment')?.hasError('required')">
-          {{ "validation.required" | translate }}
-        </mat-error>
-        <mat-error *ngIf="commentForm.get('comment')?.hasError('minlength')">
-          {{ "validation.minLength" | translate }}
-        </mat-error>
+        @if (commentForm.get('comment')?.hasError('required')) {
+          <mat-error>
+            {{ "validation.required" | translate }}
+          </mat-error>
+        }
+        @if (commentForm.get('comment')?.hasError('minlength')) {
+          <mat-error>
+            {{ "validation.minLength" | translate }}
+          </mat-error>
+        }
       </mat-form-field>
     </form>
   </div>
@@ -32,7 +36,7 @@
       color="primary"
       (click)="onSubmit()"
       [disabled]="commentForm.invalid || isSubmitting"
-    >
+      >
       <mat-icon>send</mat-icon>
       {{ "common.submit" | translate }}
     </button>

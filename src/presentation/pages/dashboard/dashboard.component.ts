@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatSelect } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
+
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -64,7 +64,6 @@ import { ChangePasswordModalComponent } from '../../../app/presentation/componen
 @Component({
   selector: 'app-dashboard',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatToolbarModule,
     MatButtonModule,
@@ -86,8 +85,8 @@ import { ChangePasswordModalComponent } from '../../../app/presentation/componen
     MatDialogModule,
     TranslateModule,
     LanguageSwitcherComponent,
-    HasPermissionDirective,
-  ],
+    HasPermissionDirective
+],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterOutlet } from '@angular/router';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -11,7 +11,7 @@ import { LanguageService } from '../core/use-cases/language.service';
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, RouterOutlet, MatProgressSpinner, TranslatePipe],
+  imports: [RouterOutlet, MatProgressSpinner, TranslatePipe],
   templateUrl: './app.component.html',
 })
 export class AppComponent implements OnInit, OnDestroy {

@@ -5,12 +5,16 @@
       <label>{{ "documents.signAndComment.commentsLabel" | translate }}</label>
       <mat-form-field   appearance="outline" class="form-field">
         <textarea style="background-color: #fff;" matInput formControlName="comments" rows="4" cols="60" ></textarea>
-        <mat-error *ngIf="form.get('comments')?.hasError('required') && form.get('comments')?.touched">
-          {{ "documents.signAndComment.commentsRequired" | translate }}
-        </mat-error>
-        <mat-error *ngIf="form.get('comments')?.hasError('minlength') && form.get('comments')?.touched">
-          {{ "documents.signAndComment.commentsMinLength" | translate:{min:2} }}
-        </mat-error>
+        @if (form.get('comments')?.hasError('required') && form.get('comments')?.touched) {
+          <mat-error>
+            {{ "documents.signAndComment.commentsRequired" | translate }}
+          </mat-error>
+        }
+        @if (form.get('comments')?.hasError('minlength') && form.get('comments')?.touched) {
+          <mat-error>
+            {{ "documents.signAndComment.commentsMinLength" | translate:{min:2} }}
+          </mat-error>
+        }
       </mat-form-field>
     </div>
 
@@ -29,27 +33,28 @@
           width="400"
           height="300"
           class="signature-canvas"
-        >
+          >
         </canvas>
         <button
           mat-stroked-button
           type="button"
           (click)="clearCanvas()"
           class="clear-btn"
-        >
+          >
           <mat-icon>clear</mat-icon>
           {{ "documents.signAndComment.clearSignature" | translate }}
         </button>
       </div>
-      <div
-        *ngIf="form.get('signature')?.invalid && form.get('signature')?.touched"
-        class="error-message"
-      >
-        {{ "documents.signAndComment.signatureRequired" | translate }}
-      </div>
+      @if (form.get('signature')?.invalid && form.get('signature')?.touched) {
+        <div
+          class="error-message"
+          >
+          {{ "documents.signAndComment.signatureRequired" | translate }}
+        </div>
+      }
     </div>
   </div>
-  
+
   <div mat-dialog-actions align="end">
     <button mat-button type="button" (click)="onCancel()">
       {{ "common.cancel" | translate }}
@@ -60,7 +65,7 @@
       type="submit"
       (click)="onSave()"
       [disabled]="form.invalid"
-    >
+      >
       {{ "common.save" | translate }}
     </button>
   </div>
