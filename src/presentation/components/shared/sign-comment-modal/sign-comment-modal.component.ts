@@ -1,7 +1,22 @@
-import { Component, ViewChild, ElementRef, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  ViewChild,
+  ElementRef,
+  inject,
+  OnInit,
+} from '@angular/core';
 
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import {
+  MatDialogModule,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,21 +24,22 @@ import { MatInputModule } from '@angular/material/input';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
-    selector: 'app-sign-comment-modal',
-    imports: [
+  selector: 'app-sign-comment-modal',
+  imports: [
     ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,
-    TranslateModule
-],
-    templateUrl: './sign-comment-modal.component.html',
-    styleUrls: ['./sign-comment-modal.component.scss']
+    TranslateModule,
+  ],
+  templateUrl: './sign-comment-modal.component.html',
+  styleUrls: ['./sign-comment-modal.component.scss'],
 })
 export class SignCommentModalComponent implements OnInit {
-  @ViewChild('signatureCanvas', { static: false }) signatureCanvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('signatureCanvas', { static: false })
+  signatureCanvas!: ElementRef<HTMLCanvasElement>;
   form: FormGroup;
   isDrawing = false;
   lastX = 0;
@@ -36,7 +52,8 @@ export class SignCommentModalComponent implements OnInit {
 
   ngOnInit(): void {
     // Try to detect RTL from document or use a service if available
-    this.isRTL = document.dir === 'rtl' || document.documentElement.dir === 'rtl';
+    this.isRTL =
+      document.dir === 'rtl' || document.documentElement.dir === 'rtl';
   }
 
   constructor() {
@@ -122,7 +139,12 @@ export class SignCommentModalComponent implements OnInit {
   }
 
   private isCanvasEmpty(): boolean {
-    const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+    const imageData = this.ctx.getImageData(
+      0,
+      0,
+      this.canvas.width,
+      this.canvas.height
+    );
     const data = imageData.data;
     for (let i = 0; i < data.length; i += 4) {
       if (data[i + 3] !== 0) {
@@ -147,12 +169,36 @@ export class SignCommentModalComponent implements OnInit {
     this.form.get('signature')?.markAsTouched();
   }
 
+  private updateCommentsValue(): string {
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = this.canvas.width+50;
+    tempCanvas.height = this.canvas.height+50;
+    const tempCtx = tempCanvas.getContext('2d')!;
+    tempCtx.drawImage(this.canvas, 0, 0);
+    // Set text properties
+    tempCtx.font = '20px Arial'; // Use a font that supports Arabic, e.g., 'Arial' or 'Noto Sans Arabic'
+    tempCtx.fillStyle = 'black';
+    tempCtx.textAlign = 'right'; // Arabic is right-to-left
+    tempCtx.textBaseline = 'middle';
+
+    // Split text by newline and draw each line
+    const lines = this.form.value.comments.split('\n');
+    const lineHeight = 30; // Adjust line height as needed
+    lines.forEach((line, index) => {
+      tempCtx?.fillText(line, tempCanvas.width - 10, 10 + index * lineHeight);
+    });
+    const commentsBase64 = tempCanvas.toDataURL('image/png');
+    return commentsBase64;
+  }
+
   onSave(): void {
     if (this.form.valid) {
       console.log(this.form.value);
+      let commentsBase64 = this.updateCommentsValue();
       this.dialogRef.close({
-        signature_data: this.form.value.signature,
-        comments: this.form.value.comments
+        signature_data: commentsBase64,
+        // signature_data: this.form.value.signature,
+        comments: this.form.value.comments,
       });
     } else {
       this.form.markAllAsTouched();

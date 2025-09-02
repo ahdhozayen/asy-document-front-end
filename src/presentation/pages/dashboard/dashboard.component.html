@@ -285,7 +285,11 @@
                         *matCellDef="let document"
                         [class.arabic-font]="isRTL"
                         >
-                        {{ "departments." + document.department | translate }}
+                        @if (isRTL) {
+                          {{ document.department_ar }}
+                        } @else {
+                          {{ document.department_en }}
+                        }
                       </td>
                     </ng-container>
                     <!-- Priority Column -->
