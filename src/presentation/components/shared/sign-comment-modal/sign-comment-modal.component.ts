@@ -21,7 +21,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule } from '@ngx-translate/core';
+import { DocumentService } from '../../../../core/use-cases/document.service';
+import { ToastService } from '../../../../core/use-cases/toast.service';
 
 @Component({
   selector: 'app-sign-comment-modal',
@@ -32,6 +35,7 @@ import { TranslateModule } from '@ngx-translate/core';
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,
+    MatProgressSpinnerModule,
     TranslateModule,
   ],
   templateUrl: './sign-comment-modal.component.html',
@@ -45,15 +49,25 @@ export class SignCommentModalComponent implements OnInit {
   lastX = 0;
   lastY = 0;
   isRTL = false;
+  isLoading = false;
+  attachmentId: number | null = null;
   private canvas!: HTMLCanvasElement;
   private ctx!: CanvasRenderingContext2D;
   public dialogRef = inject(MatDialogRef<SignCommentModalComponent>);
   private fb = inject(FormBuilder);
+  private documentService = inject(DocumentService);
+  private toastService = inject(ToastService);
+  private data = inject(MAT_DIALOG_DATA);
 
   ngOnInit(): void {
     // Try to detect RTL from document or use a service if available
     this.isRTL =
       document.dir === 'rtl' || document.documentElement.dir === 'rtl';
+    
+    // Get attachment ID from dialog data
+    if (this.data && this.data.attachmentId) {
+      this.attachmentId = this.data.attachmentId;
+    }
   }
 
   constructor() {
@@ -192,14 +206,32 @@ export class SignCommentModalComponent implements OnInit {
   }
 
   onSave(): void {
-    if (this.form.valid) {
+    if (this.form.valid && this.attachmentId) {
+      this.isLoading = true;
       console.log(this.form.value);
       let commentsBase64 = this.updateCommentsValue();
-      this.dialogRef.close({
-        signature_data: commentsBase64,
-        // signature_data: this.form.value.signature,
-        comments: this.form.value.comments,
-      });
+      
+      this.documentService
+        .signDocumentWithComment({
+          attachment: this.attachmentId,
+          comments: this.form.value.comments,
+          signature_data: commentsBase64,
+        })
+        .subscribe({
+          next: () => {
+            this.isLoading = false;
+            this.toastService.successTranslated(
+              'documents.signAndComment.success'
+            );
+            this.dialogRef.close({ success: true });
+          },
+          error: () => {
+            this.isLoading = false;
+            this.toastService.errorTranslated(
+              'documents.signAndComment.error'
+            );
+          },
+        });
     } else {
       this.form.markAllAsTouched();
     }

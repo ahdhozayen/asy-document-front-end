@@ -9,7 +9,7 @@ export type ToastType = 'success' | 'error' | 'warning' | 'info';
 })
 export class ToastService {
   private defaultConfig: MatSnackBarConfig = {
-    duration: 4000,
+    duration: 5000,
     horizontalPosition: 'end',
     verticalPosition: 'bottom'
   };
@@ -21,7 +21,7 @@ export class ToastService {
     const config: MatSnackBarConfig = {
       ...this.defaultConfig,
       duration: duration || this.defaultConfig.duration,
-      panelClass: [`toast-${type}`]
+      panelClass: [`${type}-snackbar`]
     };
 
     this.snackBar.open(message, this.translate.instant('common.close'), config);
@@ -32,7 +32,7 @@ export class ToastService {
   }
 
   error(message: string, duration?: number): void {
-    this.show(message, 'error', duration || 6000); // Longer duration for errors
+    this.show(message, 'error', duration || 7000); // Longer duration for errors
   }
 
   warning(message: string, duration?: number): void {

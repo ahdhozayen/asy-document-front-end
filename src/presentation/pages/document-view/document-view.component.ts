@@ -146,33 +146,16 @@ export class DocumentViewComponent implements OnInit {
       this.document.attachments &&
       this.document.attachments.length > 0
     ) {
+      const attachmentId = this.document.attachments[0].id;
       const dialogRef = this.dialog.open(SignCommentModalComponent, {
         width: '500px',
         maxWidth: '95vw',
         disableClose: true,
+        data: { attachmentId: attachmentId }
       });
       dialogRef.afterClosed().subscribe((result) => {
-        if (result && result.signature_data && result.comments) {
-          const attachmentId = this.document!.attachments![0].id;
-          this.documentService
-            .signDocumentWithComment({
-              attachment: attachmentId,
-              comments: result.comments, // Ensure comments are included
-              signature_data: result.signature_data,
-            })
-            .subscribe({
-              next: () => {
-                this.toastService.successTranslated(
-                  'documents.signAndComment.success'
-                );
-                this.loadDocument();
-              },
-              error: () => {
-                this.toastService.errorTranslated(
-                  'documents.signAndComment.error'
-                );
-              },
-            });
+        if (result && result.success) {
+          this.loadDocument();
         }
       });
     }

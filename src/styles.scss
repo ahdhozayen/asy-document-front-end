@@ -382,11 +382,27 @@ html, body {
     background-color: var(--success-color) !important;
     color: white !important;
   }
+  
+  .mdc-snackbar__label {
+    color: white !important;
+  }
+  
+  .mat-mdc-snack-bar-action .mat-mdc-button {
+    color: white !important;
+  }
 }
 
 .error-snackbar {
   .mdc-snackbar__surface {
     background-color: var(--error-color) !important;
+    color: white !important;
+  }
+  
+  .mdc-snackbar__label {
+    color: white !important;
+  }
+  
+  .mat-mdc-snack-bar-action .mat-mdc-button {
     color: white !important;
   }
 }
@@ -396,6 +412,14 @@ html, body {
     background-color: var(--warning-color) !important;
     color: white !important;
   }
+  
+  .mdc-snackbar__label {
+    color: white !important;
+  }
+  
+  .mat-mdc-snack-bar-action .mat-mdc-button {
+    color: white !important;
+  }
 }
 
 .info-snackbar {
@@ -403,6 +427,31 @@ html, body {
     background-color: var(--info-color) !important;
     color: white !important;
   }
+  
+  .mdc-snackbar__label {
+    color: white !important;
+  }
+  
+  .mat-mdc-snack-bar-action .mat-mdc-button {
+    color: white !important;
+  }
+}
+
+/* Additional Material Design Snackbar Overrides */
+.mat-mdc-snack-bar-container.success-snackbar .mdc-snackbar__surface {
+  background-color: var(--success-color) !important;
+}
+
+.mat-mdc-snack-bar-container.error-snackbar .mdc-snackbar__surface {
+  background-color: var(--error-color) !important;
+}
+
+.mat-mdc-snack-bar-container.warning-snackbar .mdc-snackbar__surface {
+  background-color: var(--warning-color) !important;
+}
+
+.mat-mdc-snack-bar-container.info-snackbar .mdc-snackbar__surface {
+  background-color: var(--info-color) !important;
 }
 
 .mat-mdc-snack-bar-container .mat-mdc-button {

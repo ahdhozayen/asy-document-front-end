@@ -56,7 +56,7 @@
   </div>
 
   <div mat-dialog-actions align="end">
-    <button mat-button type="button" (click)="onCancel()">
+    <button mat-button type="button" (click)="onCancel()" [disabled]="isLoading">
       {{ "common.cancel" | translate }}
     </button>
     <button
@@ -64,9 +64,12 @@
       color="primary"
       type="submit"
       (click)="onSave()"
-      [disabled]="form.invalid"
+      [disabled]="form.invalid || isLoading"
       >
-      {{ "common.save" | translate }}
+      @if (isLoading) {
+        <mat-spinner diameter="20" class="button-spinner" />
+      }
+      {{ isLoading ? ("common.saving" | translate) : ("common.save" | translate) }}
     </button>
   </div>
 </form>

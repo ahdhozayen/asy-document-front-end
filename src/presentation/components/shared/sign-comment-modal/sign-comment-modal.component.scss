@@ -53,3 +53,12 @@
   direction: rtl;
   text-align: right;
 }
+
+.button-spinner {
+  margin-right: 8px;
+}
+
+:host-context([dir="rtl"]) .button-spinner {
+  margin-right: 0;
+  margin-left: 8px;
+}
