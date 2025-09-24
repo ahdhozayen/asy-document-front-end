@@ -184,6 +184,15 @@
                         <mat-icon>download</mat-icon>
                         {{ 'common.download' | translate }}
                       </button>
+                      <button
+                        mat-button
+                        color="warn"
+                        (click)="deleteAttachment(attachment)"
+                        class="delete-file-button"
+                        [disabled]="!canEditDocument()">
+                        <mat-icon>delete</mat-icon>
+                        {{ 'common.delete' | translate }}
+                      </button>
                     </div>
                   </div>
                 </div>

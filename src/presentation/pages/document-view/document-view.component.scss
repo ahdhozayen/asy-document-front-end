@@ -306,6 +306,22 @@
                     width: 32px;
                     height: 32px;
                     min-width: 32px;
+
+                    &[color="warn"] {
+                      mat-icon {
+                        color: #f44336;
+                      }
+
+                      &:hover:not([disabled]) {
+                        background-color: rgba(244, 67, 54, 0.1);
+                      }
+
+                      &[disabled] {
+                        mat-icon {
+                          color: #bbb;
+                        }
+                      }
+                    }
                   }
                 }
               }

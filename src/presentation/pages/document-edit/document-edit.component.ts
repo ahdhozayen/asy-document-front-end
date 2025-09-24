@@ -10,7 +10,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { TranslateModule } from '@ngx-translate/core';
+import { MatDialog } from '@angular/material/dialog';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LanguageService } from '../../../core/use-cases/language.service';
 import { DocumentService } from '../../../core/use-cases/document.service';
@@ -83,6 +84,8 @@ currentDocument: (Document & { uploadDate?: string | Date }) | undefined = undef
   private toastService = inject(ToastService);
   private authorizationService = inject(AuthorizationService);
   private departmentService = inject(DepartmentService);
+  private dialog = inject(MatDialog);
+  private translate = inject(TranslateService);
 
   constructor() {
     this.editForm = this.createForm();
@@ -442,6 +445,41 @@ currentDocument: (Document & { uploadDate?: string | Date }) | undefined = undef
 
   getFileTypeLabel(): string {
     return this.fileType === 'pdf' ? 'PDF/Word Documents' : 'Image Files';
+  }
+
+  async deleteAttachment(attachment: Attachment): Promise<void> {
+    const { ConfirmationDialogComponent } = await import('../../components/shared/confirmation-dialog/confirmation-dialog.component');
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      maxWidth: '95vw',
+      data: {
+        title: this.translate.instant('documents.delete.attachment.title'),
+        message: this.translate.instant('documents.delete.attachment.message'),
+        documentTitle: attachment.original_name,
+        confirmText: this.translate.instant('documents.delete.attachment.confirm'),
+        cancelText: this.translate.instant('documents.delete.attachment.cancel'),
+        type: 'danger'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.documentService.deleteAttachment(attachment.id).subscribe({
+          next: () => {
+            this.toastService.successTranslated('documents.delete.attachment.success');
+            // Reload the document to get updated attachments
+            if (this.documentId) {
+              this.loadDocument();
+            }
+          },
+          error: (error) => {
+            console.error('Error deleting attachment:', error);
+            this.toastService.errorTranslated('documents.delete.attachment.error');
+          }
+        });
+      }
+    });
   }
   onComments(): void {
   if (this.documentId && this.canCommentOnDocument()) {

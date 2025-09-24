@@ -245,9 +245,26 @@
               flex-wrap: wrap;
 
               .view-file-button,
-              .download-file-button {
+              .download-file-button,
+              .delete-file-button {
                 min-width: 120px;
                 justify-content: center;
+              }
+
+              .delete-file-button {
+                &:not([disabled]) {
+                  border-color: #f44336;
+                  color: #f44336;
+
+                  &:hover {
+                    background-color: rgba(244, 67, 54, 0.1);
+                  }
+                }
+
+                &[disabled] {
+                  color: #bbb;
+                  border-color: #bbb;
+                }
               }
             }
           }
@@ -533,7 +550,8 @@
         width: 100%;
 
         .view-file-button,
-        .download-file-button {
+        .download-file-button,
+        .delete-file-button {
           width: 100%;
           justify-content: center;
         }

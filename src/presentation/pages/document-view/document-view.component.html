@@ -142,6 +142,15 @@
                   >
                     <mat-icon>download</mat-icon>
                   </button>
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="deleteAttachment(attachment)"
+                    [disabled]="!canEditDocument()"
+                    matTooltip="Delete this attachment"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
                 </div>
               </div>
               }

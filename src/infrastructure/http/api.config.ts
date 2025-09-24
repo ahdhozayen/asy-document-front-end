@@ -66,6 +66,7 @@ export class ApiConfig {
         attachments: {
           create: `${this.baseUrl}/documents/attachments/create`,
           detail: (id: number) => `${this.baseUrl}/documents/attachments/${id}`,
+          delete: (id: number) => `${this.baseUrl}/documents/attachments/${id}`,
         },
       },
     };

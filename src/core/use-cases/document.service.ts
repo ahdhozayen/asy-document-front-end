@@ -435,6 +435,10 @@ export class DocumentService {
     );
   }
 
+  deleteAttachment(attachmentId: number): Observable<void> {
+    return this.httpClient.delete<void>(this.config.endpoints.documents.attachments.delete(attachmentId));
+  }
+
   // Getters for current state
   get documents(): Document[] {
     return this.documentsSubject.value;

@@ -18,7 +18,7 @@ import { Attachment } from '../../../core/entities/document.model';
 import { SignCommentModalComponent } from '../../components/shared/sign-comment-modal/sign-comment-modal.component';
 import { DepartmentService } from '../../../data/services/department.service';
 
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 
 export interface Department {
@@ -64,6 +64,7 @@ export class DocumentViewComponent implements OnInit {
   private sanitizer = inject(DomSanitizer);
   private authorizationService = inject(AuthorizationService);
   private departmentService = inject(DepartmentService);
+  private translate = inject(TranslateService);
 
   constructor() {
     this.languageService.isRTL$.subscribe((isRTL) => {
@@ -193,6 +194,46 @@ export class DocumentViewComponent implements OnInit {
     if (!fileName) return false;
     const extension = fileName.split('.').pop()?.toLowerCase();
     return ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(extension || '');
+  }
+
+  async deleteAttachment(attachment: Attachment): Promise<void> {
+    const { ConfirmationDialogComponent } = await import('../../components/shared/confirmation-dialog/confirmation-dialog.component');
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      maxWidth: '95vw',
+      data: {
+        title: this.translate.instant('documents.delete.attachment.title'),
+        message: this.translate.instant('documents.delete.attachment.message'),
+        documentTitle: attachment.original_name,
+        confirmText: this.translate.instant('documents.delete.attachment.confirm'),
+        cancelText: this.translate.instant('documents.delete.attachment.cancel'),
+        type: 'danger'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.documentService.deleteAttachment(attachment.id).subscribe({
+          next: () => {
+            this.toastService.successTranslated('documents.delete.attachment.success');
+            // If this was the current attachment, select another one or clear it
+            if (this.currentAttachment?.id === attachment.id) {
+              const remainingAttachments = this.document?.attachments?.filter(a => a.id !== attachment.id);
+              this.currentAttachment = remainingAttachments?.length ? remainingAttachments[0] : null;
+            }
+            // Reload the document to get updated attachments
+            if (this.documentId) {
+              this.loadDocument();
+            }
+          },
+          error: (error) => {
+            console.error('Error deleting attachment:', error);
+            this.toastService.errorTranslated('documents.delete.attachment.error');
+          }
+        });
+      }
+    });
   }
 
   getStatusColor(status: string): string {
