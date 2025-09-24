@@ -13,6 +13,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { LanguageService } from '../../../../core/use-cases/language.service';
@@ -25,7 +26,8 @@ export interface DocumentCreateData {
   description?: string;
   fromDepartment: number;
   priority: string;
-  file: File;
+  fileType: 'pdf' | 'images';
+  files: File[];
 }
 
 @Component({
@@ -39,6 +41,7 @@ export interface DocumentCreateData {
     MatInputModule,
     MatSelectModule,
     MatDividerModule,
+    MatSlideToggleModule,
     TranslateModule
 ],
   templateUrl: './document-create-modal.component.html',
@@ -47,9 +50,10 @@ export interface DocumentCreateData {
 export class DocumentCreateModalComponent implements OnInit {
   documentForm: FormGroup;
   isRTL = false;
-  selectedFile: File | null = null;
+  selectedFiles: File[] = [];
   departments: Department[] = [];
   priorities: string[] = ['High', 'Medium', 'Low'];
+  fileType: 'pdf' | 'images' = 'pdf';
 
   private dialogRef = inject(MatDialogRef<DocumentCreateModalComponent>);
   private fb = inject(FormBuilder);
@@ -64,7 +68,8 @@ export class DocumentCreateModalComponent implements OnInit {
       description: [''],
       fromDepartment: ['', Validators.required],
       priority: ['', Validators.required],
-      file: [null, Validators.required],
+      fileType: ['pdf'],
+      files: [[], Validators.required],
     });
   }
 
@@ -85,23 +90,48 @@ export class DocumentCreateModalComponent implements OnInit {
     });
   }
 
-  onFileSelected(event: Event): void {
+  onFileTypeChange(isPdf: boolean): void {
+    this.fileType = isPdf ? 'pdf' : 'images';
+    this.documentForm.patchValue({ fileType: this.fileType });
+    // Clear selected files when switching file type
+    this.selectedFiles = [];
+    this.documentForm.patchValue({ files: [] });
+    this.documentForm.get('files')?.markAsDirty();
+  }
+
+  onFilesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length) {
-      this.selectedFile = input.files[0];
-      this.documentForm.patchValue({ file: this.selectedFile });
-      this.documentForm.get('file')?.markAsDirty();
+      const files = Array.from(input.files);
+
+      if (this.fileType === 'pdf') {
+        // For PDF, only allow one file
+        this.selectedFiles = [files[0]];
+      } else {
+        // For images, allow multiple files
+        this.selectedFiles = files;
+      }
+
+      this.documentForm.patchValue({ files: this.selectedFiles });
+      this.documentForm.get('files')?.markAsDirty();
     }
   }
 
+  removeFile(index: number): void {
+    this.selectedFiles.splice(index, 1);
+    this.documentForm.patchValue({ files: this.selectedFiles });
+    this.documentForm.get('files')?.markAsDirty();
+  }
+
   onSubmit(): void {
-    if (this.documentForm.valid && this.selectedFile) {
+    if (this.documentForm.valid && this.selectedFiles.length > 0) {
       const formData: DocumentCreateData = {
         title: this.documentForm.get('title')?.value,
         description: this.documentForm.get('description')?.value,
         fromDepartment: this.documentForm.get('fromDepartment')?.value,
         priority: this.documentForm.get('priority')?.value,
-        file: this.selectedFile,
+        fileType: this.fileType,
+        files: this.selectedFiles,
       };
 
       this.dialogRef.close(formData);

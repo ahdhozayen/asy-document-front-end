@@ -222,8 +222,14 @@
       "title": "إنشاء مكاتبة جديدة",
       "modalTitle": "إنشاء مكاتبة جديدة",
       "button": "إنشاء مكاتبة جديدة",
-      "selectFile": "اختر ملف PDF",
-      "dragDrop": "اسحب وأفلت ملف PDF هنا أو انقر للاختيار",
+      "selectFile": "اختيار ملف",
+      "uploadPdf": "رفع PDF",
+      "uploadImages": "رفع صور",
+      "changeFile": "تغيير الملف",
+      "addMoreFiles": "إضافة ملفات أخرى",
+      "dragDrop": "اسحب وأفلت ملف هنا أو انقر للاختيار",
+      "dragDropPdf": "اسحب وأفلت ملف PDF هنا أو انقر للاختيار",
+      "dragDropImages": "اسحب وأفلت ملفات الصور هنا أو انقر للاختيار",
       "fileSelected": "تم اختيار الملف:",
       "submit": "إنشاء الوثيقة",
       "creating": "جاري الإنشاء...",
@@ -231,6 +237,7 @@
       "error": "فشل في إنشاء الوثيقة",
       "validation": {
         "pdfOnly": "يُسمح فقط بملفات PDF",
+        "imagesOnly": "يُسمح فقط بملفات الصور",
         "required": "هذا الحقل مطلوب",
         "maxLength": "تم تجاوز الحد الأقصى للطول"
       }
@@ -259,10 +266,16 @@
       "department": "القسم",
       "priority": "الأولوية",
       "status": "الحالة",
+      "fileType": "نوع الملف",
+      "pdfMode": "وثيقة PDF",
+      "imageMode": "ملفات صور",
       "attachment": "مرفق الوثيقة",
+      "pdfAttachment": "وثيقة PDF",
+      "imageAttachments": "ملفات الصور",
       "attachmentNote": "ارفع ملفاً جديداً لاستبدال المرفق الحالي (اختياري)",
       "selectFile": "اختيار ملف",
-      "changeFile": "تغيير الملف"
+      "changeFile": "تغيير الملف",
+      "addMoreFiles": "إضافة ملفات أخرى"
     },
     "delete": {
       "title": "حذف الوثيقة",

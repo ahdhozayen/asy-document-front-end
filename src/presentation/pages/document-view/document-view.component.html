@@ -2,181 +2,213 @@
   class="document-view-page"
   [class.rtl]="isRTL"
   [attr.dir]="isRTL ? 'rtl' : 'ltr'"
-  >
+>
   <!-- Loading State -->
   @if (isLoading) {
-    <div class="loading-container">
-      <mat-spinner diameter="50" />
-      <p>{{ "common.loading" | translate }}</p>
-    </div>
+  <div class="loading-container">
+    <mat-spinner diameter="50" />
+    <p>{{ "common.loading" | translate }}</p>
+  </div>
   }
 
   <!-- Document Not Found State -->
   @if (documentNotFound) {
-    <div class="not-found-container">
-      <mat-icon class="not-found-icon">error_outline</mat-icon>
-      <h2>{{ "documents.view.notFound" | translate }}</h2>
-      <p>{{ "documents.view.notFoundMessage" | translate }}</p>
-      <button mat-raised-button color="primary" (click)="onBack()">
-        {{ "common.backToDashboard" | translate }}
-      </button>
-    </div>
+  <div class="not-found-container">
+    <mat-icon class="not-found-icon">error_outline</mat-icon>
+    <h2>{{ "documents.view.notFound" | translate }}</h2>
+    <p>{{ "documents.view.notFoundMessage" | translate }}</p>
+    <button mat-raised-button color="primary" (click)="onBack()">
+      {{ "common.backToDashboard" | translate }}
+    </button>
+  </div>
   }
 
   <!-- Document Content -->
   @if (!isLoading && !documentNotFound && document) {
-    <div
-      class="document-content"
-      >
-      <!-- Header with back arrow, title, tags, and action buttons -->
-      <div class="page-header">
-        <div class="header-left">
-          <button mat-icon-button class="back-button" (click)="onBack()">
-            <mat-icon>arrow_back</mat-icon>
-          </button>
-          <h2 class="page-title" [class.arabic-font]="isRTL">
-            {{ document.title }}
-          </h2>
-        </div>
-        <div class="header-tags">
-          <span
-            class="tag status-tag"
-            [ngClass]="getStatusColor(document.status)"
-            >
-            {{ "statuses." + document.status | translate }}
-          </span>
-          <span
-            class="tag priority-tag"
-            [ngClass]="getPriorityColor(document.priority)"
-            >
-            {{ "priorities." + document.priority | translate }}
-          </span>
-          <span class="tag department-tag">{{
-            isRTL
+  <div class="document-content">
+    <!-- Header with back arrow, title, tags, and action buttons -->
+    <div class="page-header">
+      <div class="header-left">
+        <button mat-icon-button class="back-button" (click)="onBack()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h2 class="page-title" [class.arabic-font]="isRTL">
+          {{ document.title }}
+        </h2>
+      </div>
+      <div class="header-tags">
+        <span
+          class="tag status-tag"
+          [ngClass]="getStatusColor(document.status)"
+        >
+          {{ "statuses." + document.status | translate }}
+        </span>
+        <span
+          class="tag priority-tag"
+          [ngClass]="getPriorityColor(document.priority)"
+        >
+          {{ "priorities." + document.priority | translate }}
+        </span>
+        <span class="tag department-tag">{{
+          isRTL
             ? document.department_ar!
             : (document.department_en! | translate)
-          }}</span>
-        </div>
-        <div class="header-actions">
-          <!-- Edit Button - Only visible for users with edit permission and disabled for signed documents -->
-          <button
-            mat-button
-            class="edit-button"
-            *appHasPermission="{ permission: 'edit', document: document }"
-            (click)="onEdit()"
-            >
-            <mat-icon>edit</mat-icon>
-            {{ "common.edit" | translate }}
-          </button>
-          <!-- Download Button - Always visible -->
-          <button
-            mat-raised-button
-            color="primary"
-            class="download-button"
-            (click)="onDownload()"
-            >
-            <mat-icon>open_in_new</mat-icon>
-            {{ "common.openInNew" | translate }}
-          </button>
-          <!-- Sign and Comment Button - Only visible for users with sign permission and disabled for already signed documents -->
-          <button
-            mat-raised-button
-            color="accent"
-            class="sign-comment-button"
-            *appHasPermission="{ permission: 'sign', document: document }"
-            (click)="onSignAndComment()"
-            >
-            <mat-icon>draw</mat-icon>
-            {{ "documents.view.signAndComment" | translate }}
-          </button>
-        </div>
+        }}</span>
       </div>
-      <!-- Main Content Area -->
-      <div class="page-content">
-        <!-- Left Panel - Document Preview -->
-        <div class="document-preview-panel">
-          <h3 class="panel-title" [class.arabic-font]="isRTL">
-            {{ "documents.view.documentPreview" | translate }}
-          </h3>
-          <div class="preview-content">
-            <p class="document-description" [class.arabic-font]="isRTL">
-              {{ document.description || "No description provided" }}
-            </p>
-            <!-- Attachment Information -->
-            @if (currentAttachment) {
-              <div class="attachment-info">
-                <h4 class="attachment-title">
-                  {{ "documents.view.attachmentInfo" | translate }}
-                </h4>
+      <div class="header-actions">
+        <!-- Edit Button - Only visible for users with edit permission and disabled for signed documents -->
+        <button
+          mat-button
+          class="edit-button"
+          *appHasPermission="{ permission: 'edit', document: document }"
+          (click)="onEdit()"
+        >
+          <mat-icon>edit</mat-icon>
+          {{ "common.edit" | translate }}
+        </button>
+        <!-- Download Button - Always visible -->
+        <button
+          mat-raised-button
+          color="primary"
+          class="download-button"
+          [disabled]="!currentAttachment"
+          (click)="onDownload()"
+        >
+          <mat-icon>open_in_new</mat-icon>
+          {{ "common.openInNew" | translate }}
+        </button>
+        <!-- Sign and Comment Button - Only visible for users with sign permission and disabled for already signed documents -->
+        <button
+          mat-raised-button
+          color="accent"
+          class="sign-comment-button"
+          *appHasPermission="{ permission: 'sign', document: document }"
+          (click)="onSignAndComment()"
+        >
+          <mat-icon>draw</mat-icon>
+          {{ "documents.view.signAndComment" | translate }}
+        </button>
+      </div>
+    </div>
+    <!-- Main Content Area -->
+    <div class="page-content">
+      <!-- Left Panel - Document Preview -->
+      <div class="document-preview-panel">
+        <h3 class="panel-title" [class.arabic-font]="isRTL">
+          {{ "documents.view.documentPreview" | translate }}
+        </h3>
+        <div class="preview-content">
+          <p class="document-description" [class.arabic-font]="isRTL">
+            {{ document.description || "No description provided" }}
+          </p>
+          <!-- Attachments Information -->
+          @if (document.attachments && document.attachments.length > 0) {
+          <div class="attachments-info">
+            <h4 class="attachments-title">
+              {{ "documents.view.attachmentsInfo" | translate }} ({{
+                document.attachments.length
+              }})
+            </h4>
+            <div class="attachments-list">
+              @for (attachment of document.attachments; track attachment.id) {
+              <div
+                class="attachment-item"
+                [class.selected]="attachment.id === currentAttachment?.id"
+              >
                 <div class="attachment-details">
                   <span class="attachment-name">{{
-                    currentAttachment.original_name
+                    attachment.original_name
                   }}</span>
                   <span class="attachment-date">{{
-                    formatDate(currentAttachment.created_at)
+                    formatDate(attachment.created_at)
                   }}</span>
+                  @if (attachment.is_signed) {
+                  <span class="attachment-signed">✓ Signed</span>
+                  }
+                </div>
+                <div class="attachment-actions">
+                  <button
+                    mat-icon-button
+                    (click)="selectAttachment(attachment)"
+                    [disabled]="attachment.id === currentAttachment?.id"
+                    matTooltip="View this attachment"
+                  >
+                    <mat-icon>visibility</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    (click)="downloadAttachment(attachment)"
+                    matTooltip="Download this attachment"
+                  >
+                    <mat-icon>download</mat-icon>
+                  </button>
                 </div>
               </div>
-            }
-            <!-- PDF Viewer -->
-            <div class="pdf-viewer">
-              <div class="pdf-toolbar">
-                <button mat-icon-button class="toolbar-btn">
-                  <mat-icon>menu</mat-icon>
-                </button>
-                <span class="page-info">1 / 1</span>
-                <button mat-icon-button class="toolbar-btn">
-                  <mat-icon>zoom_out</mat-icon>
-                </button>
-                <button mat-icon-button class="toolbar-btn">
-                  <mat-icon>zoom_in</mat-icon>
-                </button>
-                <button mat-icon-button class="toolbar-btn">
-                  <mat-icon>grid_view</mat-icon>
-                </button>
-                <button mat-icon-button class="toolbar-btn">
-                  <mat-icon>rotate_left</mat-icon>
-                </button>
-                <button mat-icon-button class="toolbar-btn">
-                  <mat-icon>rotate_right</mat-icon>
-                </button>
-                <button
-                  mat-icon-button
-                  class="toolbar-btn"
-                  (click)="onDownload()"
-                  >
-                  <mat-icon>download</mat-icon>
-                </button>
-                <button mat-icon-button class="toolbar-btn">
-                  <mat-icon>print</mat-icon>
-                </button>
-                <button mat-icon-button class="toolbar-btn">
-                  <mat-icon>more_vert</mat-icon>
-                </button>
-              </div>
-              <div class="pdf-content">
-                <!-- PDF Content - Show actual document if available -->
-                @if (currentAttachment && currentAttachment.file) {
-                  <div
-                    class="pdf-iframe-container"
-                    >
-                    <!-- <iframe
+              }
+            </div>
+          </div>
+          }
+          <!-- PDF Viewer -->
+          <div class="pdf-viewer">
+            <div class="pdf-toolbar">
+              <button mat-icon-button class="toolbar-btn">
+                <mat-icon>menu</mat-icon>
+              </button>
+              <span class="page-info">1 / 1</span>
+              <button mat-icon-button class="toolbar-btn">
+                <mat-icon>zoom_out</mat-icon>
+              </button>
+              <button mat-icon-button class="toolbar-btn">
+                <mat-icon>zoom_in</mat-icon>
+              </button>
+              <button mat-icon-button class="toolbar-btn">
+                <mat-icon>grid_view</mat-icon>
+              </button>
+              <button mat-icon-button class="toolbar-btn">
+                <mat-icon>rotate_left</mat-icon>
+              </button>
+              <button mat-icon-button class="toolbar-btn">
+                <mat-icon>rotate_right</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                class="toolbar-btn"
+                (click)="onDownload()"
+              >
+                <mat-icon>download</mat-icon>
+              </button>
+              <button mat-icon-button class="toolbar-btn">
+                <mat-icon>print</mat-icon>
+              </button>
+              <button mat-icon-button class="toolbar-btn">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+            </div>
+            <div class="pdf-content">
+              <!-- Document Content - Show actual document if available -->
+              @if (currentAttachment && currentAttachment.file) {
+              <div class="document-content-container">
+                @if (isImageFile(currentAttachment.original_name)) {
+                <!-- Image viewer -->
+                <div class="image-viewer">
+                  <img
                     [src]="mediaURL + currentAttachment.file"
-                    class="pdf-iframe"
-                    title="Document Preview"
-                  ></iframe> -->
-                  <!-- <pdf-viewer
-                  [src]="mediaURL + currentAttachment.file"
-                  [render-text]="true"
-                  [show-all]="true"
-                  style="width: 100%; height: 100%"
-                ></pdf-viewer> -->
-                <ngx-extended-pdf-viewer [src]="mediaURL + currentAttachment.file"
-                 />
+                    [alt]="currentAttachment.original_name"
+                    class="document-image"
+                  />
+                </div>
+                } @else {
+                <!-- PDF viewer -->
+                <div class="pdf-iframe-container">
+                  <ngx-extended-pdf-viewer
+                    [src]="mediaURL + currentAttachment.file"
+                  />
+                </div>
+                }
               </div>
-            }
-            <!-- Document Not Found Message -->
-            @if (!currentAttachment?.file) {
+              }
+              <!-- Document Not Found Message -->
+              @if (!currentAttachment?.file) {
               <div class="document-not-found">
                 <div class="not-found-content">
                   <mat-icon class="not-found-icon">error_outline</mat-icon>
@@ -184,19 +216,19 @@
                   <p>{{ "documents.view.notFoundMessage" | translate }}</p>
                 </div>
               </div>
-            }
+              }
+            </div>
           </div>
         </div>
-      </div>
-      <!-- Right Panel - Document Information -->
-      <div class="document-info-panel">
-        <h3 class="panel-title" [class.arabic-font]="isRTL">
-          {{ "documents.view.documentInformation" | translate }}
-        </h3>
-        <div class="info-content">
-          <div class="info-item">
-            <span class="info-label"
-              >{{ "documents.fields.department" | translate }}:</span
+        <!-- Right Panel - Document Information -->
+        <div class="document-info-panel">
+          <h3 class="panel-title" [class.arabic-font]="isRTL">
+            {{ "documents.view.documentInformation" | translate }}
+          </h3>
+          <div class="info-content">
+            <div class="info-item">
+              <span class="info-label"
+                >{{ "documents.fields.department" | translate }}:</span
               >
               <span class="info-value">{{
                 getDepartmentName(document.department.toString())
@@ -204,42 +236,52 @@
             </div>
             <div class="info-item">
               <span class="info-label"
-                >{{ "documents.fields.attachmentName" | translate }}:</span
-                >
-                <span class="info-value">{{
-                  currentAttachment?.original_name || "No attachment"
-                }}</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label"
-                  >{{ "documents.fields.attachmentDate" | translate }}:</span
-                  >
-                  <span class="info-value">{{
-                    formatDate(currentAttachment?.created_at)
-                  }}</span>
-                </div>
-                <div class="info-item">
-                  <span class="info-label"
-                    >{{ "documents.fields.isSigned" | translate }}:</span
-                    >
-                    <span
-                      class="info-value"
-                [ngClass]="{
-                  signed: currentAttachment?.is_signed,
-                  'not-signed': !currentAttachment?.is_signed
-                }"
-                      >
-                      {{
-                      currentAttachment?.is_signed
-                      ? ("common.yes" | translate)
-                      : ("common.no" | translate)
-                      }}
-                    </span>
-                  </div>
-                </div>
-              </div>
+                >{{ "documents.fields.totalAttachments" | translate }}:</span
+              >
+              <span class="info-value">{{
+                document.attachments?.length || 0
+              }}</span>
             </div>
+            @if (currentAttachment) {
+            <div class="info-item">
+              <span class="info-label"
+                >{{ "documents.fields.currentAttachment" | translate }}:</span
+              >
+              <span class="info-value">{{
+                currentAttachment.original_name || "No attachment"
+              }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label"
+                >{{ "documents.fields.attachmentDate" | translate }}:</span
+              >
+              <span class="info-value">{{
+                formatDate(currentAttachment.created_at)
+              }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label"
+                >{{ "documents.fields.isSigned" | translate }}:</span
+              >
+              <span
+                class="info-value"
+                [ngClass]="{
+                  signed: currentAttachment.is_signed,
+                  'not-signed': !currentAttachment.is_signed
+                }"
+              >
+                {{
+                  currentAttachment.is_signed
+                    ? ("common.yes" | translate)
+                    : ("common.no" | translate)
+                }}
+              </span>
+            </div>
+            }
           </div>
         </div>
-      }
+      </div>
     </div>
+  </div>
+  }
+</div>

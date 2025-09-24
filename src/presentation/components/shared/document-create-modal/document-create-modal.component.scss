@@ -169,6 +169,50 @@
       }
     }
 
+    .file-type-container {
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+
+      .file-type-label {
+        font-size: 0.875rem;
+        color: rgba(0, 0, 0, 0.6);
+        margin-bottom: 0.5rem;
+      }
+
+      .file-type-switch {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        background-color: #f5f5f5;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+
+        span {
+          font-size: 0.875rem;
+          color: #666;
+          transition: all 0.3s ease;
+
+          &.active {
+            color: #1976d2;
+            font-weight: 500;
+          }
+        }
+
+        .mat-slide-toggle {
+          ::ng-deep {
+            .mdc-switch {
+              --mdc-switch-selected-track-color: #1976d2;
+              --mdc-switch-selected-handle-color: #1976d2;
+              --mdc-switch-selected-pressed-handle-color: #1976d2;
+              --mdc-switch-selected-focus-handle-color: #1976d2;
+              --mdc-switch-selected-hover-handle-color: #1976d2;
+            }
+          }
+        }
+      }
+    }
+
     .file-upload-container {
       margin-top: 0.5rem;
       margin-bottom: 1rem;
@@ -201,7 +245,7 @@
           background-color: #f5f7ff;
         }
 
-        &.has-file {
+        &.has-files {
           border-color: #4caf50;
           background-color: #f1f8e9;
         }
@@ -234,11 +278,41 @@
             color: #667eea;
           }
 
-          .file-name {
-            font-weight: 500;
-            color: #4caf50;
-            word-break: break-word;
-            max-width: 100%;
+          .selected-files {
+            width: 100%;
+            max-width: 400px;
+
+            .file-item {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              padding: 0.5rem;
+              background-color: #e8f5e8;
+              border-radius: 4px;
+              margin-bottom: 0.5rem;
+              border: 1px solid #4caf50;
+
+              .file-name {
+                font-weight: 500;
+                color: #2e7d32;
+                word-break: break-word;
+                flex: 1;
+                margin-right: 0.5rem;
+              }
+
+              .remove-file-btn {
+                min-width: auto;
+                width: 32px;
+                height: 32px;
+                padding: 0;
+
+                .mat-icon {
+                  font-size: 18px;
+                  width: 18px;
+                  height: 18px;
+                }
+              }
+            }
           }
 
           .browse-btn {

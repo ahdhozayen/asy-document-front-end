@@ -226,8 +226,14 @@
       "title": "Create New Document",
       "modalTitle": "Create New Document",
       "button": "Create New Document",
-      "selectFile": "Select PDF File",
-      "dragDrop": "Drag and drop a PDF file here, or click to select",
+      "selectFile": "Select File",
+      "uploadPdf": "Upload PDF",
+      "uploadImages": "Upload Images",
+      "changeFile": "Change File",
+      "addMoreFiles": "Add More Files",
+      "dragDrop": "Drag and drop a file here, or click to select",
+      "dragDropPdf": "Drag and drop a PDF file here, or click to select",
+      "dragDropImages": "Drag and drop image files here, or click to select",
       "fileSelected": "File selected:",
       "submit": "Create Document",
       "creating": "Creating...",
@@ -235,6 +241,7 @@
       "error": "Failed to create document",
       "validation": {
         "pdfOnly": "Only PDF files are allowed",
+        "imagesOnly": "Only image files are allowed",
         "required": "This field is required",
         "maxLength": "Maximum length exceeded"
       }
@@ -263,10 +270,16 @@
       "department": "Department",
       "priority": "Priority",
       "status": "Status",
+      "fileType": "File Type",
+      "pdfMode": "PDF Document",
+      "imageMode": "Image Files",
       "attachment": "Document Attachment",
+      "pdfAttachment": "PDF Document",
+      "imageAttachments": "Image Files",
       "attachmentNote": "Upload a new file to replace the current attachment (optional)",
       "selectFile": "Select File",
-      "changeFile": "Change File"
+      "changeFile": "Change File",
+      "addMoreFiles": "Add More Files"
     },
     "delete": {
       "title": "Delete Document",

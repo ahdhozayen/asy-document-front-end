@@ -351,7 +351,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
             description: result.description || '',
             department: result.fromDepartment,
             priority: result.priority,
-            file: result.file,
+            fileType: result.fileType,
+            files: result.files,
           })
           .subscribe({
             next: () => {
@@ -361,8 +362,14 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
               );
               this.loadData(); // Refresh document list
             },
-            error: () => {
+            error: (error) => {
               this.isLoading = false;
+              console.error('Document creation failed:', error);
+              console.error('Error details:', {
+                message: error.message,
+                status: error.status,
+                data: error.data
+              });
               this.toastService.error(
                 this.translate.instant('documents.create.error')
               );

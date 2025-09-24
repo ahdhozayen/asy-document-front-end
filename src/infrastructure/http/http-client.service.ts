@@ -53,6 +53,13 @@ export class HttpClientService {
   }
 
   private handleError = (error: HttpErrorResponse): Observable<never> => {
+    console.error('HTTP Error occurred:', {
+      status: error.status,
+      statusText: error.statusText,
+      url: error.url,
+      message: error.message,
+      error: error.error
+    });
 
     const apiError = new ApiError(
       error.error?.message || error.message || 'An error occurred',
@@ -72,6 +79,9 @@ export class HttpClientService {
 
   post<T>(url: string, data: unknown): Observable<T> {
     const headers = this.getAuthHeaders();
+    console.log('Making POST request to:', url);
+    console.log('Request headers:', headers);
+    console.log('Request data:', data);
     return this.http.post<T>(url, data, { headers }).pipe(
       catchError(this.handleError)
     );

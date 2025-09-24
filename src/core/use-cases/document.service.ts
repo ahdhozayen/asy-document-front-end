@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, BehaviorSubject, throwError } from 'rxjs';
+import { Observable, BehaviorSubject, throwError, forkJoin } from 'rxjs';
 import { map, tap, catchError, switchMap } from 'rxjs/operators';
 import { HttpClientService } from '../../infrastructure/http/http-client.service';
 import { ApiConfig } from '../../infrastructure/http/api.config';
@@ -209,9 +209,20 @@ export class DocumentService {
   }
 
   createDocument(data: CreateDocumentData): Observable<Document> {
-    // Validate file
-    if (!data.file) {
-      return throwError(() => new Error('File is required'));
+    console.log('Starting document creation with data:', data);
+    console.log('API Base URL:', this.config.baseUrl);
+    console.log('Document create endpoint:', this.config.endpoints.documents.create);
+
+    // Validate files
+    if (!data.files || data.files.length === 0) {
+      console.error('No files provided');
+      return throwError(() => new Error('At least one file is required'));
+    }
+
+    // Validate file count based on type
+    if (data.fileType === 'pdf' && data.files.length > 1) {
+      console.error('Multiple PDF files not allowed');
+      return throwError(() => new Error('Only one PDF file is allowed'));
     }
 
     // Step 1: Create document metadata
@@ -219,42 +230,78 @@ export class DocumentService {
       title: data.title,
       description: data.description,
       department: data.department,
-      priority: data.priority
+      priority: data.priority,
+      file_type: data.fileType
     };
 
+    console.log('Step 1: Creating document metadata with:', metadata);
     return this.createDocumentMetadata(metadata).pipe(
       switchMap(document => {
-        // Step 2: Upload file attachment
-        
+        console.log('Step 2: Uploading attachments for document:', document.id);
+        // Step 2: Upload file attachments
         const attachment: UploadDocumentAttachment = {
           documentId: document.id,
-          file: data.file,
-          originalName: data.file.name
+          files: data.files
         };
         return this.uploadDocumentAttachment(attachment);
       }),
       tap(document => {
+        console.log('Document creation completed successfully:', document);
         // Update local documents list
         const currentDocs = this.documentsSubject.value;
         this.documentsSubject.next([document, ...currentDocs]);
+      }),
+      catchError(error => {
+        console.error('Error in createDocument:', error);
+        console.error('Error type:', typeof error);
+        console.error('Error message:', error.message);
+        console.error('Error status:', error.status);
+        return throwError(() => error);
       })
     );
   }
 
   createDocumentMetadata(metadata: CreateDocumentMetadata): Observable<Document> {
+    console.log('Creating document metadata:', metadata);
     return this.httpClient.post<DocumentApiResponse>(this.config.endpoints.documents.create, metadata).pipe(
-      map(response => this.extractDocumentFromResponse(response))
+      map(response => {
+        console.log('Document metadata created successfully:', response);
+        return this.extractDocumentFromResponse(response);
+      }),
+      catchError(error => {
+        console.error('Error creating document metadata:', error);
+        console.error('Metadata sent:', metadata);
+        return throwError(() => error);
+      })
     );
   }
 
   uploadDocumentAttachment(attachment: UploadDocumentAttachment): Observable<Document> {
-    const formData = new FormData();
-    formData.append('document', attachment.documentId.toString());
-    formData.append('file', attachment.file);
-    formData.append('original_name', attachment.originalName);
+    console.log('Uploading attachments:', attachment.files.length, 'files for document:', attachment.documentId);
+    
+    // Upload files sequentially to avoid conflicts
+    const uploadObservables = attachment.files.map((file, index) => {
+      const formData = new FormData();
+      formData.append('document', attachment.documentId.toString());
+      formData.append('file', file);
+      formData.append('original_name', file.name);
 
-    return this.httpClient.postFormData<DocumentApiResponse>(this.config.endpoints.documents.attachments.create, formData).pipe(
-      map(response => this.extractDocumentFromResponse(response))
+      console.log(`Uploading file ${index + 1}/${attachment.files.length}:`, file.name);
+      
+      return this.httpClient.postFormData<DocumentApiResponse>(this.config.endpoints.documents.attachments.create, formData);
+    });
+
+    // Upload all files and return the document (we'll get it from the last response)
+    return forkJoin(uploadObservables).pipe(
+      map(responses => {
+        console.log('All files uploaded successfully');
+        // Return the document from the last response
+        return this.extractDocumentFromResponse(responses[responses.length - 1]);
+      }),
+      catchError(error => {
+        console.error('Error uploading attachments:', error);
+        return throwError(() => error);
+      })
     );
   }
 

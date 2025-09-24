@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LanguageService } from '../../../core/use-cases/language.service';
 import { DocumentService } from '../../../core/use-cases/document.service';
@@ -35,6 +36,7 @@ export interface Department {
     MatDialogModule,
     HasPermissionDirective,
     MatProgressSpinner,
+    MatTooltipModule,
     TranslatePipe,
     NgxExtendedPdfViewerModule,
   ],
@@ -163,13 +165,34 @@ export class DocumentViewComponent implements OnInit {
 
   onDownload(): void {
     if (this.currentAttachment?.file) {
-      // Fallback to direct file path if ID is not available
-      const fileUrl = environment.mediaURL + this.currentAttachment.file;
-      // const fileUrl = `${environment.mediaURL}${normalizedPath}`;
-      window.open(fileUrl, '_blank');
+      this.downloadAttachment(this.currentAttachment);
     } else {
       this.toastService.errorTranslated('documents.download.error');
     }
+  }
+
+  downloadAttachment(attachment: Attachment): void {
+    if (attachment?.file) {
+      const fileUrl = environment.mediaURL + attachment.file;
+      const link = document.createElement('a');
+      link.href = fileUrl;
+      link.download = attachment.original_name || 'document';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      this.toastService.errorTranslated('documents.download.error');
+    }
+  }
+
+  selectAttachment(attachment: Attachment): void {
+    this.currentAttachment = attachment;
+  }
+
+  isImageFile(fileName: string): boolean {
+    if (!fileName) return false;
+    const extension = fileName.split('.').pop()?.toLowerCase();
+    return ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(extension || '');
   }
 
   getStatusColor(status: string): string {

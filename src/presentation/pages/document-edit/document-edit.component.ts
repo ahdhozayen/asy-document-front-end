@@ -18,7 +18,7 @@ import { environment } from '@env/environment';
 import { AuthorizationService } from '../../../core/use-cases/authorization.service';
 import { HasPermissionDirective } from '@presentation/shared/directives/has-permission.directive';
 import { PermissionDisableDirective } from '@presentation/shared/directives/permission-disable.directive';
-import { Document } from '../../../core/entities/document.model';
+import { Document, Attachment } from '../../../core/entities/document.model';
 import { inject } from '@angular/core';
 import { DepartmentService } from '../../../data/services/department.service';
 
@@ -242,8 +242,7 @@ currentDocument: (Document & { uploadDate?: string | Date }) | undefined = undef
           if (this.selectedFile) {
             this.documentService.uploadDocumentAttachment({
               documentId: this.documentId!,
-              file: this.selectedFile,
-              originalName: this.selectedFile.name
+              files: [this.selectedFile]
             }).subscribe({
               next: () => {
                 this.toastService.successTranslated('documents.edit.success');
@@ -350,43 +349,51 @@ currentDocument: (Document & { uploadDate?: string | Date }) | undefined = undef
   }
 
   /**
-   * Opens the current document attachment in a new tab
+   * Opens a specific document attachment in a new tab
+   */
+  viewAttachment(attachment: Attachment): void {
+    if (attachment?.file) {
+      const fileUrl = environment.mediaURL + attachment.file;
+      window.open(fileUrl, '_blank');
+    } else {
+      this.toastService.errorTranslated('documents.view.fileNotFound');
+    }
+  }
+
+  /**
+   * Downloads a specific document attachment
+   */
+  downloadAttachment(attachment: Attachment): void {
+    if (attachment?.file) {
+      const fileUrl = environment.mediaURL + attachment.file;
+      const link = document.createElement('a');
+      link.href = fileUrl;
+      link.download = attachment.original_name || 'document';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      this.toastService.errorTranslated('documents.download.error');
+    }
+  }
+
+  /**
+   * Opens the current document attachment in a new tab (legacy method - keeping for compatibility)
    */
   viewCurrentAttachment(): void {
     if (this.currentDocument?.attachments && this.currentDocument.attachments.length > 0) {
-      const attachment = this.currentDocument.attachments[0];
-
-      if (attachment.file) {
-        const fileUrl = environment.mediaURL + attachment.file;
-        window.open(fileUrl, '_blank');
-        return;
-      }
-
-      this.toastService.errorTranslated('documents.view.fileNotFound');
+      this.viewAttachment(this.currentDocument.attachments[0]);
     } else {
       this.toastService.errorTranslated('documents.view.noAttachment');
     }
   }
 
   /**
-   * Downloads the current document attachment
+   * Downloads the current document attachment (legacy method - keeping for compatibility)
    */
   downloadCurrentAttachment(): void {
     if (this.currentDocument?.attachments && this.currentDocument.attachments.length > 0) {
-      const attachment = this.currentDocument.attachments[0];
-
-      if (attachment.file) {
-        const fileUrl = environment.mediaURL + attachment.file;
-        const link = document.createElement('a');
-        link.href = fileUrl;
-        link.download = attachment.original_name || 'document';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        return;
-      }
-
-      this.toastService.errorTranslated('documents.download.error');
+      this.downloadAttachment(this.currentDocument.attachments[0]);
     } else {
       this.toastService.errorTranslated('documents.view.noAttachment');
     }

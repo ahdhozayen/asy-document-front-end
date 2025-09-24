@@ -80,45 +80,86 @@
           ></textarea>
         </div>
 
+        <!-- File Type Switch -->
+        <div class="file-type-container">
+          <div class="file-type-label">
+            <span [class.arabic-font]="isRTL">{{
+              "documents.form.fileType" | translate
+            }}</span>
+          </div>
+          <div class="file-type-switch">
+            <span [class.arabic-font]="isRTL"
+                  [class.active]="fileType === 'pdf'">
+              {{ "documents.form.pdfMode" | translate }}
+            </span>
+            <mat-slide-toggle
+              [checked]="fileType === 'images'"
+              (change)="onFileTypeChange(!$event.checked)"
+              color="primary">
+            </mat-slide-toggle>
+            <span [class.arabic-font]="isRTL"
+                  [class.active]="fileType === 'images'">
+              {{ "documents.form.imageMode" | translate }}
+            </span>
+          </div>
+        </div>
+
         <!-- File Upload -->
         <div class="file-upload-container">
           <div class="file-upload-label">
             <span [class.arabic-font]="isRTL">{{
-              "documents.form.attachment" | translate
+              fileType === 'pdf' ?
+              ("documents.form.pdfAttachment" | translate) :
+              ("documents.form.imageAttachments" | translate)
             }}</span>
             <span class="required-indicator">*</span>
           </div>
 
           <div
             class="file-upload-area"
-            [class.has-file]="selectedFile"
-          [class.invalid]="
-            documentForm.get('file')?.invalid &&
-            documentForm.get('file')?.touched
-          "
+            [class.has-files]="selectedFiles.length > 0"
+            [class.invalid]="
+              documentForm.get('files')?.invalid &&
+              documentForm.get('files')?.touched
+            "
             >
             <input
               type="file"
               #fileInput
-              accept=".pdf"
+              [accept]="fileType === 'pdf' ? '.pdf' : 'image/*'"
+              [multiple]="fileType === 'images'"
               class="file-input"
-              (change)="onFileSelected($event)"
+              (change)="onFilesSelected($event)"
               />
 
               <div class="upload-content">
                 <mat-icon>upload_file</mat-icon>
-                @if (!selectedFile) {
+                @if (selectedFiles.length === 0) {
                   <span [class.arabic-font]="isRTL">
-                    {{ "documents.create.dragDrop" | translate }}
+                    {{ fileType === 'pdf' ?
+                       ("documents.create.dragDropPdf" | translate) :
+                       ("documents.create.dragDropImages" | translate)
+                    }}
                   </span>
                 }
-                @if (selectedFile) {
-                  <span
-                    class="file-name"
-                    [class.arabic-font]="isRTL"
-                    >
-                    {{ getFileNameFromPath(selectedFile.name) }}
-                  </span>
+                @if (selectedFiles.length > 0) {
+                  <div class="selected-files">
+                    @for (file of selectedFiles; track file.name; let i = $index) {
+                      <div class="file-item">
+                        <span class="file-name" [class.arabic-font]="isRTL">
+                          {{ getFileNameFromPath(file.name) }}
+                        </span>
+                        <button
+                          type="button"
+                          mat-icon-button
+                          color="warn"
+                          (click)="removeFile(i)"
+                          class="remove-file-btn">
+                          <mat-icon>close</mat-icon>
+                        </button>
+                      </div>
+                    }
+                  </div>
                 }
                 <button
                   type="button"
@@ -127,14 +168,21 @@
                   (click)="fileInput.click()"
                   class="browse-btn"
                   >
-                  {{ "documents.create.selectFile" | translate }}
+                  {{ selectedFiles.length === 0 ?
+                     (fileType === 'pdf' ?
+                      ("documents.create.uploadPdf" | translate) :
+                      ("documents.create.uploadImages" | translate)) :
+                     (fileType === 'pdf' ?
+                      ("documents.create.changeFile" | translate) :
+                      ("documents.create.addMoreFiles" | translate))
+                  }}
                 </button>
               </div>
             </div>
 
             @if (
-              documentForm.get('file')?.invalid &&
-              documentForm.get('file')?.touched
+              documentForm.get('files')?.invalid &&
+              documentForm.get('files')?.touched
               ) {
               <div
                 class="error-message"

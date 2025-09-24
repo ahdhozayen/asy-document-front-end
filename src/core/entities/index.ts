@@ -89,7 +89,8 @@ export interface CreateDocumentData {
   description: string;
   department: string | number;
   priority: string;
-  file: File;
+  fileType: 'pdf' | 'images';
+  files: File[];
 }
 
 export interface CreateDocumentMetadata {
@@ -97,10 +98,10 @@ export interface CreateDocumentMetadata {
   description: string;
   department: string | number;
   priority: string;
+  file_type: 'pdf' | 'images';
 }
 
 export interface UploadDocumentAttachment {
   documentId: number;
-  file: File;
-  originalName: string;
+  files: File[];
 }
