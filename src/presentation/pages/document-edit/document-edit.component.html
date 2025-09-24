@@ -112,6 +112,31 @@
             </mat-form-field>
           </div>
 
+          <!-- File Type Switch -->
+          <div class="file-type-container">
+            <div class="file-type-label">
+              <span [class.arabic-font]="isRTL">{{
+                "documents.form.fileType" | translate
+              }}</span>
+            </div>
+            <div class="file-type-switch">
+              <span [class.arabic-font]="isRTL"
+                    [class.active]="fileType === 'pdf'">
+                {{ "documents.form.pdfMode" | translate }}
+              </span>
+              <mat-slide-toggle
+                [checked]="fileType === 'images'"
+                (change)="onFileTypeChange(!$event.checked)"
+                color="primary"
+                [disabled]="!canEditDocument()">
+              </mat-slide-toggle>
+              <span [class.arabic-font]="isRTL"
+                    [class.active]="fileType === 'images'">
+                {{ "documents.form.imageMode" | translate }}
+              </span>
+            </div>
+          </div>
+
           <!-- Document Description -->
           <div class="description-field">
             <label class="field-label" for="description-textarea">{{ "documents.form.description" | translate }} *</label>
@@ -168,14 +193,16 @@
           <!-- Upload New File Section -->
           <div class="upload-new-file-section">
             <h4 class="section-title" [class.arabic-font]="isRTL">
-              {{ "documents.edit.uploadNewFile" | translate }}
+              {{ fileType === 'pdf' ?
+                ("documents.edit.uploadNewFile" | translate) :
+                ("documents.edit.uploadNewImages" | translate) }}
             </h4>
             <div class="file-upload-container">
               <div class="file-upload-area">
                 <input
                   type="file"
                   #fileInput
-                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                  [accept]="getAcceptedFileTypes()"
                   class="file-input"
                   (change)="onFileSelected($event)"
                   />
@@ -186,10 +213,14 @@
                       color="primary"
                       (click)="fileInput.click()"
                       class="choose-file-btn">
-                      {{ "documents.edit.chooseFile" | translate }}
+                      {{ fileType === 'pdf' ?
+                        ("documents.edit.chooseFile" | translate) :
+                        ("documents.edit.chooseImages" | translate) }}
                     </button>
                     <span class="no-file-text" [class.arabic-font]="isRTL">
-                      {{ selectedFile ? selectedFile.name : ('documents.edit.noFileChosen' | translate) }}
+                      {{ selectedFile ? selectedFile.name : (fileType === 'pdf' ?
+                        ('documents.edit.noFileChosen' | translate) :
+                        ('documents.edit.noImagesChosen' | translate)) }}
                     </span>
                   </div>
                 </div>

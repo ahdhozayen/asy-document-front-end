@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
@@ -52,7 +53,8 @@ export interface Department {
         MatTooltipModule,
         TranslateModule,
         HasPermissionDirective,
-        PermissionDisableDirective
+        PermissionDisableDirective,
+        MatSlideToggleModule
     ],
     templateUrl: './document-edit.component.html',
     styleUrls: ['./document-edit.component.scss']
@@ -63,13 +65,15 @@ export class DocumentEditComponent implements OnInit {
   isSubmitting = false;
   selectedFile: File | null = null;
   fileError: string | null = null;
+  fileType: 'pdf' | 'images' = 'pdf';
 currentDocument: (Document & { uploadDate?: string | Date }) | undefined = undefined;
   commentCount = 0;
   documentId: number | null = null;
   departments: Department[] = [];
 
   private readonly maxFileSize = 10 * 1024 * 1024; // 10MB
-  private readonly allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/jpg', 'image/png'];
+  private readonly allowedPdfTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+  private readonly allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/bmp', 'image/webp'];
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -141,6 +145,9 @@ currentDocument: (Document & { uploadDate?: string | Date }) | undefined = undef
             this.router.navigate(['/dashboard']);
             return;
           }
+
+          // Set file type from document
+          this.fileType = this.currentDocument.file_type === 'images' ? 'images' : 'pdf';
 
           this.populateForm();
         },
@@ -265,6 +272,13 @@ currentDocument: (Document & { uploadDate?: string | Date }) | undefined = undef
     }
   }
 
+  onFileTypeChange(isPdf: boolean): void {
+    this.fileType = isPdf ? 'pdf' : 'images';
+    // Clear selected file when switching file type
+    this.selectedFile = null;
+    this.fileError = null;
+  }
+
   private validateAndSetFile(file: File): void {
     this.fileError = null;
 
@@ -274,9 +288,13 @@ currentDocument: (Document & { uploadDate?: string | Date }) | undefined = undef
       return;
     }
 
-    // Check file type
-    if (!this.allowedTypes.includes(file.type)) {
-      this.fileError = 'File type not supported. Please select a PDF, Word document, or image file.';
+    // Check file type based on current file type selection
+    const allowedTypes = this.fileType === 'pdf' ? this.allowedPdfTypes : this.allowedImageTypes;
+    if (!allowedTypes.includes(file.type)) {
+      const typeMessage = this.fileType === 'pdf'
+        ? 'File type not supported. Please select a PDF or Word document.'
+        : 'File type not supported. Please select an image file (JPG, PNG, GIF, etc.).';
+      this.fileError = typeMessage;
       return;
     }
 
@@ -416,6 +434,14 @@ currentDocument: (Document & { uploadDate?: string | Date }) | undefined = undef
     if (!department) return departmentId;
 
     return this.isRTL ? department.name_ar : department.name_en;
+  }
+
+  getAcceptedFileTypes(): string {
+    return this.fileType === 'pdf' ? '.pdf,.doc,.docx' : 'image/*';
+  }
+
+  getFileTypeLabel(): string {
+    return this.fileType === 'pdf' ? 'PDF/Word Documents' : 'Image Files';
   }
   onComments(): void {
   if (this.documentId && this.canCommentOnDocument()) {

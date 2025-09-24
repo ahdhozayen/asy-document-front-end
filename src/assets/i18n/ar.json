@@ -158,6 +158,8 @@
       "redirectDepartment": "إعادة توجيه إلى قسم",
       "attachmentName": "اسم المرفق",
       "attachmentDate": "تاريخ المرفق",
+      "totalAttachments": "إجمالي المرفقات",
+      "currentAttachment": "المرفق الحالي",
       "isSigned": "موقع",
       "uploadDate": "تاريخ الرفع",
       "fileSize": "حجم الملف",
@@ -178,6 +180,7 @@
       "documentPreview": "معاينة المكاتبة",
       "documentInformation": "معلومات المكاتبة",
       "attachmentInfo": "معلومات المرفق",
+      "attachmentsInfo": "معلومات المرفقات",
       "notFound": "المكاتبة غير موجودة",
       "notFoundMessage": "لم يتم العثور على المكاتبة المطلوبة أو ليس لديك صلاحية لعرضها.",
       "signAndComment": "توقيع وتعليق"
@@ -253,9 +256,14 @@
       "fileSize": "حجم الملف:",
       "fileType": "نوع الملف:",
       "currentFile": "الملف الحالي",
+      "currentFiles": "الملفات الحالية",
       "viewFile": "عرض الملف",
       "noFileChosen": "لم يتم اختيار ملف",
       "uploadNewFile": "رفع ملف جديد",
+      "uploadNewImages": "رفع صور جديدة",
+      "chooseFile": "اختيار ملف",
+      "chooseImages": "اختيار صور",
+      "noImagesChosen": "لم يتم اختيار صور",
       "loadWarning": "تعذر تحميل تفاصيل الوثيقة. قد تكون بعض المعلومات مفقودة."
     },
     "form": {

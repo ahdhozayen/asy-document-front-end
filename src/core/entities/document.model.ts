@@ -50,6 +50,7 @@ export interface DocumentApiResponse {
   fileUrl?: string;
   comments?: string;
   redirect_department?: string;
+  file_type?: 'pdf' | 'images';
   attachments?: Attachment[];
 }
 
@@ -72,6 +73,7 @@ export class Document {
     public readonly fileUrl?: string,
     public readonly comments?: string,
     public readonly redirectDepartment?: string,
+    public readonly file_type?: 'pdf' | 'images',
     public readonly attachments?: Attachment[]
   ) {}
 
@@ -225,6 +227,7 @@ export class Document {
       data.file_url || data.fileUrl,
       data.comments,
       data.redirect_department,
+      data.file_type || 'pdf',
       data.attachments
     );
   }
@@ -262,6 +265,7 @@ export class Document {
       this.fileUrl,
       this.comments,
       this.redirectDepartment,
+      this.file_type,
       this.attachments
     );
   }
@@ -285,6 +289,7 @@ export class Document {
       this.fileUrl,
       comments,
       this.redirectDepartment,
+      this.file_type,
       this.attachments
     );
   }
