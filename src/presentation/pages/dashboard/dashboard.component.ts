@@ -561,6 +561,13 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.loadData();
   }
 
+  onCardClick(status: string): void {
+    // Update the status filter based on the clicked card
+    this.filterForm.patchValue({
+      status: status,
+    });
+  }
+
   openChangePasswordModal(): void {
     const dialogRef = this.dialog.open(ChangePasswordModalComponent, {
       width: '400px',

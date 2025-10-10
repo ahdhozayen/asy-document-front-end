@@ -63,7 +63,7 @@
       <!-- Stats Cards -->
       <div class="dashboard-stats">
         <!-- Total Documents -->
-        <mat-card class="stat-card stat-card-total">
+        <mat-card class="stat-card stat-card-total clickable-card" (click)="onCardClick('all')">
           <div class="stat-icon-box">
             <mat-icon>description</mat-icon>
           </div>
@@ -78,7 +78,7 @@
         </mat-card>
 
         <!-- Signed Documents -->
-        <mat-card class="stat-card stat-card-signed">
+        <mat-card class="stat-card stat-card-signed clickable-card" (click)="onCardClick('signed')">
           <div class="stat-icon-box">
             <mat-icon>task_alt</mat-icon>
           </div>
@@ -93,7 +93,7 @@
         </mat-card>
 
         <!-- Pending Documents -->
-        <mat-card class="stat-card stat-card-pending">
+        <mat-card class="stat-card stat-card-pending clickable-card" (click)="onCardClick('pending')">
           <div class="stat-icon-box">
             <mat-icon>pending</mat-icon>
           </div>

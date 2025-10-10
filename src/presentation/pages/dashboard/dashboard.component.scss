@@ -210,6 +210,33 @@
       cursor: pointer;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
+      &.clickable-card {
+        cursor: pointer;
+        user-select: none;
+        
+        &:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+          
+          &::before {
+            opacity: 1;
+          }
+          
+          .stat-icon-box {
+            transform: scale(1.1) rotate(5deg);
+          }
+          
+          .stat-number {
+            transform: scale(1.05);
+          }
+        }
+        
+        &:active {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+      }
+
       &::before {
         content: '';
         position: absolute;
