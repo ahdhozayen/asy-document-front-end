@@ -64,65 +64,49 @@
       <div class="dashboard-stats">
         <!-- Total Documents -->
         <mat-card class="stat-card stat-card-total">
-          <div class="flex items-center">
-            <div
-              class="stat-icon-box bg-[#001BB7] flex items-center justify-center rounded-full mr-4"
-              style="width: 56px; height: 56px"
-              >
-              <mat-icon style="color: #fff; font-size: 25px"
-                >description</mat-icon
-                >
-              </div>
+          <div class="stat-icon-box">
+            <mat-icon>description</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number" [class.arabic-font]="isRTL">
+              {{ documentStats.total }}
             </div>
+            <div class="stat-label" [class.arabic-font]="isRTL">
+              {{ "dashboard.stats.total" | translate }}
+            </div>
+          </div>
+        </mat-card>
 
-            <div
-              class="text-5xl text-gray-500 font-bold text-[#001BB7]"
-              [class.arabic-font]="isRTL"
-              >
-              {{ "dashboard.stats.total" | translate }} {{ documentStats.total }}
+        <!-- Signed Documents -->
+        <mat-card class="stat-card stat-card-signed">
+          <div class="stat-icon-box">
+            <mat-icon>task_alt</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number" [class.arabic-font]="isRTL">
+              {{ documentStats.signed }}
             </div>
-          </mat-card>
+            <div class="stat-label" [class.arabic-font]="isRTL">
+              {{ "dashboard.stats.signed" | translate }}
+            </div>
+          </div>
+        </mat-card>
 
-          <!-- Signed Documents -->
-          <mat-card
-            class="stat-card stat-card-signed inline-flex min-w-[280px] w-[280px] flex-shrink-0 bg-white rounded-xl shadow-md flex-row items-center justify-between px-6"
-            >
-            <div class="flex items-center">
-              <div
-                class="stat-icon-box bg-[#0046FF] flex items-center justify-center rounded-full mr-4"
-                style="width: 56px; height: 56px"
-                >
-                <mat-icon style="color: #fff; font-size: 25px">task_alt</mat-icon>
-              </div>
-            </div>
-            <div
-              class="text-5xl text-gray-500 font-bold text-[#0046FF]"
-              [class.arabic-font]="isRTL"
-              >
-              {{ "dashboard.stats.signed" | translate }} {{ documentStats.signed }}
-            </div>
-          </mat-card>
-          <!-- Pending Documents -->
-          <mat-card
-            class="stat-card stat-card-pending inline-flex min-w-[280px] w-[280px] flex-shrink-0 bg-white rounded-xl shadow-md flex-row items-center justify-between px-6"
-            >
-            <div class="flex items-center">
-              <div
-                class="stat-icon-box bg-[#FF8040] flex items-center justify-center rounded-full mr-4"
-                style="width: 56px; height: 56px"
-                >
-                <mat-icon style="color: #fff; font-size: 25px">pending</mat-icon>
-              </div>
-            </div>
-            <div
-              class="text-5xl text-gray-500 font-bold text-[#FF8040]"
-              [class.arabic-font]="isRTL"
-              >
-              {{ "dashboard.stats.pending" | translate }}
+        <!-- Pending Documents -->
+        <mat-card class="stat-card stat-card-pending">
+          <div class="stat-icon-box">
+            <mat-icon>pending</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number" [class.arabic-font]="isRTL">
               {{ documentStats.pending }}
             </div>
-          </mat-card>
-        </div>
+            <div class="stat-label" [class.arabic-font]="isRTL">
+              {{ "dashboard.stats.pending" | translate }}
+            </div>
+          </div>
+        </mat-card>
+      </div>
 
         <!-- Filters Section -->
         <mat-card class="filters-card">
