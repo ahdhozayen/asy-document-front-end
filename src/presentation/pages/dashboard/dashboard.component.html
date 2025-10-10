@@ -352,7 +352,7 @@
                       </th>
                       <td mat-cell *matCellDef="let document">
                         <div class="actions-container" [class.rtl]="isRTL">
-                          <!-- View Button - Only visible for CEO users -->
+                          <!-- View Button - Visible for both CEO and helpdesk users -->
                           <button
                             mat-icon-button
                             color="primary"
@@ -362,14 +362,14 @@
                             >
                             <mat-icon>visibility</mat-icon>
                           </button>
-                          <!-- Edit Button - Only visible for helpdesk users and disabled for signed documents -->
+                          <!-- Edit Button - Only visible for helpdesk users on unsigned documents -->
                           <button
                             mat-icon-button
                             color="accent"
-                    *appHasPermission="{
-                      permission: 'edit',
-                      document: document
-                    }"
+                            *appHasPermission="{
+                              permission: 'edit',
+                              document: document
+                            }"
                             (click)="onEditDocument(document)"
                             [matTooltip]="'dashboard.actions.edit' | translate"
                             >

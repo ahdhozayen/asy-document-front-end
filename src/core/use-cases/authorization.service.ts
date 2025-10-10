@@ -25,11 +25,11 @@ export class AuthorizationService {
 
   /**
    * Checks if the current user can view documents on the dashboard
-   * According to requirements, only CEO users can view documents on the dashboard
+   * Both CEO and helpdesk users can view documents on the dashboard
    */
   canViewDocumentOnDashboard(): Observable<boolean> {
     return this.authService.currentUser$.pipe(
-      map((user) => !!user && user.isCEO())
+      map((user) => !!user && (user.isCEO() || user.isHelpdesk()))
     );
   }
 
@@ -150,11 +150,11 @@ export class AuthorizationService {
   canViewDocumentOnDashboardSync(userRole?: UserRole): boolean {
     // If no user role is provided, use the current user from auth service
     if (!userRole && this.authService.currentUser) {
-      return this.authService.currentUser.isCEO();
+      return this.authService.currentUser.isCEO() || this.authService.currentUser.isHelpdesk();
     }
 
-    // Only CEO users can view documents on dashboard
-    return userRole === USER_ROLES.CEO;
+    // Both CEO and helpdesk users can view documents on dashboard
+    return userRole === USER_ROLES.CEO || userRole === USER_ROLES.HELPDESK;
   }
 
   /**

@@ -175,12 +175,8 @@ export class DocumentViewComponent implements OnInit {
   downloadAttachment(attachment: Attachment): void {
     if (attachment?.file) {
       const fileUrl = environment.mediaURL + attachment.file;
-      const link = document.createElement('a');
-      link.href = fileUrl;
-      link.download = attachment.original_name || 'document';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      // Open file in a new tab instead of downloading
+      window.open(fileUrl, '_blank');
     } else {
       this.toastService.errorTranslated('documents.download.error');
     }
