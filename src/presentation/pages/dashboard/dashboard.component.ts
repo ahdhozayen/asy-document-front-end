@@ -121,6 +121,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     'department',
     'priority',
     'status',
+    'version',
     'createdAt',
     'actions',
   ];

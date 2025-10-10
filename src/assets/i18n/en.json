@@ -97,6 +97,7 @@
       "department": "Department",
       "priority": "Priority",
       "status": "Status",
+      "version": "Version",
       "createdAt": "Created Date",
       "actions": "Actions"
     },

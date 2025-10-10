@@ -15,6 +15,8 @@ export interface Attachment {
   is_signed: boolean;
   created_at: string;
   document: number;
+  version_number?: number;
+  original_file?: string;
 }
 
 export interface DocumentUser {
@@ -175,6 +177,12 @@ export class Document {
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - this.created_at.getTime());
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  get maxVersion(): number {
+    if (!this.attachments || this.attachments.length === 0) return 1;
+    const versions = this.attachments.map(att => att.version_number || 1);
+    return Math.max(...versions);
   }
 
   get formattedCreatedAt(): string {

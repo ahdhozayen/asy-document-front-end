@@ -57,7 +57,7 @@
             <mat-select formControlName="priority">
               @for (priority of priorities; track priority) {
                 <mat-option [value]="priority.toLowerCase()">
-                  {{ priority.toLowerCase() | translate }}
+                  {{ "priorities." + priority.toLowerCase() | translate }}
                 </mat-option>
               }
             </mat-select>

@@ -97,6 +97,7 @@
       "department": "القسم",
       "priority": "الأولوية",
       "status": "الحالة",
+      "version": "الإصدار",
       "createdAt": "تاريخ الإنشاء",
       "actions": "الإجراءات"
     },
