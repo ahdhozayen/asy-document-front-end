@@ -159,40 +159,7 @@
           }
           <!-- PDF Viewer -->
           <div class="pdf-viewer">
-            <div class="pdf-toolbar">
-              <button mat-icon-button class="toolbar-btn">
-                <mat-icon>menu</mat-icon>
-              </button>
-              <span class="page-info">1 / 1</span>
-              <button mat-icon-button class="toolbar-btn">
-                <mat-icon>zoom_out</mat-icon>
-              </button>
-              <button mat-icon-button class="toolbar-btn">
-                <mat-icon>zoom_in</mat-icon>
-              </button>
-              <button mat-icon-button class="toolbar-btn">
-                <mat-icon>grid_view</mat-icon>
-              </button>
-              <button mat-icon-button class="toolbar-btn">
-                <mat-icon>rotate_left</mat-icon>
-              </button>
-              <button mat-icon-button class="toolbar-btn">
-                <mat-icon>rotate_right</mat-icon>
-              </button>
-              <button
-                mat-icon-button
-                class="toolbar-btn"
-                (click)="onDownload()"
-              >
-                <mat-icon>download</mat-icon>
-              </button>
-              <button mat-icon-button class="toolbar-btn">
-                <mat-icon>print</mat-icon>
-              </button>
-              <button mat-icon-button class="toolbar-btn">
-                <mat-icon>more_vert</mat-icon>
-              </button>
-            </div>
+            
             <div class="pdf-content">
               <!-- Document Content - Show actual document if available -->
               @if (currentAttachment && currentAttachment.file) {
@@ -211,6 +178,11 @@
                 <div class="pdf-iframe-container">
                   <ngx-extended-pdf-viewer
                     [src]="mediaURL + currentAttachment.file"
+                    [showToolbar]="false"
+                    [showSidebarButton]="false"
+                    [showDownloadButton]="false"
+                    [showPrintButton]="false"
+                    [showRotateButton]="false"
                   />
                 </div>
                 }
