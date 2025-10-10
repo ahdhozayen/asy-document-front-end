@@ -68,6 +68,9 @@ export class ApiConfig {
           detail: (id: number) => `${this.baseUrl}/documents/attachments/${id}`,
           delete: (id: number) => `${this.baseUrl}/documents/attachments/${id}`,
         },
+        signatures: {
+          list: (attachmentId: number) => `${this.baseUrl}/documents/signature/list?attachment_id=${attachmentId}`,
+        },
       },
     };
   }

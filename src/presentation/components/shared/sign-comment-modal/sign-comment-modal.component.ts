@@ -51,6 +51,7 @@ export class SignCommentModalComponent implements OnInit {
   isRTL = false;
   isLoading = false;
   attachmentId: number | null = null;
+  isReplacement = false;
   private canvas!: HTMLCanvasElement;
   private ctx!: CanvasRenderingContext2D;
   public dialogRef = inject(MatDialogRef<SignCommentModalComponent>);
@@ -63,10 +64,22 @@ export class SignCommentModalComponent implements OnInit {
     // Try to detect RTL from document or use a service if available
     this.isRTL =
       document.dir === 'rtl' || document.documentElement.dir === 'rtl';
-    
+
     // Get attachment ID from dialog data
     if (this.data && this.data.attachmentId) {
       this.attachmentId = this.data.attachmentId;
+    }
+
+    // Pre-populate comments if this is a replacement
+    if (this.data && this.data.existingComments) {
+      this.form.patchValue({
+        comments: this.data.existingComments
+      });
+    }
+
+    // Set replacement flag
+    if (this.data && this.data.isReplacement) {
+      this.isReplacement = this.data.isReplacement;
     }
   }
 

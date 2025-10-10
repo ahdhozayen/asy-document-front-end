@@ -150,15 +150,52 @@ export class DocumentViewComponent implements OnInit {
       this.document.attachments.length > 0
     ) {
       const attachmentId = this.document.attachments[0].id;
-      const dialogRef = this.dialog.open(SignCommentModalComponent, {
-        width: '500px',
-        maxWidth: '95vw',
-        disableClose: true,
-        data: { attachmentId: attachmentId }
-      });
-      dialogRef.afterClosed().subscribe((result) => {
-        if (result && result.success) {
-          this.loadDocument();
+
+      // Fetch existing signatures for this attachment
+      this.documentService.getSignaturesForAttachment(attachmentId).subscribe({
+        next: (signatures) => {
+          // Get the most recent signature's comments if exists
+          let existingComments = '';
+          if (signatures && signatures.length > 0) {
+            // Sort by signed_at descending to get most recent
+            const sortedSignatures = signatures.sort((a, b) =>
+              new Date(b.signed_at).getTime() - new Date(a.signed_at).getTime()
+            );
+            existingComments = this.document?.comments || '';
+          }
+
+          const dialogRef = this.dialog.open(SignCommentModalComponent, {
+            width: '500px',
+            maxWidth: '95vw',
+            disableClose: true,
+            data: {
+              attachmentId: attachmentId,
+              existingComments: existingComments,
+              isReplacement: signatures && signatures.length > 0
+            }
+          });
+
+          dialogRef.afterClosed().subscribe((result) => {
+            if (result && result.success) {
+              this.loadDocument();
+            }
+          });
+        },
+        error: (error) => {
+          console.error('Error fetching signatures:', error);
+          // Open modal anyway without existing comments
+          const dialogRef = this.dialog.open(SignCommentModalComponent, {
+            width: '500px',
+            maxWidth: '95vw',
+            disableClose: true,
+            data: { attachmentId: attachmentId }
+          });
+
+          dialogRef.afterClosed().subscribe((result) => {
+            if (result && result.success) {
+              this.loadDocument();
+            }
+          });
         }
       });
     }

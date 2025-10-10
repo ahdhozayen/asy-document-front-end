@@ -508,6 +508,32 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  getPriorityIcon(priority: string): string {
+    switch (priority) {
+      case 'high':
+        return 'arrow_upward';
+      case 'medium':
+        return 'remove';
+      case 'low':
+        return 'arrow_downward';
+      default:
+        return 'help_outline';
+    }
+  }
+
+  getStatusIcon(status: string): string {
+    switch (status) {
+      case 'pending':
+        return 'pending';
+      case 'in_review':
+        return 'rate_review';
+      case 'signed':
+        return 'check_circle';
+      default:
+        return 'help_outline';
+    }
+  }
+
   formatDate(date: Date): string {
     return new Intl.DateTimeFormat(this.languageService.currentLanguage, {
       year: 'numeric',

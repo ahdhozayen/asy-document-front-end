@@ -94,14 +94,15 @@ export class AuthorizationService {
 
   /**
    * Checks if the current user can sign a document
-   * Only CEO users can sign documents that are in review
+   * CEO users can sign documents that are pending, in review, or already signed (for re-signing)
    */
   canSignDocument(document: Document): Observable<boolean> {
     return this.authService.currentUser$.pipe(
       map((user) => {
         if (!user || !document) return false;
 
-        return document.status === DOCUMENT_STATUS.PENDING && user.isCEO();
+        // CEO can sign documents in any status (pending, in_review, or signed for re-signing)
+        return user.isCEO();
       })
     );
   }
@@ -171,17 +172,16 @@ export class AuthorizationService {
   /**
    * Synchronous method to check if a document can be signed
    * Used for quick checks in templates
+   * CEO can sign documents in any status (for initial signing or re-signing)
    */
   canSignDocumentSync(document: Document): boolean {
     if (!document) return false;
 
     // If no user role is provided, use the current user from auth service
     if (this.authService.currentUser) {
-      // Only CEO can sign documents
-      if (!this.authService.currentUser.isCEO()) return false;
-
-      // Only documents in review can be signed
-      return document.isInReview;
+      // Only CEO can sign documents, regardless of document status
+      // This allows for both initial signing and re-signing
+      return this.authService.currentUser.isCEO();
     }
 
     return false;

@@ -1,6 +1,14 @@
 <h2 mat-dialog-title>{{ "documents.signAndComment.title" | translate }}</h2>
 <form [formGroup]="form">
   <div mat-dialog-content [class.rtl]="isRTL" [attr.dir]="isRTL ? 'rtl' : 'ltr'">
+    @if (isReplacement) {
+      <div class="replacement-warning" style="background-color: #fff3cd; padding: 12px; margin-bottom: 16px; border-radius: 4px; border-left: 4px solid #fbbf24;">
+        <strong style="color: #856404;">⚠️ {{ "documents.signAndComment.replacementWarning" | translate }}</strong>
+        <p style="margin: 8px 0 0 0; color: #856404; font-size: 0.9em;">
+          {{ "documents.signAndComment.replacementInfo" | translate }}
+        </p>
+      </div>
+    }
     <div class="signature-section">
       <label>{{ "documents.signAndComment.commentsLabel" | translate }} ({{ "common.optional" | translate }})</label>
       <mat-form-field   appearance="outline" class="form-field">

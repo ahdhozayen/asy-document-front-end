@@ -439,6 +439,19 @@ export class DocumentService {
     return this.httpClient.delete<void>(this.config.endpoints.documents.attachments.delete(attachmentId));
   }
 
+  getSignaturesForAttachment(attachmentId: number): Observable<any[]> {
+    return this.httpClient.get<any[]>(this.config.endpoints.documents.signatures.list(attachmentId)).pipe(
+      map(response => {
+        // Handle array response
+        return Array.isArray(response) ? response : [];
+      }),
+      catchError(error => {
+        console.error('Error fetching signatures:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
   // Getters for current state
   get documents(): Document[] {
     return this.documentsSubject.value;

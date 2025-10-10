@@ -25,7 +25,8 @@
     "all": "All",
     "saveChanges": "Save Changes",
     "comments": "Comments",
-    "openInNew": "Open in New"
+    "openInNew": "Open in New",
+    "optional": "Optional"
   },
   "departments": {
     "finance": "Finance",
@@ -213,7 +214,9 @@
       "commentsRequired": "Comments are required",
       "commentsMinLength": "Comments must be at least {min} characters",
       "success": "Document signed and commented successfully",
-      "error": "Failed to sign and comment on document"
+      "error": "Failed to sign and comment on document",
+      "replacementWarning": "Warning: Replacing Existing Signature",
+      "replacementInfo": "This document has already been signed. Creating a new signature will replace the previous one."
     },
     "upload": {
       "title": "Upload Document",

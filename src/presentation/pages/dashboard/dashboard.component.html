@@ -303,12 +303,14 @@
                         {{ "dashboard.documentsTable.priority" | translate }}
                       </th>
                       <td mat-cell *matCellDef="let document">
-                        <mat-chip
-                          [color]="getPriorityColor(document.priority)"
-                          selected
-                          >
-                          {{ "priorities." + document.priority | translate }}
-                        </mat-chip>
+                        <div class="badge-container" [class.arabic-font]="isRTL">
+                          <mat-icon [class]="'priority-icon priority-' + document.priority">
+                            {{ getPriorityIcon(document.priority) }}
+                          </mat-icon>
+                          <span [class]="'priority-text priority-' + document.priority">
+                            {{ "priorities." + document.priority | translate }}
+                          </span>
+                        </div>
                       </td>
                     </ng-container>
                     <!-- Status Column -->
@@ -322,9 +324,14 @@
                         {{ "dashboard.documentsTable.status" | translate }}
                       </th>
                       <td mat-cell *matCellDef="let document">
-                        <mat-chip [color]="getStatusColor(document.status)" selected>
-                          {{ "statuses." + document.status | translate }}
-                        </mat-chip>
+                        <div class="badge-container" [class.arabic-font]="isRTL">
+                          <mat-icon [class]="'status-icon status-' + document.status">
+                            {{ getStatusIcon(document.status) }}
+                          </mat-icon>
+                          <span [class]="'status-text status-' + document.status">
+                            {{ "statuses." + document.status | translate }}
+                          </span>
+                        </div>
                       </td>
                     </ng-container>
                     <!-- Created At Column -->
