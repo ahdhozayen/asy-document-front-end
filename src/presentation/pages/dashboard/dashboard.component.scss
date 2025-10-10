@@ -454,6 +454,10 @@
         font-weight: 500;
         font-size: 0.75rem;
         border-radius: 16px;
+        min-width: 90px;
+        display: inline-flex;
+        justify-content: center;
+        text-align: center;
 
         // Priority colors
         &.mat-warn {
@@ -685,6 +689,11 @@
       .actions-container {
         flex-direction: column;
         gap: 0.25rem;
+      }
+
+      mat-chip {
+        min-width: 75px;
+        font-size: 0.65rem;
       }
     }
   }
