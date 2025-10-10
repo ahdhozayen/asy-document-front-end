@@ -2,24 +2,14 @@
 <form [formGroup]="form">
   <div mat-dialog-content [class.rtl]="isRTL" [attr.dir]="isRTL ? 'rtl' : 'ltr'">
     <div class="signature-section">
-      <label>{{ "documents.signAndComment.commentsLabel" | translate }}</label>
+      <label>{{ "documents.signAndComment.commentsLabel" | translate }} ({{ "common.optional" | translate }})</label>
       <mat-form-field   appearance="outline" class="form-field">
         <textarea style="background-color: #fff;" matInput formControlName="comments" rows="4" cols="60" ></textarea>
-        @if (form.get('comments')?.hasError('required') && form.get('comments')?.touched) {
-          <mat-error>
-            {{ "documents.signAndComment.commentsRequired" | translate }}
-          </mat-error>
-        }
-        @if (form.get('comments')?.hasError('minlength') && form.get('comments')?.touched) {
-          <mat-error>
-            {{ "documents.signAndComment.commentsMinLength" | translate:{min:2} }}
-          </mat-error>
-        }
       </mat-form-field>
     </div>
 
     <div class="signature-section">
-      <label>{{ "documents.signAndComment.signatureLabel" | translate }}</label>
+      <label>{{ "documents.signAndComment.signatureLabel" | translate }} ({{ "common.optional" | translate }})</label>
       <div class="signature-pad-container">
         <canvas
           #signatureCanvas
@@ -45,13 +35,6 @@
           {{ "documents.signAndComment.clearSignature" | translate }}
         </button>
       </div>
-      @if (form.get('signature')?.invalid && form.get('signature')?.touched) {
-        <div
-          class="error-message"
-          >
-          {{ "documents.signAndComment.signatureRequired" | translate }}
-        </div>
-      }
     </div>
   </div>
 
@@ -64,7 +47,7 @@
       color="primary"
       type="submit"
       (click)="onSave()"
-      [disabled]="form.invalid || isLoading"
+      [disabled]="isLoading"
       >
       @if (isLoading) {
         <mat-spinner diameter="20" class="button-spinner" />

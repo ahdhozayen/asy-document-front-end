@@ -72,8 +72,8 @@ export class SignCommentModalComponent implements OnInit {
 
   constructor() {
     this.form = this.fb.group({
-      comments: ['', [Validators.required, Validators.minLength(2)]],
-      signature: ['', Validators.required],
+      comments: [''],
+      signature: [''],
     });
   }
 
@@ -206,11 +206,11 @@ export class SignCommentModalComponent implements OnInit {
   }
 
   onSave(): void {
-    if (this.form.valid && this.attachmentId) {
+    if (this.attachmentId) {
       this.isLoading = true;
       console.log(this.form.value);
       let commentsBase64 = this.updateCommentsValue();
-      
+
       this.documentService
         .signDocumentWithComment({
           attachment: this.attachmentId,
@@ -232,8 +232,6 @@ export class SignCommentModalComponent implements OnInit {
             );
           },
         });
-    } else {
-      this.form.markAllAsTouched();
     }
   }
 
