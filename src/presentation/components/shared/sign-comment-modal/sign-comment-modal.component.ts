@@ -99,8 +99,8 @@ export class SignCommentModalComponent implements OnInit {
     this.ctx = this.canvas.getContext('2d', { alpha: true })!;
     this.canvas.width = 450;
     this.canvas.height = 300;
-    this.ctx.strokeStyle = '#000';
-    this.ctx.lineWidth = 2;
+    this.ctx.strokeStyle = '#FF0000'; // Red color for signature
+    this.ctx.lineWidth = 4; // Thicker line for bolder signature
     this.ctx.lineCap = 'round';
     this.ctx.lineJoin = 'round';
     this.clearCanvas();
@@ -202,15 +202,15 @@ export class SignCommentModalComponent implements OnInit {
     tempCanvas.height = this.canvas.height+50;
     const tempCtx = tempCanvas.getContext('2d')!;
     tempCtx.drawImage(this.canvas, 0, 0);
-    // Set text properties
-    tempCtx.font = '20px Arial'; // Use a font that supports Arabic, e.g., 'Arial' or 'Noto Sans Arabic'
-    tempCtx.fillStyle = 'black';
+    // Set text properties - Bigger, bolder, and red
+    tempCtx.font = 'bold 32px Arial'; // Bigger and bolder font that supports Arabic
+    tempCtx.fillStyle = '#FF0000'; // Red color for comments
     tempCtx.textAlign = 'right'; // Arabic is right-to-left
     tempCtx.textBaseline = 'middle';
 
     // Split text by newline and draw each line
     const lines = this.form.value.comments.split('\n');
-    const lineHeight = 30; // Adjust line height as needed
+    const lineHeight = 40; // Increased line height for bigger font
     lines.forEach((line, index) => {
       tempCtx?.fillText(line, tempCanvas.width - 10, 10 + index * lineHeight);
     });
