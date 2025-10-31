@@ -201,22 +201,52 @@ export class SignCommentModalComponent implements OnInit {
     const tempCanvas = document.createElement('canvas');
     const tempCtx = tempCanvas.getContext('2d')!;
 
-    // LARGER FIXED WIDTH for better readability
-    const FIXED_WIDTH = 2000;  // Increased from 1000 to 1500px
-    const MAX_TEXT_WIDTH = FIXED_WIDTH; // Leave margins
-    const lineHeight = 50;  // Increased from 40 to 50px
+    // Get current language to determine text direction
+    const isRTL = this.languageService.isRTL;
+    const textDirection = isRTL ? 'rtl' : 'ltr';
+    const textAlign = isRTL ? 'right' : 'left'; // Right-align for RTL, left-align for LTR
+
+    // FIXED WIDTH for comments image
+    const FIXED_WIDTH = 1200;  // Image width in pixels
     const padding = 30;
+    const MAX_TEXT_WIDTH = FIXED_WIDTH - (padding * 2); // Account for margins
+    const lineHeight = 50;  // Increased from 40 to 50px
 
     // Set text properties FIRST for measuring
     tempCtx.font = 'bold 36px Arial'; // Increased from 32px to 36px
     tempCtx.fillStyle = '#FF0000';
-    tempCtx.textAlign = 'start';
-    tempCtx.direction = 'rtl';
+    tempCtx.textAlign = textAlign as CanvasTextAlign;
+    tempCtx.direction = textDirection;
     tempCtx.textBaseline = 'top';
 
     // Split by newlines and wrap long lines
     const inputLines = this.form.value.comments.split('\n');
     const wrappedLines: string[] = [];
+
+    // Helper function to break long word into smaller chunks
+    const breakLongWord = (word: string, maxWidth: number): string[] => {
+      const chunks: string[] = [];
+      let currentChunk = '';
+
+      // Try breaking by characters for very long words
+      for (let i = 0; i < word.length; i++) {
+        const testChunk = currentChunk + word[i];
+        const metrics = tempCtx.measureText(testChunk);
+
+        if (metrics.width > maxWidth && currentChunk) {
+          chunks.push(currentChunk);
+          currentChunk = word[i];
+        } else {
+          currentChunk = testChunk;
+        }
+      }
+
+      if (currentChunk) {
+        chunks.push(currentChunk);
+      }
+
+      return chunks.length > 0 ? chunks : [word];
+    };
 
     // Wrap each line if it's too long
     inputLines.forEach((line) => {
@@ -229,22 +259,44 @@ export class SignCommentModalComponent implements OnInit {
       let currentLine = '';
 
       words.forEach((word, index) => {
-        const testLine = currentLine ? currentLine + ' ' + word : word;
-        const metrics = tempCtx.measureText(testLine);
-
-        if (metrics.width > MAX_TEXT_WIDTH && currentLine) {
-          // Line is too long, push current line and start new one
-          wrappedLines.push(currentLine);
-          currentLine = word;
+        // Check if the word itself is too long
+        const wordMetrics = tempCtx.measureText(word);
+        
+        if (wordMetrics.width > MAX_TEXT_WIDTH) {
+          // Word itself is too long, break it first
+          if (currentLine) {
+            // Push current line before breaking the long word
+            wrappedLines.push(currentLine);
+            currentLine = '';
+          }
+          
+          // Break the long word
+          const wordChunks = breakLongWord(word, MAX_TEXT_WIDTH);
+          // Push all chunks except the last one
+          for (let i = 0; i < wordChunks.length - 1; i++) {
+            wrappedLines.push(wordChunks[i]);
+          }
+          // Keep the last chunk for the current line
+          currentLine = wordChunks[wordChunks.length - 1] || '';
         } else {
-          currentLine = testLine;
-        }
+          // Normal word, try adding it to current line
+          const testLine = currentLine ? currentLine + ' ' + word : word;
+          const metrics = tempCtx.measureText(testLine);
 
-        // Push last line
-        if (index === words.length - 1) {
-          wrappedLines.push(currentLine);
+          if (metrics.width > MAX_TEXT_WIDTH && currentLine) {
+            // Line is too long, push current line and start new one
+            wrappedLines.push(currentLine);
+            currentLine = word;
+          } else {
+            currentLine = testLine;
+          }
         }
       });
+
+      // Push the last line if it exists
+      if (currentLine) {
+        wrappedLines.push(currentLine);
+      }
     });
 
     // Calculate canvas height based on wrapped lines
@@ -254,13 +306,16 @@ export class SignCommentModalComponent implements OnInit {
     // Re-apply text properties after canvas resize
     tempCtx.font = 'bold 36px Arial';
     tempCtx.fillStyle = '#FF0000';
-    tempCtx.textAlign = 'start';
-    tempCtx.direction = 'rtl';
+    tempCtx.textAlign = textAlign as CanvasTextAlign;
+    tempCtx.direction = textDirection;
     tempCtx.textBaseline = 'top';
 
-    // Draw each wrapped line centered
+    // Calculate x position based on alignment (right for RTL, left for LTR)
+    const textX = isRTL ? FIXED_WIDTH - padding : padding;
+
+    // Draw each wrapped line with appropriate alignment
     wrappedLines.forEach((line, index) => {
-      tempCtx.fillText(line, FIXED_WIDTH / 2, padding + (index * lineHeight));
+      tempCtx.fillText(line, textX, padding + (index * lineHeight));
     });
 
     const commentsBase64 = tempCanvas.toDataURL('image/png');
