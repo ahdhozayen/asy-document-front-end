@@ -1,18 +1,65 @@
+// Dialog container styling
+:host ::ng-deep .mat-mdc-dialog-container {
+  max-width: 90vw !important;
+  
+  .mat-mdc-dialog-surface {
+    max-width: 100% !important;
+  }
+}
+
+// Dialog content styling
+:host ::ng-deep .mat-dialog-content {
+  overflow: visible !important;
+  padding: 20px 24px !important;
+  margin: 0 !important;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+:host ::ng-deep .mat-dialog-actions {
+  padding: 8px 24px 24px !important;
+  margin: 0 !important;
+  min-height: auto;
+  
+  button {
+    margin: 0 4px;
+    
+    &:first-child {
+      margin-right: 0;
+    }
+  }
+}
+
+// Section styling
 .signature-section {
   margin-bottom: 24px;
+  width: 100%;
 
   label {
     display: block;
     margin-bottom: 8px;
-    text-align: right;
-    direction: rtl;
+    font-weight: 500;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.87);
   }
 }
 
+// Form field styling - responsive
+:host ::ng-deep .mat-form-field {
+  width: 100% !important;
+  display: block;
+  
+  &.form-field {
+    width: 100% !important;
+  }
+}
+
+// Signature pad container
 .signature-pad-container {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: stretch;
+  width: 100%;
   margin-bottom: 8px;
 }
 
@@ -20,14 +67,25 @@
   border: 1px solid #bdbdbd;
   border-radius: 4px;
   background: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  margin-bottom: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  margin-bottom: 12px;
   touch-action: none;
+  width: 100%;
+  max-width: 100%;
+  cursor: crosshair;
+  box-sizing: border-box;
+  display: block;
+  
+  &:focus {
+    outline: none;
+    border-color: #3f51b5;
+    box-shadow: 0 0 0 2px rgba(63, 81, 181, 0.2);
+  }
 }
 
 .clear-btn {
-  margin-right: 0;
-  margin-bottom: 8px;
+  align-self: flex-end;
+  margin-top: 4px;
 }
 
 .comments-field {
@@ -38,32 +96,107 @@
   color: #f44336;
   font-size: 13px;
   margin-top: 4px;
-  text-align: right;
-}
-
-:host ::ng-deep .mat-dialog-content {
-  overflow: visible !important;
-}
-
-// RTL styling - always applied
-:host ::ng-deep .mat-form-field {
-  direction: rtl;
-  text-align: right;
-  width: 100%;
-}
-
-:host ::ng-deep .mat-form-field label,
-:host ::ng-deep .mat-form-field .mat-form-field-label {
-  right: 0;
-  left: auto;
-  text-align: right;
-}
-
-:host ::ng-deep textarea {
-  direction: rtl;
-  text-align: right;
 }
 
 .button-spinner {
-  margin-left: 8px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+// RTL/LTR responsive styling
+:host {
+  &[dir='rtl'],
+  .rtl {
+    .signature-section label {
+      text-align: right;
+      direction: rtl;
+    }
+
+    :host ::ng-deep .mat-form-field {
+      direction: rtl;
+      
+      .mat-form-field-label {
+        right: 0;
+        left: auto;
+        text-align: right;
+      }
+    }
+
+    :host ::ng-deep textarea {
+      direction: rtl;
+      text-align: right;
+      caret-color: transparent; // Hide cursor
+    }
+
+    .signature-pad-container {
+      align-items: flex-end;
+    }
+
+    .clear-btn {
+      align-self: flex-end;
+    }
+  }
+
+  &[dir='ltr'],
+  .ltr {
+    .signature-section label {
+      text-align: left;
+      direction: ltr;
+    }
+
+    :host ::ng-deep .mat-form-field {
+      direction: ltr;
+      
+      .mat-form-field-label {
+        left: 0;
+        right: auto;
+        text-align: left;
+      }
+    }
+
+    :host ::ng-deep textarea {
+      direction: ltr;
+      text-align: left;
+      caret-color: transparent; // Hide cursor
+    }
+
+    .signature-pad-container {
+      align-items: flex-start;
+    }
+
+    .clear-btn {
+      align-self: flex-start;
+    }
+  }
+}
+
+// Replacement warning styling
+.replacement-warning {
+  border-radius: 4px;
+  
+  p {
+    margin: 8px 0 0 0;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  :host ::ng-deep .mat-mdc-dialog-container {
+    max-width: 95vw !important;
+    margin: 10px !important;
+  }
+
+  :host ::ng-deep .mat-dialog-content {
+    padding: 16px !important;
+  }
+
+  :host ::ng-deep .mat-dialog-actions {
+    padding: 8px 16px 16px !important;
+    flex-direction: column-reverse;
+    
+    button {
+      width: 100%;
+      margin: 4px 0 !important;
+    }
+  }
 }

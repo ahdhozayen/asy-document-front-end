@@ -165,8 +165,8 @@ export class DocumentViewComponent implements OnInit {
           }
 
           const dialogRef = this.dialog.open(SignCommentModalComponent, {
-            width: "50%",
-            maxWidth: '95vw',
+            width: '600px',
+            maxWidth: '90vw',
             disableClose: true,
             data: {
               attachmentId: attachmentId,
@@ -185,8 +185,8 @@ export class DocumentViewComponent implements OnInit {
           console.error('Error fetching signatures:', error);
           // Open modal anyway without existing comments
           const dialogRef = this.dialog.open(SignCommentModalComponent, {
-            width: '500px',
-            maxWidth: '95vw',
+            width: '600px',
+            maxWidth: '90vw',
             disableClose: true,
             data: { attachmentId: attachmentId }
           });

@@ -44,14 +44,14 @@
 
           <!-- Profile Menu -->
           <mat-menu #profileMenu="matMenu">
-            <button mat-menu-item (click)="openChangePasswordModal()">
+            <button mat-menu-item (click)="openChangePasswordModal()" [class.arabic-font]="isRTL">
               <mat-icon>lock</mat-icon>
-              <span>Change Password</span>
+              <span>{{ "auth.changePassword.title" | translate }}</span>
             </button>
             <mat-divider />
-            <button mat-menu-item (click)="onLogout()">
+            <button mat-menu-item (click)="onLogout()" [class.arabic-font]="isRTL">
               <mat-icon>logout</mat-icon>
-              <span>Logout</span>
+              <span>{{ "auth.logout" | translate }}</span>
             </button>
           </mat-menu>
         </div>

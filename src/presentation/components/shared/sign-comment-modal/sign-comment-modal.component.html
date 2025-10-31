@@ -1,6 +1,12 @@
-<h2 mat-dialog-title class="rtl">{{ "documents.signAndComment.title" | translate }}</h2>
+<h2 mat-dialog-title [class.rtl]="languageService.isRTL" [class.ltr]="!languageService.isRTL">
+  {{ "documents.signAndComment.title" | translate }}
+</h2>
 <form [formGroup]="form">
-  <div mat-dialog-content class="rtl" dir="rtl">
+  <div 
+    mat-dialog-content 
+    [class.rtl]="languageService.isRTL" 
+    [class.ltr]="!languageService.isRTL"
+    [attr.dir]="languageService.isRTL ? 'rtl' : 'ltr'">
     @if (isReplacement) {
       <div class="replacement-warning" style="background-color: #fff3cd; padding: 12px; margin-bottom: 16px; border-radius: 4px; border-left: 4px solid #fbbf24;">
         <strong style="color: #856404;">⚠️ {{ "documents.signAndComment.replacementWarning" | translate }}</strong>
@@ -18,7 +24,7 @@
 
     <div class="signature-section">
       <label>{{ "documents.signAndComment.signatureLabel" | translate }} ({{ "common.optional" | translate }})</label>
-      <div class="signature-pad-container rtl">
+      <div class="signature-pad-container" [class.rtl]="languageService.isRTL" [class.ltr]="!languageService.isRTL">
         <canvas
           #signatureCanvas
           (mousedown)="onMouseDown($event)"
@@ -44,7 +50,7 @@
     </div>
   </div>
 
-  <div mat-dialog-actions align="end">
+  <div mat-dialog-actions [attr.align]="languageService.isRTL ? 'start' : 'end'">
     <button mat-button type="button" (click)="onCancel()" [disabled]="isLoading">
       {{ "common.cancel" | translate }}
     </button>

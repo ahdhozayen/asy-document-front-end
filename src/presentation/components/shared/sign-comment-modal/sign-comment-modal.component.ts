@@ -55,10 +55,10 @@ export class SignCommentModalComponent implements OnInit {
   private canvas!: HTMLCanvasElement;
   private ctx!: CanvasRenderingContext2D;
   public dialogRef = inject(MatDialogRef<SignCommentModalComponent>);
+  public languageService = inject(LanguageService);
   private fb = inject(FormBuilder);
   private documentService = inject(DocumentService);
   private toastService = inject(ToastService);
-  private languageService = inject(LanguageService);
   private data = inject(MAT_DIALOG_DATA);
 
   ngOnInit(): void {
@@ -88,14 +88,37 @@ export class SignCommentModalComponent implements OnInit {
   }
 
   ngAfterViewInit(): void {
-    this.initializeCanvas();
+    // Wait for view to fully render before initializing canvas
+    setTimeout(() => {
+      this.initializeCanvas();
+    }, 0);
   }
 
   private initializeCanvas(): void {
     this.canvas = this.signatureCanvas.nativeElement;
     this.ctx = this.canvas.getContext('2d', { alpha: true })!;
-    this.canvas.width = 430;
+    
+    // Get the comments form field to match its width
+    const commentsSection = document.querySelector('.signature-section:first-of-type');
+    const commentsFormField = commentsSection?.querySelector('.mat-form-field') as HTMLElement;
+    
+    // Calculate canvas width to match form field
+    let canvasWidth = 430; // Default width
+    if (commentsFormField) {
+      canvasWidth = commentsFormField.offsetWidth;
+    } else {
+      // Fallback: use canvas container's display width
+      const container = this.canvas.parentElement;
+      if (container) {
+        canvasWidth = container.offsetWidth;
+      }
+    }
+    
+    // Set canvas internal width to match display width
+    // Note: Display width is handled by CSS (width: 100%)
+    this.canvas.width = canvasWidth;
     this.canvas.height = 300;
+    
     this.ctx.strokeStyle = '#FF0000'; // Red color for signature
     this.ctx.lineWidth = 4; // Thicker line for bolder signature
     this.ctx.lineCap = 'round';
