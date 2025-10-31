@@ -1,11 +1,18 @@
 .signature-section {
   margin-bottom: 24px;
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    text-align: right;
+    direction: rtl;
+  }
 }
 
 .signature-pad-container {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: flex-end;
   margin-bottom: 8px;
 }
 
@@ -19,7 +26,7 @@
 }
 
 .clear-btn {
-  margin-left: 0;
+  margin-right: 0;
   margin-bottom: 8px;
 }
 
@@ -31,34 +38,32 @@
   color: #f44336;
   font-size: 13px;
   margin-top: 4px;
+  text-align: right;
 }
 
 :host ::ng-deep .mat-dialog-content {
   overflow: visible !important;
 }
 
-:host-context([dir="rtl"]) .mat-form-field {
+// RTL styling - always applied
+:host ::ng-deep .mat-form-field {
   direction: rtl;
   text-align: right;
+  width: 100%;
 }
 
-:host-context([dir="rtl"]) .mat-form-field label,
-:host-context([dir="rtl"]) .mat-form-field .mat-form-field-label {
+:host ::ng-deep .mat-form-field label,
+:host ::ng-deep .mat-form-field .mat-form-field-label {
   right: 0;
   left: auto;
   text-align: right;
 }
 
-:host-context([dir="rtl"]) textarea {
+:host ::ng-deep textarea {
   direction: rtl;
   text-align: right;
 }
 
 .button-spinner {
-  margin-right: 8px;
-}
-
-:host-context([dir="rtl"]) .button-spinner {
-  margin-right: 0;
   margin-left: 8px;
 }

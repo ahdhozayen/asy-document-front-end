@@ -25,6 +25,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule } from '@ngx-translate/core';
 import { DocumentService } from '../../../../core/use-cases/document.service';
 import { ToastService } from '../../../../core/use-cases/toast.service';
+import { LanguageService } from '../../../../core/use-cases/language.service';
 
 @Component({
   selector: 'app-sign-comment-modal',
@@ -48,7 +49,6 @@ export class SignCommentModalComponent implements OnInit {
   isDrawing = false;
   lastX = 0;
   lastY = 0;
-  isRTL = false;
   isLoading = false;
   attachmentId: number | null = null;
   isReplacement = false;
@@ -58,13 +58,10 @@ export class SignCommentModalComponent implements OnInit {
   private fb = inject(FormBuilder);
   private documentService = inject(DocumentService);
   private toastService = inject(ToastService);
+  private languageService = inject(LanguageService);
   private data = inject(MAT_DIALOG_DATA);
 
   ngOnInit(): void {
-    // Try to detect RTL from document or use a service if available
-    this.isRTL =
-      document.dir === 'rtl' || document.documentElement.dir === 'rtl';
-
     // Get attachment ID from dialog data
     if (this.data && this.data.attachmentId) {
       this.attachmentId = this.data.attachmentId;
@@ -97,7 +94,7 @@ export class SignCommentModalComponent implements OnInit {
   private initializeCanvas(): void {
     this.canvas = this.signatureCanvas.nativeElement;
     this.ctx = this.canvas.getContext('2d', { alpha: true })!;
-    this.canvas.width = 450;
+    this.canvas.width = 430;
     this.canvas.height = 300;
     this.ctx.strokeStyle = '#FF0000'; // Red color for signature
     this.ctx.lineWidth = 4; // Thicker line for bolder signature
@@ -196,24 +193,76 @@ export class SignCommentModalComponent implements OnInit {
     this.form.get('signature')?.markAsTouched();
   }
 
-  private updateCommentsValue(): string {
-    const tempCanvas = document.createElement('canvas');
-    tempCanvas.width = this.canvas.width+50;
-    tempCanvas.height = this.canvas.height+50;
-    const tempCtx = tempCanvas.getContext('2d')!;
-    tempCtx.drawImage(this.canvas, 0, 0);
-    // Set text properties - Bigger, bolder, and red
-    tempCtx.font = 'bold 32px Arial'; // Bigger and bolder font that supports Arabic
-    tempCtx.fillStyle = '#FF0000'; // Red color for comments
-    tempCtx.textAlign = 'right'; // Arabic is right-to-left
-    tempCtx.textBaseline = 'middle';
+  private createCommentsImageBase64(): string {
+    if (!this.form.value.comments || this.form.value.comments.trim() === '') {
+      return '';
+    }
 
-    // Split text by newline and draw each line
-    const lines = this.form.value.comments.split('\n');
-    const lineHeight = 40; // Increased line height for bigger font
-    lines.forEach((line, index) => {
-      tempCtx?.fillText(line, tempCanvas.width - 10, 10 + index * lineHeight);
+    const tempCanvas = document.createElement('canvas');
+    const tempCtx = tempCanvas.getContext('2d')!;
+
+    // LARGER FIXED WIDTH for better readability
+    const FIXED_WIDTH = 2000;  // Increased from 1000 to 1500px
+    const MAX_TEXT_WIDTH = FIXED_WIDTH; // Leave margins
+    const lineHeight = 50;  // Increased from 40 to 50px
+    const padding = 30;
+
+    // Set text properties FIRST for measuring
+    tempCtx.font = 'bold 36px Arial'; // Increased from 32px to 36px
+    tempCtx.fillStyle = '#FF0000';
+    tempCtx.textAlign = 'start';
+    tempCtx.direction = 'rtl';
+    tempCtx.textBaseline = 'top';
+
+    // Split by newlines and wrap long lines
+    const inputLines = this.form.value.comments.split('\n');
+    const wrappedLines: string[] = [];
+
+    // Wrap each line if it's too long
+    inputLines.forEach((line) => {
+      if (line.trim() === '') {
+        wrappedLines.push('');
+        return;
+      }
+
+      const words = line.split(' ');
+      let currentLine = '';
+
+      words.forEach((word, index) => {
+        const testLine = currentLine ? currentLine + ' ' + word : word;
+        const metrics = tempCtx.measureText(testLine);
+
+        if (metrics.width > MAX_TEXT_WIDTH && currentLine) {
+          // Line is too long, push current line and start new one
+          wrappedLines.push(currentLine);
+          currentLine = word;
+        } else {
+          currentLine = testLine;
+        }
+
+        // Push last line
+        if (index === words.length - 1) {
+          wrappedLines.push(currentLine);
+        }
+      });
     });
+
+    // Calculate canvas height based on wrapped lines
+    tempCanvas.width = FIXED_WIDTH;
+    tempCanvas.height = (wrappedLines.length * lineHeight) + (padding * 2);
+
+    // Re-apply text properties after canvas resize
+    tempCtx.font = 'bold 36px Arial';
+    tempCtx.fillStyle = '#FF0000';
+    tempCtx.textAlign = 'start';
+    tempCtx.direction = 'rtl';
+    tempCtx.textBaseline = 'top';
+
+    // Draw each wrapped line centered
+    wrappedLines.forEach((line, index) => {
+      tempCtx.fillText(line, FIXED_WIDTH / 2, padding + (index * lineHeight));
+    });
+
     const commentsBase64 = tempCanvas.toDataURL('image/png');
     return commentsBase64;
   }
@@ -222,13 +271,19 @@ export class SignCommentModalComponent implements OnInit {
     if (this.attachmentId) {
       this.isLoading = true;
       console.log(this.form.value);
-      let commentsBase64 = this.updateCommentsValue();
+
+      // Get signature Base64 from form (canvas drawing only)
+      const signatureBase64 = this.form.value.signature;
+
+      // Get comments Base64 (text rendered as image, auto-sized)
+      const commentsBase64 = this.createCommentsImageBase64();
 
       this.documentService
         .signDocumentWithComment({
           attachment: this.attachmentId,
-          comments: this.form.value.comments,
-          signature_data: commentsBase64,
+          comments: this.form.value.comments, // Plain text for Document.comments
+          signature_data: signatureBase64,     // Signature drawing Base64
+          comments_data: commentsBase64,       // Comments text as Base64 image
         })
         .subscribe({
           next: () => {
@@ -238,11 +293,75 @@ export class SignCommentModalComponent implements OnInit {
             );
             this.dialogRef.close({ success: true });
           },
-          error: () => {
+          error: (error) => {
             this.isLoading = false;
-            this.toastService.errorTranslated(
-              'documents.signAndComment.error'
-            );
+            console.log('Full error object:', error);
+            console.log('error.data:', error?.data);
+
+            // Get current language
+            const currentLang = this.languageService.currentLanguage;
+            console.log('Current language:', currentLang);
+
+            // Try to get the localized error message from backend
+            let errorMessage = null;
+
+            // Check for language-specific messages (message_ar or message_en)
+            if (currentLang === 'ar' && error?.data?.message_ar) {
+              errorMessage = error.data.message_ar;
+            } else if (currentLang === 'en' && error?.data?.message_en) {
+              errorMessage = error.data.message_en;
+            }
+            // Fallback to message field
+            else if (error?.data?.message) {
+              errorMessage = error.data.message;
+            }
+            // Check error.message (ApiError extracts from backend message)
+            else if (error?.message && error.message !== 'An error occurred') {
+              errorMessage = error.message;
+            }
+            // Check for field-specific errors in error.data.errors
+            else if (error?.data?.errors) {
+              const firstField = Object.keys(error.data.errors)[0];
+              const fieldError = error.data.errors[firstField];
+              if (Array.isArray(fieldError) && fieldError.length > 0) {
+                const firstError = fieldError[0];
+                // Check if error is an object with language keys
+                if (typeof firstError === 'object' && firstError !== null) {
+                  errorMessage = currentLang === 'ar' ? firstError['ar'] : firstError['en'];
+                } else {
+                  errorMessage = firstError;
+                }
+              } else {
+                errorMessage = fieldError;
+              }
+            }
+            // Check for signature_data error directly in error.data
+            else if (error?.data?.signature_data) {
+              const sigError = Array.isArray(error.data.signature_data)
+                ? error.data.signature_data[0]
+                : error.data.signature_data;
+              // Check if error is an object with language keys
+              if (typeof sigError === 'object' && sigError !== null) {
+                errorMessage = currentLang === 'ar' ? sigError['ar'] : sigError['en'];
+              } else {
+                errorMessage = sigError;
+              }
+            }
+            // Check for non_field_errors (common DRF error format)
+            else if (error?.data?.non_field_errors && Array.isArray(error.data.non_field_errors)) {
+              errorMessage = error.data.non_field_errors[0];
+            }
+
+            // Display the error message or fallback to generic
+            if (errorMessage) {
+              console.log('Displaying error message:', errorMessage);
+              this.toastService.error(errorMessage);
+            } else {
+              console.log('No specific error message found, using generic');
+              this.toastService.errorTranslated(
+                'documents.signAndComment.error'
+              );
+            }
           },
         });
     }

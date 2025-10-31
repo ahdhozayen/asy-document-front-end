@@ -165,7 +165,7 @@ export class DocumentViewComponent implements OnInit {
           }
 
           const dialogRef = this.dialog.open(SignCommentModalComponent, {
-            width: '500px',
+            width: "50%",
             maxWidth: '95vw',
             disableClose: true,
             data: {

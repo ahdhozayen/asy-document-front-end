@@ -398,7 +398,7 @@ export class DocumentService {
     );
   }
 
-  signDocumentWithComment(data: { attachment: number, signature_data: string, comments: string }): Observable<Document> {
+  signDocumentWithComment(data: { attachment: number, signature_data: string, comments_data: string, comments: string }): Observable<Document> {
     return this.httpClient.post<DocumentApiResponse>(this.config.endpoints.documents.sign, data).pipe(
       map(response => this.extractDocumentFromResponse(response)),
       tap(updatedDocument => {
