@@ -59,9 +59,8 @@ export class DocumentService {
 
     if (filters) {
       if (filters.search) params.append('search', filters.search);
-      if (filters.department) params.append('department', filters.department.toString());
       if (filters.status) params.append('status', filters.status);
-      if (filters.priority) params.append('priority', filters.priority);
+      if (filters.priority) params.append('priority', filters.priority.toString());
       if (filters.page) params.append('page', filters.page.toString());
       if (filters.pageSize) params.append('page_size', filters.pageSize.toString());
     }
@@ -100,9 +99,8 @@ export class DocumentService {
 
     if (filters) {
       if (filters.search) params.append('search', filters.search);
-      if (filters.department) params.append('department', filters.department.toString());
       if (filters.status) params.append('status', filters.status);
-      if (filters.priority) params.append('priority', filters.priority);
+      if (filters.priority) params.append('priority', filters.priority.toString());
       if (filters.page) params.append('page', filters.page.toString());
       if (filters.pageSize) params.append('page_size', filters.pageSize.toString());
       if (filters.sortBy && filters.sort) {
@@ -229,7 +227,6 @@ export class DocumentService {
     const metadata: CreateDocumentMetadata = {
       title: data.title,
       description: data.description,
-      department: data.department,
       priority: data.priority,
       file_type: data.fileType
     };
@@ -309,7 +306,6 @@ export class DocumentService {
     const updateData = {
       title: data.title,
       description: data.description,
-      department: data.department,
       priority: data.priority,
       status: data.status
     };
@@ -414,10 +410,9 @@ export class DocumentService {
     );
   }
 
-  addDocumentComment(id: number, data: { comment: string, redirectDepartment: string }): Observable<Document> {
+  addDocumentComment(id: number, data: { comment: string }): Observable<Document> {
     const commentData = {
-      comment: data.comment,
-      redirect_department: data.redirectDepartment
+      comment: data.comment
     };
 
     return this.httpClient.post<DocumentApiResponse>(this.config.endpoints.documents.comment(id), commentData).pipe(

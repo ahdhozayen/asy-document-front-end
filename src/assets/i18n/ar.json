@@ -28,14 +28,6 @@
     "openInNew": "فتح في نافذة جديدة",
     "optional": "اختياري"
   },
-  "departments": {
-    "finance": "المالية",
-    "hr": "الموارد البشرية",
-    "it": "تكنولوجيا المعلومات",
-    "legal": "القانونية",
-    "operations": "العمليات",
-    "marketing": "التسويق"
-  },
   "priorities": {
     "low": "منخفضة",
     "medium": "متوسطة",
@@ -94,7 +86,6 @@
 
     "documentsTable": {
       "title": "المكاتبات",
-      "department": "القسم",
       "priority": "الأولوية",
       "status": "الحالة",
       "version": "الإصدار",
@@ -104,10 +95,8 @@
     "filters": {
       "search": "البحث في المكاتبات...",
       "searchPlaceholder": "البحث في المكاتبات...",
-      "department": "القسم",
       "priority": "الأولوية",
       "status": "الحالة",
-      "all_departments": "جميع الأقسام",
       "all_priorities": "جميع الأولويات",
       "all_statuses": "جميع الحالات",
       "reset": "إعادة تعيين الفلاتر"
@@ -124,7 +113,6 @@
     "title": "المكاتبات",
     "noDocuments": "لا توجد مكاتبات",
     "documentName": "اسم المكاتبة",
-    "department": "القسم",
     "priority": "الأولوية",
     "status": "الحالة",
     "createdAt": "تاريخ الإنشاء",
@@ -139,7 +127,6 @@
       "addComment": "إضافة تعليق",
       "comment": "التعليق",
       "commentPlaceholder": "أدخل تعليقك هنا (10 أحرف على الأقل)",
-      "redirectDepartment": "إعادة توجيه إلى قسم",
       "submit": "إرسال التعليق",
       "cancel": "إلغاء",
       "success": "تمت إضافة التعليق بنجاح",
@@ -152,12 +139,10 @@
     "fields": {
       "title": "العنوان",
       "description": "الوصف",
-      "department": "القسم",
       "priority": "الأولوية",
       "status": "الحالة",
       "createdAt": "تاريخ الإنشاء",
       "reviewedAt": "تاريخ المراجعة",
-      "redirectDepartment": "إعادة توجيه إلى قسم",
       "attachmentName": "اسم المرفق",
       "attachmentDate": "تاريخ المرفق",
       "totalAttachments": "إجمالي المرفقات",
@@ -173,8 +158,6 @@
       "attachments": "المرفقات",
       "addComment": "إضافة تعليق",
       "commentPlaceholder": "أدخل تعليقك هنا",
-      "redirectDepartment": "إعادة توجيه القسم",
-      "selectDepartment": "اختر القسم",
       "submitComment": "إرسال التعليق",
       "signDocument": "توقيع الوثيقة",
       "viewAttachment": "عرض المرفق",
@@ -208,9 +191,11 @@
       "clearSignature": "مسح التوقيع",
       "signatureLabel": "توقيعك",
       "signatureRequired": "التوقيع مطلوب",
-      "commentsLabel": "التعليقات",
+      "commentsLabel": "التوجيه / التعليقات",
       "commentsRequired": "التعليقات مطلوبة",
       "commentsMinLength": "يجب أن تكون التعليقات على الأقل {min} أحرف",
+      "departmentsLabel": "الأقسام",
+      "isApproved": "موافق",
       "success": "تم توقيع المستند والتعليق عليه بنجاح",
       "error": "فشل في توقيع المستند والتعليق عليه",
       "replacementWarning": "تحذير: استبدال التوقيع الموجود",
@@ -246,7 +231,12 @@
         "pdfOnly": "يُسمح فقط بملفات PDF",
         "imagesOnly": "يُسمح فقط بملفات الصور",
         "required": "هذا الحقل مطلوب",
-        "maxLength": "تم تجاوز الحد الأقصى للطول"
+        "maxLength": "تم تجاوز الحد الأقصى للطول",
+        "fileSizeError": "يجب أن يكون حجم الملف أقل من {size}",
+        "invalidFileTypePdf": "نوع الملف غير صحيح. يُسمح فقط بملفات PDF (.pdf) عند اختيار وضع PDF.",
+        "invalidFileTypeImage": "نوع الملف غير صحيح. يُسمح فقط بملفات الصور (.jpg, .jpeg, .png, .gif, .bmp, .webp, .tiff, .svg) عند اختيار وضع الصور.",
+        "invalidMimeTypePdf": "نوع MIME للملف لا يتطابق مع تنسيق PDF. يرجى رفع ملف PDF صالح.",
+        "invalidMimeTypeImage": "نوع MIME للملف لا يتطابق مع تنسيق الصورة. يرجى رفع ملف صورة صالح."
       }
     },
     "edit": {
@@ -320,15 +310,6 @@
       "low": "منخفضة",
       "medium": "متوسطة",
       "high": "عالية"
-    },
-    "departments": {
-      "Finance": "المالية",
-      "HR": "الموارد البشرية",
-      "IT": "تقنية المعلومات",
-      "Legal": "القانونية",
-      "Operations": "العمليات",
-      "Marketing": "التسويق",
-      "Sales": "المبيعات"
     }
   },
   "errors": {
@@ -341,8 +322,7 @@
     "validationError": "خطأ في التحقق من البيانات",
     "fileUploadError": "فشل في رفع الملف",
     "fileSizeError": "حجم الملف كبير جداً",
-    "fileTypeError": "نوع الملف غير مدعوم",
-    "loadingDepartments": "فشل في تحميل الأقسام"
+    "fileTypeError": "نوع الملف غير مدعوم"
   },
   "dialogs": {
     "confirmation": {

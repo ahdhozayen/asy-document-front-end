@@ -131,28 +131,6 @@
                     <mat-icon matSuffix>search</mat-icon>
                   </mat-form-field>
                   <div class="filters-row">
-                    <!-- Department Filter -->
-                    <mat-form-field appearance="outline" class="filter-input">
-                      <mat-label>{{
-                        "dashboard.filters.department" | translate
-                      }}</mat-label>
-                      <mat-select
-                        formControlName="department"
-                        placeholder="{{ 'dashboard.filters.department' | translate }}"
-                        >
-                        <mat-option>{{
-                          "dashboard.filters.all_departments" | translate
-                        }}</mat-option>
-                        @for (dept of departments; track dept) {
-                          <mat-option
-                            [value]="dept.id"
-                            >
-                            {{ isRTL ? dept.name_ar : dept.name_en }}
-                          </mat-option>
-                        }
-                      </mat-select>
-                    </mat-form-field>
-
                     <!-- Priority Filter -->
                     <mat-form-field appearance="outline" class="filter-input">
                       <mat-label>{{
@@ -162,18 +140,14 @@
                         formControlName="priority"
                         placeholder="{{ 'dashboard.filters.priority' | translate }}"
                         >
-                        <mat-option>{{
+                        <mat-option value="all">{{
                           "dashboard.filters.all_priorities" | translate
                         }}</mat-option>
-                        <mat-option value="high">{{
-                          "priorities.high" | translate
-                        }}</mat-option>
-                        <mat-option value="medium">{{
-                          "priorities.medium" | translate
-                        }}</mat-option>
-                        <mat-option value="low">{{
-                          "priorities.low" | translate
-                        }}</mat-option>
+                        @for (priority of priorities; track priority.id) {
+                          <mat-option [value]="priority.id">
+                            {{ isRTL ? priority.name_ar : priority.name_en }}
+                          </mat-option>
+                        }
                       </mat-select>
                     </mat-form-field>
 
@@ -254,28 +228,6 @@
                         {{ document.title }}
                       </td>
                     </ng-container>
-                    <!-- Department Column -->
-                    <ng-container matColumnDef="department">
-                      <th
-                        mat-header-cell
-                        *matHeaderCellDef
-                        [class.arabic-font]="isRTL"
-                        mat-sort-header
-                        >
-                        {{ "dashboard.documentsTable.department" | translate }}
-                      </th>
-                      <td
-                        mat-cell
-                        *matCellDef="let document"
-                        [class.arabic-font]="isRTL"
-                        >
-                        @if (isRTL) {
-                          {{ document.department_ar }}
-                        } @else {
-                          {{ document.department_en }}
-                        }
-                      </td>
-                    </ng-container>
                     <!-- Priority Column -->
                     <ng-container matColumnDef="priority">
                       <th
@@ -288,11 +240,11 @@
                       </th>
                       <td mat-cell *matCellDef="let document">
                         <div class="badge-container" [class.arabic-font]="isRTL">
-                          <mat-icon [class]="'priority-icon priority-' + document.priority">
-                            {{ getPriorityIcon(document.priority) }}
+                          <mat-icon [class]="'priority-icon priority-' + (document.priority_en | lowercase)">
+                            {{ getPriorityIcon(document.priority_en) }}
                           </mat-icon>
-                          <span [class]="'priority-text priority-' + document.priority">
-                            {{ "priorities." + document.priority | translate }}
+                          <span [class]="'priority-text priority-' + (document.priority_en | lowercase)">
+                            {{ isRTL ? document.priority_ar : document.priority_en }}
                           </span>
                         </div>
                       </td>

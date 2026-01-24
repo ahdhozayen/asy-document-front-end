@@ -1,4 +1,4 @@
-export interface Department {
+export interface Priority {
   id: number;
   name_en: string;
   name_ar: string;

@@ -16,16 +16,9 @@ import { environment } from '@env/environment';
 import { HasPermissionDirective } from '@presentation/shared/directives/has-permission.directive';
 import { Attachment } from '../../../core/entities/document.model';
 import { SignCommentModalComponent } from '../../components/shared/sign-comment-modal/sign-comment-modal.component';
-import { DepartmentService } from '../../../data/services/department.service';
 
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
-
-export interface Department {
-  id: number;
-  name_ar: string;
-  name_en: string;
-}
 
 @Component({
   selector: 'app-document-view',
@@ -51,7 +44,6 @@ export class DocumentViewComponent implements OnInit {
   documentNotFound = false;
   commentCount = 0;
   currentAttachment: Attachment | null = null;
-  departments: Department[] = [];
 
   mediaURL = environment.mediaURL;
 
@@ -63,7 +55,6 @@ export class DocumentViewComponent implements OnInit {
   private dialog = inject(MatDialog);
   private sanitizer = inject(DomSanitizer);
   private authorizationService = inject(AuthorizationService);
-  private departmentService = inject(DepartmentService);
   private translate = inject(TranslateService);
 
   constructor() {
@@ -73,25 +64,11 @@ export class DocumentViewComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Load departments first
-    this.loadDepartments();
-
     this.route.params.subscribe((params) => {
       this.documentId = +params['id'];
       if (this.documentId) {
         this.loadDocument();
       }
-    });
-  }
-
-  private loadDepartments(): void {
-    this.departmentService.getDepartments().subscribe({
-      next: (departments) => {
-        this.departments = departments;
-      },
-      error: (error) => {
-        console.error('Failed to load departments:', error);
-      },
     });
   }
 
@@ -284,19 +261,12 @@ export class DocumentViewComponent implements OnInit {
     }
   }
 
-  getPriorityColor(priority: string): string {
-    switch (priority) {
-      case 'low':
-        return 'bg-green-100 text-green-800';
-      case 'medium':
-        return 'bg-blue-100 text-blue-800';
-      case 'high':
-        return 'bg-orange-100 text-orange-800';
-      case 'urgent':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
+  getPriorityColor(priority: string | number | undefined): string {
+    const p = String(priority).toLowerCase();
+    if (p.includes('high') || p.includes('urgent')) return 'bg-orange-100 text-orange-800';
+    if (p.includes('medium')) return 'bg-blue-100 text-blue-800';
+    if (p.includes('low')) return 'bg-green-100 text-green-800';
+    return 'bg-gray-100 text-gray-800';
   }
 
   formatDate(date: Date | string | undefined): string {
@@ -363,16 +333,5 @@ export class DocumentViewComponent implements OnInit {
   canCommentOnDocument(): boolean {
     if (!this.document) return false;
     return this.authorizationService.canCommentOnDocumentSync(this.document);
-  }
-
-  getDepartmentName(departmentId: string): string {
-    if (!departmentId || !this.departments.length) return departmentId;
-
-    const department = this.departments.find(
-      (d) => d.id.toString() === departmentId
-    );
-    if (!department) return departmentId;
-
-    return this.isRTL ? department.name_ar : department.name_en;
   }
 }

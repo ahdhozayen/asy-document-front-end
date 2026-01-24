@@ -321,6 +321,34 @@
         }
       }
 
+      .error-message {
+        color: #f44336;
+        font-size: 0.875rem;
+        font-weight: bold;
+        margin-top: 0.75rem;
+        padding: 0.5rem;
+        background-color: #ffebee;
+        border-left: 3px solid #f44336;
+        border-radius: 4px;
+        text-align: left;
+
+        div {
+          color: #f44336;
+          font-weight: bold;
+          margin-bottom: 0.25rem;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
+
+        .rtl & {
+          text-align: right;
+          border-left: none;
+          border-right: 3px solid #f44336;
+        }
+      }
+
       .file-error {
         color: #f44336;
         font-size: 0.75rem;

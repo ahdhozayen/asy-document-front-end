@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -22,21 +22,15 @@ import { HasPermissionDirective } from '@presentation/shared/directives/has-perm
 import { PermissionDisableDirective } from '@presentation/shared/directives/permission-disable.directive';
 import { Document, Attachment } from '../../../core/entities/document.model';
 import { inject } from '@angular/core';
-import { DepartmentService } from '../../../data/services/department.service';
+import { PriorityService } from '../../../data/services/priority.service';
+import { Priority } from '../../../domain/models/priority.model';
 
 export interface DocumentEditData {
   title: string;
   description?: string;
-  fromDepartment: string;
-  priority: string;
+  priority: number;
   status: string;
   file?: File;
-}
-
-export interface Department {
-  id: number;
-  name_ar: string;
-  name_en: string;
 }
 
 @Component({
@@ -61,6 +55,8 @@ export interface Department {
     styleUrls: ['./document-edit.component.scss']
 })
 export class DocumentEditComponent implements OnInit {
+  @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
+  
   editForm: FormGroup;
   isRTL = false;
   isSubmitting = false;
@@ -70,11 +66,13 @@ export class DocumentEditComponent implements OnInit {
 currentDocument: (Document & { uploadDate?: string | Date }) | undefined = undefined;
   commentCount = 0;
   documentId: number | null = null;
-  departments: Department[] = [];
+  priorities: Priority[] = [];
 
   private readonly maxFileSize = 10 * 1024 * 1024; // 10MB
-  private readonly allowedPdfTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-  private readonly allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/bmp', 'image/webp'];
+  private readonly allowedPdfExtensions = ['.pdf'];
+  private readonly allowedImageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.tiff', '.svg'];
+  private readonly allowedPdfMimeTypes = ['application/pdf'];
+  private readonly allowedImageMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/bmp', 'image/webp', 'image/tiff', 'image/svg+xml'];
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -83,7 +81,7 @@ currentDocument: (Document & { uploadDate?: string | Date }) | undefined = undef
   private documentService = inject(DocumentService);
   private toastService = inject(ToastService);
   private authorizationService = inject(AuthorizationService);
-  private departmentService = inject(DepartmentService);
+  private priorityService = inject(PriorityService);
   private dialog = inject(MatDialog);
   private translate = inject(TranslateService);
 
@@ -96,8 +94,8 @@ currentDocument: (Document & { uploadDate?: string | Date }) | undefined = undef
   }
 
   ngOnInit(): void {
-    // Load departments first
-    this.loadDepartments();
+    // Load priorities first
+    this.loadPriorities();
 
     this.route.params.subscribe(params => {
       this.documentId = +params['id'];
@@ -110,13 +108,13 @@ currentDocument: (Document & { uploadDate?: string | Date }) | undefined = undef
     });
   }
 
-  private loadDepartments(): void {
-    this.departmentService.getDepartments().subscribe({
-      next: (departments) => {
-        this.departments = departments;
+  private loadPriorities(): void {
+    this.priorityService.getPriorities().subscribe({
+      next: (priorities) => {
+        this.priorities = priorities;
       },
       error: (error) => {
-        console.error('Failed to load departments:', error);
+        console.error('Failed to load priorities:', error);
       }
     });
   }
@@ -167,7 +165,6 @@ currentDocument: (Document & { uploadDate?: string | Date }) | undefined = undef
     return this.fb.group({
       title: ['', [Validators.required, Validators.maxLength(100)]],
       description: [''],
-      fromDepartment: ['', [Validators.required]],
       priority: ['', [Validators.required]],
       status: ['', [Validators.required]]
     });
@@ -178,7 +175,6 @@ currentDocument: (Document & { uploadDate?: string | Date }) | undefined = undef
       this.editForm.patchValue({
         title: this.currentDocument.title,
         description: this.currentDocument.description || '',
-        fromDepartment: this.currentDocument.department.toString(),
         priority: this.currentDocument.priority,
         status: this.currentDocument.status
       });
@@ -197,7 +193,6 @@ currentDocument: (Document & { uploadDate?: string | Date }) | undefined = undef
       const editData: DocumentEditData = {
         title: formValue.title.trim(),
         description: formValue.description?.trim() || '',
-        fromDepartment: formValue.fromDepartment,
         priority: formValue.priority,
         status: formValue.status,
         file: this.selectedFile || undefined
@@ -224,7 +219,6 @@ currentDocument: (Document & { uploadDate?: string | Date }) | undefined = undef
       this.documentService.updateDocument(this.documentId, {
         title: editData.title,
         description: editData.description,
-        department: editData.fromDepartment,
         priority: editData.priority,
         status: editData.status
       }).subscribe({
@@ -243,7 +237,6 @@ currentDocument: (Document & { uploadDate?: string | Date }) | undefined = undef
       this.documentService.updateDocument(this.documentId, {
         title: editData.title,
         description: editData.description,
-        department: editData.fromDepartment,
         priority: editData.priority,
         status: editData.status
       }).subscribe({
@@ -272,6 +265,14 @@ currentDocument: (Document & { uploadDate?: string | Date }) | undefined = undef
     if (input?.files && input.files.length > 0) {
       const file = input.files[0];
       this.validateAndSetFile(file);
+      
+      // Clear the file input if there's an error to allow re-selection
+      if (this.fileError) {
+        input.value = '';
+      }
+    } else {
+      // Clear error if no file is selected
+      this.fileError = null;
     }
   }
 
@@ -280,6 +281,10 @@ currentDocument: (Document & { uploadDate?: string | Date }) | undefined = undef
     // Clear selected file when switching file type
     this.selectedFile = null;
     this.fileError = null;
+    // Clear file input element
+    if (this.fileInputRef?.nativeElement) {
+      this.fileInputRef.nativeElement.value = '';
+    }
   }
 
   private validateAndSetFile(file: File): void {
@@ -287,18 +292,38 @@ currentDocument: (Document & { uploadDate?: string | Date }) | undefined = undef
 
     // Check file size
     if (file.size > this.maxFileSize) {
-      this.fileError = `File size must be less than ${this.formatFileSize(this.maxFileSize)}`;
+      const size = this.formatFileSize(this.maxFileSize);
+      this.fileError = this.translate.instant('documents.create.validation.fileSizeError', { size });
       return;
     }
 
-    // Check file type based on current file type selection
-    const allowedTypes = this.fileType === 'pdf' ? this.allowedPdfTypes : this.allowedImageTypes;
-    if (!allowedTypes.includes(file.type)) {
-      const typeMessage = this.fileType === 'pdf'
-        ? 'File type not supported. Please select a PDF or Word document.'
-        : 'File type not supported. Please select an image file (JPG, PNG, GIF, etc.).';
-      this.fileError = typeMessage;
-      return;
+    // Get file extension
+    const fileName = file.name.toLowerCase();
+    const fileExtension = fileName.substring(fileName.lastIndexOf('.'));
+
+    // Validate based on file type selection
+    if (this.fileType === 'pdf') {
+      // Check extension first
+      if (!this.allowedPdfExtensions.includes(fileExtension)) {
+        this.fileError = this.translate.instant('documents.create.validation.invalidFileTypePdf');
+        return;
+      }
+      // Check MIME type as additional validation
+      if (!this.allowedPdfMimeTypes.includes(file.type)) {
+        this.fileError = this.translate.instant('documents.create.validation.invalidMimeTypePdf');
+        return;
+      }
+    } else {
+      // Check extension for images
+      if (!this.allowedImageExtensions.includes(fileExtension)) {
+        this.fileError = this.translate.instant('documents.create.validation.invalidFileTypeImage');
+        return;
+      }
+      // Check MIME type as additional validation
+      if (!this.allowedImageMimeTypes.includes(file.type)) {
+        this.fileError = this.translate.instant('documents.create.validation.invalidMimeTypeImage');
+        return;
+      }
     }
 
     this.selectedFile = file;
@@ -428,15 +453,6 @@ currentDocument: (Document & { uploadDate?: string | Date }) | undefined = undef
   canCommentOnDocument(): boolean {
     if (!this.currentDocument) return false;
     return this.authorizationService.canCommentOnDocumentSync(this.currentDocument);
-  }
-
-  getDepartmentName(departmentId: string): string {
-    if (!departmentId || !this.departments.length) return departmentId;
-
-    const department = this.departments.find(d => d.id.toString() === departmentId);
-    if (!department) return departmentId;
-
-    return this.isRTL ? department.name_ar : department.name_en;
   }
 
   getAcceptedFileTypes(): string {

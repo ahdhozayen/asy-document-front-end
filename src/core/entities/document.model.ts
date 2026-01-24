@@ -1,12 +1,5 @@
 export type DocumentStatus = 'pending' | 'in_review' | 'signed' | 'rejected';
-export type DocumentPriority = 'low' | 'medium' | 'high' | 'urgent';
-
-export enum DOCUMENT_PRIORITY {
-  LOW = 'low',
-  MEDIUM = 'medium',
-  HIGH = 'high',
-  URGENT = 'urgent'
-}
+export type DocumentPriority = number;
 
 export interface Attachment {
   id: number;
@@ -39,10 +32,9 @@ export interface DocumentApiResponse {
   mime_type?: string;
   mimeType?: string;
   status?: string;
-  priority?: string;
-  department?: number;
-  department_ar?: string;
-  department_en?: string;
+  priority?: number;
+  priority_ar?: string;
+  priority_en?: string;
   uploaded_by?: DocumentUser | number;
   uploaded_by_name?: string;
   uploadedByName?: string;
@@ -51,7 +43,6 @@ export interface DocumentApiResponse {
   file_url?: string;
   fileUrl?: string;
   comments?: string;
-  redirect_department?: string;
   file_type?: 'pdf' | 'images';
   attachments?: Attachment[];
 }
@@ -65,16 +56,14 @@ export class Document {
     public readonly fileSize: number,
     public readonly mimeType: string,
     public readonly status: DocumentStatus,
-    public readonly priority: DocumentPriority,
-    public readonly department: number,
-    public readonly department_ar: string,
-    public readonly department_en: string,
+    public readonly priority: number,
+    public readonly priority_ar: string,
+    public readonly priority_en: string,
     public readonly uploadedByName: string,
     public readonly created_at: Date,
     public readonly updated_at: Date,
     public readonly fileUrl?: string,
     public readonly comments?: string,
-    public readonly redirectDepartment?: string,
     public readonly file_type?: 'pdf' | 'images',
     public readonly attachments?: Attachment[]
   ) {}
@@ -96,15 +85,18 @@ export class Document {
   }
 
   get isHighPriority(): boolean {
-    return this.priority === 'high';
+    const p = String(this.priority_en).toLowerCase();
+    return p.includes('high') || p.includes('urgent');
   }
 
   get isMediumPriority(): boolean {
-    return this.priority === 'medium';
+    const p = String(this.priority_en).toLowerCase();
+    return p.includes('medium');
   }
 
   get isLowPriority(): boolean {
-    return this.priority === 'low';
+    const p = String(this.priority_en).toLowerCase();
+    return p.includes('low');
   }
 
   get formattedFileSize(): string {
@@ -134,16 +126,11 @@ export class Document {
   }
 
   get priorityColor(): string {
-    switch (this.priority) {
-      case 'high':
-        return 'error';
-      case 'medium':
-        return 'warning';
-      case 'low':
-        return 'success';
-      default:
-        return 'default';
-    }
+    const p = String(this.priority_en).toLowerCase();
+    if (p.includes('high') || p.includes('urgent')) return 'error';
+    if (p.includes('medium')) return 'warning';
+    if (p.includes('low')) return 'success';
+    return 'default';
   }
 
   get canBeEdited(): boolean {
@@ -225,16 +212,14 @@ export class Document {
       data.file_size || data.fileSize || 0,
       data.mime_type || data.mimeType || '',
       (data.status as DocumentStatus) || 'pending',
-      (data.priority as DocumentPriority) || 'medium',
-      data.department || 0,
-      data.department_ar || '',
-      data.department_en || '',
+      data.priority || 0,
+      data.priority_ar || '',
+      data.priority_en || '',
       uploadedByName,
       parseDate(data.created_at),
       parseDate(data.updated_at),
       data.file_url || data.fileUrl,
       data.comments,
-      data.redirect_department,
       data.file_type || 'pdf',
       data.attachments
     );
@@ -249,7 +234,6 @@ export class Document {
       mime_type: this.mimeType,
       status: this.status,
       priority: this.priority,
-      department: this.department,
       comments: this.comments
     };
   }
@@ -264,15 +248,13 @@ export class Document {
       this.mimeType,
       status,
       this.priority,
-      this.department,
-      this.department_ar,
-      this.department_en,
+      this.priority_ar,
+      this.priority_en,
       this.uploadedByName,
       this.created_at,
       new Date(), // Update the updatedAt timestamp
       this.fileUrl,
       this.comments,
-      this.redirectDepartment,
       this.file_type,
       this.attachments
     );
@@ -288,15 +270,13 @@ export class Document {
       this.mimeType,
       this.status,
       this.priority,
-      this.department,
-      this.department_ar,
-      this.department_en,
+      this.priority_ar,
+      this.priority_en,
       this.uploadedByName,
       this.created_at,
       new Date(),
       this.fileUrl,
       comments,
-      this.redirectDepartment,
       this.file_type,
       this.attachments
     );

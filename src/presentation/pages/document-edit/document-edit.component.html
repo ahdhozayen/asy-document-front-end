@@ -16,8 +16,7 @@
 
     <div class="header-tags">
       <span class="tag status-tag">{{ "statuses." + currentDocument?.status | translate }}</span>
-      <span class="tag priority-tag">{{ "priorities." + currentDocument?.priority | translate }}</span>
-      <span class="tag department-tag">{{ "departments." + (isRTL ? currentDocument?.department_ar! : currentDocument?.department_en! | translate) }}</span>
+      <span class="tag priority-tag">{{ isRTL ? currentDocument?.priority_ar : currentDocument?.priority_en }}</span>
     </div>
 
     <div class="header-actions">
@@ -78,31 +77,17 @@
             }
           </mat-form-field>
 
-          <!-- Department and Priority in one row -->
+          <!-- Priority in its own row -->
           <div class="flex-row-container">
-            <mat-form-field appearance="outline" class="form-field mr-2">
-              <mat-label>{{ "documents.form.department" | translate }}</mat-label>
-              <mat-select formControlName="fromDepartment">
-                @for (dept of departments; track dept) {
-                  <mat-option [value]="dept.id.toString()">
-                    {{ isRTL ? dept.name_ar : dept.name_en }}
-                  </mat-option>
-                }
-              </mat-select>
-              @if (editForm.get('fromDepartment')?.hasError('required')) {
-                <mat-error>
-                  {{ "documents.create.validation.required" | translate }}
-                </mat-error>
-              }
-            </mat-form-field>
-
             <!-- Priority -->
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>{{ "documents.form.priority" | translate }}</mat-label>
               <mat-select formControlName="priority">
-                <mat-option value="low">{{ 'priorities.low' | translate }}</mat-option>
-                <mat-option value="medium">{{ 'priorities.medium' | translate }}</mat-option>
-                <mat-option value="high">{{ 'priorities.high' | translate }}</mat-option>
+                @for (priority of priorities; track priority.id) {
+                  <mat-option [value]="priority.id">
+                    {{ isRTL ? priority.name_ar : priority.name_en }}
+                  </mat-option>
+                }
               </mat-select>
               @if (editForm.get('priority')?.hasError('required')) {
                 <mat-error>
@@ -255,11 +240,6 @@
           </h3>
 
           <div class="info-content">
-            <div class="info-item">
-              <span class="info-label">{{ "documents.form.department" | translate }}:</span>
-              <span class="info-value">{{ getDepartmentName(currentDocument?.department?.toString() || '') }}</span>
-            </div>
-
             <div class="info-item">
               <span class="info-label">{{ "documents.edit.uploadDate" | translate }}:</span>
               <span class="info-value">{{ currentDocument?.uploadDate | date:'M/d/yyyy, h:mm:ss a' }}</span>

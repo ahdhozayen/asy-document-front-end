@@ -45,15 +45,10 @@
         </span>
         <span
           class="tag priority-tag"
-          [ngClass]="getPriorityColor(document.priority)"
+          [ngClass]="getPriorityColor(document.priority_en)"
         >
-          {{ "priorities." + document.priority | translate }}
+          {{ isRTL ? document.priority_ar : document.priority_en }}
         </span>
-        <span class="tag department-tag">{{
-          isRTL
-            ? document.department_ar!
-            : (document.department_en! | translate)
-        }}</span>
       </div>
       <div class="header-actions">
         <!-- Edit Button - Only visible for users with edit permission and disabled for signed documents -->
@@ -207,14 +202,6 @@
             {{ "documents.view.documentInformation" | translate }}
           </h3>
           <div class="info-content">
-            <div class="info-item">
-              <span class="info-label"
-                >{{ "documents.fields.department" | translate }}:</span
-              >
-              <span class="info-value">{{
-                getDepartmentName(document.department.toString())
-              }}</span>
-            </div>
             <div class="info-item">
               <span class="info-label"
                 >{{ "documents.fields.totalAttachments" | translate }}:</span

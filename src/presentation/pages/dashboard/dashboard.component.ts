@@ -9,6 +9,7 @@ import {
   AfterViewInit,
   ChangeDetectorRef,
 } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatSelect } from '@angular/material/select';
 
@@ -44,14 +45,14 @@ import { DocumentService } from '../../../core/use-cases/document.service';
 import { ToastService } from '../../../core/use-cases/toast.service';
 import { LanguageService } from '../../../core/use-cases/language.service';
 import { AuthorizationService } from '../../../core/use-cases/authorization.service';
-import { DepartmentService } from '../../../data/services/department.service';
+import { PriorityService } from '../../../data/services/priority.service';
+import { Priority } from '../../../domain/models/priority.model';
 import {
   User,
   Document,
   DocumentFilters,
   DocumentStats,
 } from '../../../core/entities';
-import { Department } from '../../../domain/models/department.model';
 import { LanguageSwitcherComponent } from '../../components/shared/language-switcher/language-switcher.component';
 import { HasPermissionDirective } from '../../shared/directives/has-permission.directive';
 // Import dialog components that will be loaded dynamically
@@ -61,9 +62,11 @@ import {
 } from '../../components/shared/confirmation-dialog/confirmation-dialog.component';
 import { DocumentCreateModalComponent } from '../../components/shared/document-create-modal/document-create-modal.component';
 import { ChangePasswordModalComponent } from '../../../app/presentation/components/shared/change-password-modal.component';
+
 @Component({
   selector: 'app-dashboard',
   imports: [
+    CommonModule,
     ReactiveFormsModule,
     MatToolbarModule,
     MatButtonModule,
@@ -118,7 +121,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   filterForm: FormGroup;
   displayedColumns: string[] = [
     'title',
-    'department',
     'priority',
     'status',
     'createdAt',
@@ -134,17 +136,16 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   public languageService = inject(LanguageService);
   private translate = inject(TranslateService);
   private dialog = inject(MatDialog);
-  private departmentService = inject(DepartmentService);
+  private priorityService = inject(PriorityService);
   private router = inject(Router);
   private authorizationService = inject(AuthorizationService);
   private cdr = inject(ChangeDetectorRef);
 
-  departments: Department[] = [];
+  priorities: Priority[] = [];
 
   constructor() {
     this.filterForm = this.fb.group({
       search: [''],
-      department: ['all'],
       priority: ['all'],
       status: ['all'],
     });
@@ -202,13 +203,13 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe((loading) => {
         if (!loading) {
-          // Load departments from the service
-          this.departmentService.getDepartments().subscribe({
-            next: (departments) => {
-              this.departments = departments;
+          // Load priorities from the service
+          this.priorityService.getPriorities().subscribe({
+            next: (priorities) => {
+              this.priorities = priorities;
             },
             error: (error) => {
-              console.error('Failed to load departments:', error);
+              console.error('Failed to load priorities:', error);
             },
           });
         }
@@ -286,8 +287,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private applyFilters(formFilters: {
     search?: string;
-    department?: string | number;
-    priority?: string;
+    priority?: string | number;
     status?: string;
   }): void {
     // Reset to first page when filters change
@@ -295,8 +295,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
     const filters: DocumentFilters = {
       search: formFilters.search || undefined,
-      department:
-        formFilters.department === 'all' ? undefined : formFilters.department,
       priority:
         formFilters.priority === 'all' ? undefined : formFilters.priority,
       status: formFilters.status === 'all' ? undefined : formFilters.status,
@@ -349,7 +347,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
           .createDocument({
             title: result.title,
             description: result.description || '',
-            department: result.fromDepartment,
             priority: result.priority,
             fileType: result.fileType,
             files: result.files,
@@ -444,13 +441,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private addDocumentComment(
     documentId: number,
-    comment: string,
-    redirectDepartment: string
+    comment: string
   ): void {
     this.documentService
       .addDocumentComment(documentId, {
         comment: comment,
-        redirectDepartment: redirectDepartment,
       })
       .subscribe({
         next: () => {
@@ -495,30 +490,20 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  getPriorityColor(priority: string): string {
-    switch (priority) {
-      case 'high':
-        return 'warn';
-      case 'medium':
-        return 'accent';
-      case 'low':
-        return 'primary';
-      default:
-        return '';
-    }
+  getPriorityColor(priority: string | number | undefined): string {
+    const p = String(priority).toLowerCase();
+    if (p.includes('high') || p.includes('urgent')) return 'warn';
+    if (p.includes('medium')) return 'accent';
+    if (p.includes('low')) return 'primary';
+    return '';
   }
 
-  getPriorityIcon(priority: string): string {
-    switch (priority) {
-      case 'high':
-        return 'arrow_upward';
-      case 'medium':
-        return 'remove';
-      case 'low':
-        return 'arrow_downward';
-      default:
-        return 'help_outline';
-    }
+  getPriorityIcon(priority: string | number | undefined): string {
+    const p = String(priority).toLowerCase();
+    if (p.includes('high') || p.includes('urgent')) return 'arrow_upward';
+    if (p.includes('medium')) return 'remove';
+    if (p.includes('low')) return 'arrow_downward';
+    return 'help_outline';
   }
 
   getStatusIcon(status: string): string {
@@ -548,7 +533,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     // Reset form to default values
     this.filterForm.reset({
       search: '',
-      department: 'all',
       priority: 'all',
       status: 'all',
     });

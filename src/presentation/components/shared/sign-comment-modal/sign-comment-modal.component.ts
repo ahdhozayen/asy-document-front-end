@@ -8,6 +8,7 @@ import {
 
 import {
   FormBuilder,
+  FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
@@ -23,9 +24,27 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule } from '@ngx-translate/core';
+import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs';
 import { DocumentService } from '../../../../core/use-cases/document.service';
 import { ToastService } from '../../../../core/use-cases/toast.service';
 import { LanguageService } from '../../../../core/use-cases/language.service';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { environment } from '@env/environment';
+
+interface Department {
+  id: number;
+  name_ar: string;
+  name_en: string;
+}
+
+interface PaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}
 
 @Component({
   selector: 'app-sign-comment-modal',
@@ -38,6 +57,8 @@ import { LanguageService } from '../../../../core/use-cases/language.service';
     MatInputModule,
     MatProgressSpinnerModule,
     TranslateModule,
+    MatSelectModule,
+    MatCheckboxModule,
   ],
   templateUrl: './sign-comment-modal.component.html',
   styleUrls: ['./sign-comment-modal.component.scss'],
@@ -60,6 +81,8 @@ export class SignCommentModalComponent implements OnInit {
   private documentService = inject(DocumentService);
   private toastService = inject(ToastService);
   private data = inject(MAT_DIALOG_DATA);
+  private http = inject(HttpClient);
+  isApproved = new FormControl(false);
 
   ngOnInit(): void {
     // Get attachment ID from dialog data
@@ -78,6 +101,40 @@ export class SignCommentModalComponent implements OnInit {
     if (this.data && this.data.isReplacement) {
       this.isReplacement = this.data.isReplacement;
     }
+
+    // Load departments from API
+    this.loadDepartments();
+  }
+
+  private loadDepartments(): void {
+    const apiUrl = `${environment.apiUrl}/lookups/departments`;
+    this.http.get<PaginatedResponse<Department>>(apiUrl)
+      .pipe(
+        map(response => {
+          // Check if response has the expected format (paginated)
+          if (response && response.results && Array.isArray(response.results)) {
+            return response.results;
+          } else if (Array.isArray(response)) {
+            // Handle case where API returns direct array instead of paginated response
+            return response;
+          } else {
+            return [];
+          }
+        })
+      )
+      .subscribe({
+        next: (departments) => {
+          this.departmentsList = departments;
+        },
+        error: (error) => {
+          console.error('Failed to load departments:', error);
+          this.departmentsList = [];
+        },
+      });
+  }
+
+  getDepartmentName(department: Department): string {
+    return this.languageService.isRTL ? department.name_ar : department.name_en;
   }
 
   constructor() {
@@ -97,11 +154,11 @@ export class SignCommentModalComponent implements OnInit {
   private initializeCanvas(): void {
     this.canvas = this.signatureCanvas.nativeElement;
     this.ctx = this.canvas.getContext('2d', { alpha: true })!;
-    
+
     // Get the comments form field to match its width
     const commentsSection = document.querySelector('.signature-section:first-of-type');
     const commentsFormField = commentsSection?.querySelector('.mat-form-field') as HTMLElement;
-    
+
     // Calculate canvas width to match form field
     let canvasWidth = 430; // Default width
     if (commentsFormField) {
@@ -113,12 +170,12 @@ export class SignCommentModalComponent implements OnInit {
         canvasWidth = container.offsetWidth;
       }
     }
-    
+
     // Set canvas internal width to match display width
     // Note: Display width is handled by CSS (width: 100%)
     this.canvas.width = canvasWidth;
     this.canvas.height = 300;
-    
+
     this.ctx.strokeStyle = '#FF0000'; // Red color for signature
     this.ctx.lineWidth = 4; // Thicker line for bolder signature
     this.ctx.lineCap = 'round';
@@ -216,6 +273,11 @@ export class SignCommentModalComponent implements OnInit {
     this.form.get('signature')?.markAsTouched();
   }
 
+
+  departments = new FormControl<number[]>([]);
+  departmentsList: Department[] = [];
+
+
   private createCommentsImageBase64(): string {
     if (!this.form.value.comments || this.form.value.comments.trim() === '') {
       return '';
@@ -284,7 +346,7 @@ export class SignCommentModalComponent implements OnInit {
       words.forEach((word, index) => {
         // Check if the word itself is too long
         const wordMetrics = tempCtx.measureText(word);
-        
+
         if (wordMetrics.width > MAX_TEXT_WIDTH) {
           // Word itself is too long, break it first
           if (currentLine) {
@@ -292,7 +354,7 @@ export class SignCommentModalComponent implements OnInit {
             wrappedLines.push(currentLine);
             currentLine = '';
           }
-          
+
           // Break the long word
           const wordChunks = breakLongWord(word, MAX_TEXT_WIDTH);
           // Push all chunks except the last one

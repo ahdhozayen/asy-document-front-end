@@ -29,35 +29,15 @@
           }
         </mat-form-field>
 
-        <!-- From Department -->
-        <!-- Department and Priority in one row -->
+        <!-- Priority in its own row -->
         <div class="flex-row-container">
-          <mat-form-field appearance="outline" class="form-field mr-2">
-            <mat-label>{{ "documents.form.department" | translate }}</mat-label>
-            <mat-select formControlName="fromDepartment">
-              @for (department of departments; track department) {
-                <mat-option
-                  [value]="department.id"
-                  >
-                  {{ isRTL ? department.name_ar : department.name_en }}
-                </mat-option>
-              }
-            </mat-select>
-            @if (documentForm.get('fromDepartment')?.hasError('required')) {
-              <mat-error
-                >
-                {{ "documents.create.validation.required" | translate }}
-              </mat-error>
-            }
-          </mat-form-field>
-
           <!-- Priority -->
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>{{ "documents.form.priority" | translate }}</mat-label>
             <mat-select formControlName="priority">
-              @for (priority of priorities; track priority) {
-                <mat-option [value]="priority.toLowerCase()">
-                  {{ "priorities." + priority.toLowerCase() | translate }}
+              @for (priority of priorities; track priority.id) {
+                <mat-option [value]="priority.id">
+                  {{ isRTL ? priority.name_ar : priority.name_en }}
                 </mat-option>
               }
             </mat-select>
@@ -188,6 +168,13 @@
                 class="error-message"
                 >
                 {{ "documents.create.validation.required" | translate }}
+              </div>
+            }
+            @if (fileErrors.length > 0) {
+              <div class="error-message">
+                @for (error of fileErrors; track error) {
+                  <div [class.arabic-font]="isRTL">{{ error }}</div>
+                }
               </div>
             }
           </div>

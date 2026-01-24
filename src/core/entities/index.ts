@@ -2,36 +2,6 @@ export * from './user.model';
 export * from './document.model';
 import type { User } from './user.model';
 
-// Common types and constants
-export const DEPARTMENTS = [
-  'Finance',
-  'HR',
-  'IT',
-  'Legal',
-  'Operations',
-  'Marketing',
-  'Sales'
-] as const;
-
-export const DOCUMENT_STATUS = {
-  PENDING: 'pending' as const,
-  IN_REVIEW: 'in_review' as const,
-  SIGNED: 'signed' as const,
-  REJECTED: 'rejected' as const
-};
-
-export const DOCUMENT_PRIORITY = {
-  LOW: 'low' as const,
-  MEDIUM: 'medium' as const,
-  HIGH: 'high' as const
-};
-
-export const USER_ROLES = {
-  CEO: 'ceo' as const,
-  HELPDESK: 'helpdesk' as const,
-  EMPLOYEE: 'employee' as const
-};
-
 // API Response interfaces
 export interface ApiResponse<T> {
   results: T[];
@@ -75,9 +45,8 @@ export interface LoginCredentials {
 
 export interface DocumentFilters {
   search?: string;
-  department?: string | number;
   status?: string;
-  priority?: string;
+  priority?: string | number;
   page?: number;
   pageSize?: number;
   sort?: string;
@@ -87,8 +56,7 @@ export interface DocumentFilters {
 export interface CreateDocumentData {
   title: string;
   description: string;
-  department: string | number;
-  priority: string;
+  priority: number;
   fileType: 'pdf' | 'images';
   files: File[];
 }
@@ -96,8 +64,7 @@ export interface CreateDocumentData {
 export interface CreateDocumentMetadata {
   title: string;
   description: string;
-  department: string | number;
-  priority: string;
+  priority: number;
   file_type: 'pdf' | 'images';
 }
 

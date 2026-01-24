@@ -28,14 +28,6 @@
     "openInNew": "Open in New",
     "optional": "Optional"
   },
-  "departments": {
-    "finance": "Finance",
-    "hr": "Human Resources",
-    "it": "Information Technology",
-    "legal": "Legal",
-    "operations": "Operations",
-    "marketing": "Marketing"
-  },
   "priorities": {
     "low": "Low",
     "medium": "Medium",
@@ -94,7 +86,6 @@
 
     "documentsTable": {
       "title": "Documents",
-      "department": "Department",
       "priority": "Priority",
       "status": "Status",
       "version": "Version",
@@ -104,10 +95,8 @@
     "filters": {
       "search": "Search documents...",
       "searchPlaceholder": "Search documents...",
-      "department": "Department",
       "priority": "Priority",
       "status": "Status",
-      "all_departments": "All Departments",
       "all_priorities": "All Priorities",
       "all_statuses": "All Statuses",
       "reset": "Reset Filters"
@@ -124,7 +113,6 @@
     "title": "Documents",
     "noDocuments": "No documents found",
     "documentName": "Document Name",
-    "department": "Department",
     "priority": "Priority",
     "status": "Status",
     "createdAt": "Created At",
@@ -139,7 +127,6 @@
       "addComment": "Add Comment",
       "comment": "Comment",
       "commentPlaceholder": "Enter your comment here (minimum 10 characters)",
-      "redirectDepartment": "Redirect to Department",
       "submit": "Submit Comment",
       "cancel": "Cancel",
       "success": "Comment added successfully",
@@ -152,12 +139,10 @@
     "fields": {
       "title": "Title",
       "description": "Description",
-      "department": "Department",
       "priority": "Priority",
       "status": "Status",
       "createdAt": "Created Date",
       "reviewedAt": "Reviewed Date",
-      "redirectDepartment": "Redirect Department",
       "attachmentName": "Attachment Name",
       "attachmentDate": "Attachment Date",
       "totalAttachments": "Total Attachments",
@@ -173,8 +158,6 @@
       "attachments": "Attachments",
       "addComment": "Add Comment",
       "commentPlaceholder": "Enter your comment here",
-      "redirectDepartment": "Redirect Department",
-      "selectDepartment": "Select department",
       "submitComment": "Submit Comment",
       "signDocument": "Sign Document",
       "viewAttachment": "View Attachment",
@@ -214,6 +197,8 @@
       "commentsLabel": "Comments",
       "commentsRequired": "Comments are required",
       "commentsMinLength": "Comments must be at least {min} characters",
+      "departmentsLabel": "Departments",
+      "isApproved": "Approved",
       "success": "Document signed and commented successfully",
       "error": "Failed to sign and comment on document",
       "replacementWarning": "Warning: Replacing Existing Signature",
@@ -250,7 +235,12 @@
         "pdfOnly": "Only PDF files are allowed",
         "imagesOnly": "Only image files are allowed",
         "required": "This field is required",
-        "maxLength": "Maximum length exceeded"
+        "maxLength": "Maximum length exceeded",
+        "fileSizeError": "File size must be less than {size}",
+        "invalidFileTypePdf": "Invalid file type. Only PDF files (.pdf) are allowed when PDF mode is selected.",
+        "invalidFileTypeImage": "Invalid file type. Only image files (.jpg, .jpeg, .png, .gif, .bmp, .webp, .tiff, .svg) are allowed when Image mode is selected.",
+        "invalidMimeTypePdf": "File MIME type does not match PDF format. Please upload a valid PDF file.",
+        "invalidMimeTypeImage": "File MIME type does not match image format. Please upload a valid image file."
       }
     },
     "edit": {
@@ -324,15 +314,6 @@
       "low": "Low",
       "medium": "Medium",
       "high": "High"
-    },
-    "departments": {
-      "Finance": "Finance",
-      "HR": "Human Resources",
-      "IT": "Information Technology",
-      "Legal": "Legal",
-      "Operations": "Operations",
-      "Marketing": "Marketing",
-      "Sales": "Sales"
     }
   },
   "errors": {
@@ -345,8 +326,7 @@
     "validationError": "Validation error",
     "fileUploadError": "File upload failed",
     "fileSizeError": "File size too large",
-    "fileTypeError": "File type not supported",
-    "loadingDepartments": "Failed to load departments"
+    "fileTypeError": "File type not supported"
   },
   "dialogs": {
     "confirmation": {

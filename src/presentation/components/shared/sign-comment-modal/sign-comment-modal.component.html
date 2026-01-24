@@ -1,70 +1,151 @@
 <h2 mat-dialog-title [class.rtl]="languageService.isRTL" [class.ltr]="!languageService.isRTL">
   {{ "documents.signAndComment.title" | translate }}
 </h2>
+
 <form [formGroup]="form">
-  <div 
-    mat-dialog-content 
-    [class.rtl]="languageService.isRTL" 
-    [class.ltr]="!languageService.isRTL"
+  <div mat-dialog-content [class.rtl]="languageService.isRTL" [class.ltr]="!languageService.isRTL"
     [attr.dir]="languageService.isRTL ? 'rtl' : 'ltr'">
+    
+    <!-- Warning Section (if applicable) -->
     @if (isReplacement) {
-      <div class="replacement-warning" style="background-color: #fff3cd; padding: 12px; margin-bottom: 16px; border-radius: 4px; border-left: 4px solid #fbbf24;">
-        <strong style="color: #856404;">⚠️ {{ "documents.signAndComment.replacementWarning" | translate }}</strong>
-        <p style="margin: 8px 0 0 0; color: #856404; font-size: 0.9em;">
+    <div class="replacement-warning" 
+         style="background-color: #fef3c7; 
+                padding: 16px; 
+                margin-bottom: 24px; 
+                border-radius: 8px; 
+                border: 1px solid #fbbf24;
+                display: flex;
+                align-items: flex-start;
+                gap: 12px;">
+      <div style="color: #d97706; font-size: 1.2em; line-height: 1;">⚠️</div>
+      <div>
+        <strong style="color: #92400e; display: block; margin-bottom: 4px;">
+          {{ "documents.signAndComment.replacementWarning" | translate }}
+        </strong>
+        <p style="margin: 0; color: #92400e; font-size: 0.9em; line-height: 1.5;">
           {{ "documents.signAndComment.replacementInfo" | translate }}
         </p>
       </div>
+    </div>
     }
-    <div class="signature-section">
-      <label>{{ "documents.signAndComment.commentsLabel" | translate }} ({{ "common.optional" | translate }})</label>
-      <mat-form-field appearance="outline" class="form-field">
-        <textarea style="background-color: #fff;" matInput formControlName="comments" rows="4" cols="60"></textarea>
+
+    <!-- Approval Checkbox - Moved to top for better flow -->
+    <div class="approval-section" style="margin-bottom: 24px;">
+      <mat-checkbox [formControl]="isApproved" class="approval-checkbox" 
+                   style="font-size: 1rem; font-weight: 500;">
+        {{ "documents.signAndComment.isApproved" | translate }}
+      </mat-checkbox>
+      <p style="margin: 8px 0 0 32px; color: #6b7280; font-size: 0.875rem;">
+        {{ "documents.signAndComment.approvalHint" | translate }}
+      </p>
+    </div>
+
+    <!-- Departments Selection -->
+    <div class="signature-section" style="margin-bottom: 24px;">
+      <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #374151;">
+        {{ "documents.signAndComment.departmentsLabel" | translate }}
+        <span style="color: #6b7280; font-weight: normal;">({{ "common.optional" | translate }})</span>
+      </label>
+      <mat-form-field appearance="outline" class="form-field" style="width: 100%;">
+        <mat-label>{{ "documents.signAndComment.departmentsPlaceholder" | translate }}</mat-label>
+        <mat-select [formControl]="departments" multiple>
+          @for (department of departmentsList; track department.id) {
+          <mat-option [value]="department.id" style="padding: 8px 16px;">
+            {{getDepartmentName(department)}}
+          </mat-option>
+          }
+        </mat-select>
+        <mat-hint style="color: #6b7280; font-size: 0.875rem;">
+          {{ "documents.signAndComment.departmentsHint" | translate }}
+        </mat-hint>
       </mat-form-field>
     </div>
 
+    <!-- Comments Section -->
     <div class="signature-section">
-      <label>{{ "documents.signAndComment.signatureLabel" | translate }} ({{ "common.optional" | translate }})</label>
-      <div class="signature-pad-container" [class.rtl]="languageService.isRTL" [class.ltr]="!languageService.isRTL">
-        <canvas
-          #signatureCanvas
-          (mousedown)="onMouseDown($event)"
-          (mousemove)="onMouseMove($event)"
-          (mouseup)="onMouseUp()"
-          (mouseleave)="onMouseUp()"
-          (touchstart)="onTouchStart($event)"
-          (touchmove)="onTouchMove($event)"
-          (touchend)="onTouchEnd()"
-          class="signature-canvas"
-          >
-        </canvas>
-        <button
-          mat-stroked-button
-          type="button"
-          (click)="clearCanvas()"
-          class="clear-btn"
-          >
-          <mat-icon>clear</mat-icon>
-          {{ "documents.signAndComment.clearSignature" | translate }}
-        </button>
-      </div>
+      <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #374151;">
+        {{ "documents.signAndComment.commentsLabel" | translate }}
+        <span style="color: #6b7280; font-weight: normal;">({{ "common.optional" | translate }})</span>
+      </label>
+      <mat-form-field appearance="outline" class="form-field" style="width: 100%;">
+        <textarea matInput formControlName="comments" rows="5" 
+                 [placeholder]="'documents.signAndComment.commentsPlaceholder' | translate"
+                 style="resize: vertical; min-height: 80px; background-color: #fff;"></textarea>
+      </mat-form-field>
     </div>
+    
   </div>
 
-  <div mat-dialog-actions [attr.align]="languageService.isRTL ? 'start' : 'end'">
-    <button mat-button type="button" (click)="onCancel()" [disabled]="isLoading">
+  <!-- Action Buttons -->
+  <div mat-dialog-actions [attr.align]="languageService.isRTL ? 'start' : 'end'"
+       style="padding: 20px 24px 24px; margin: 0; border-top: 1px solid #e5e7eb;">
+    <button mat-button type="button" (click)="onCancel()" [disabled]="isLoading"
+            style="padding: 8px 20px; margin-right: 12px;">
       {{ "common.cancel" | translate }}
     </button>
-    <button
-      mat-raised-button
-      color="primary"
-      type="submit"
-      (click)="onSave()"
-      [disabled]="isLoading"
-      >
+    <button mat-raised-button color="primary" type="submit" (click)="onSave()" [disabled]="isLoading"
+            style="padding: 8px 24px; min-width: 100px;">
       @if (isLoading) {
-        <mat-spinner diameter="20" class="button-spinner" />
+      <mat-spinner diameter="20" class="button-spinner" style="margin-right: 8px;" />
       }
       {{ isLoading ? ("common.saving" | translate) : ("common.save" | translate) }}
     </button>
   </div>
 </form>
+
+<!-- Add this to your component's CSS -->
+<style>
+:host {
+  display: block;
+}
+
+.form-field {
+  width: 100%;
+}
+
+.approval-checkbox ::ng-deep .mat-checkbox-label {
+  white-space: normal;
+  line-height: 1.4;
+}
+
+.signature-section {
+  margin-bottom: 20px;
+}
+
+.departments-field .mat-form-field,
+.signature-section .mat-form-field {
+  margin-top: 8px;
+}
+
+.button-spinner {
+  display: inline-block;
+}
+
+/* For better RTL support */
+[dir="rtl"] .button-spinner {
+  margin-left: 8px;
+  margin-right: 0;
+}
+
+[dir="ltr"] .button-spinner {
+  margin-right: 8px;
+  margin-left: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .signature-section.departments-checkbox-section {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  mat-dialog-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  
+  mat-dialog-actions button {
+    margin: 4px;
+  }
+}
+</style>
