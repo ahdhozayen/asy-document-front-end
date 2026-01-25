@@ -160,7 +160,7 @@ export class SignCommentModalComponent implements OnInit {
     const commentsFormField = commentsSection?.querySelector('.mat-form-field') as HTMLElement;
 
     // Calculate canvas width to match form field
-    let canvasWidth = 430; // Default width
+    let canvasWidth = 250; // Default width
     if (commentsFormField) {
       canvasWidth = commentsFormField.offsetWidth;
     } else {
@@ -174,7 +174,7 @@ export class SignCommentModalComponent implements OnInit {
     // Set canvas internal width to match display width
     // Note: Display width is handled by CSS (width: 100%)
     this.canvas.width = canvasWidth;
-    this.canvas.height = 300;
+    this.canvas.height = 250;
 
     this.ctx.strokeStyle = '#FF0000'; // Red color for signature
     this.ctx.lineWidth = 4; // Thicker line for bolder signature
@@ -418,12 +418,19 @@ export class SignCommentModalComponent implements OnInit {
       // Get comments Base64 (text rendered as image, auto-sized)
       const commentsBase64 = this.createCommentsImageBase64();
 
+      const selectedDepartmentIds = this.departments.value ?? [];
+      const selectedDepartmentNames = this.departmentsList
+        .filter((d) => selectedDepartmentIds.includes(d.id))
+        .map((d) => this.getDepartmentName(d));
+
       this.documentService
         .signDocumentWithComment({
           attachment: this.attachmentId,
           comments: this.form.value.comments, // Plain text for Document.comments
           signature_data: signatureBase64,     // Signature drawing Base64
           comments_data: commentsBase64,       // Comments text as Base64 image
+          is_approved: this.isApproved.value ?? false,
+          department_list: selectedDepartmentNames,
         })
         .subscribe({
           next: () => {

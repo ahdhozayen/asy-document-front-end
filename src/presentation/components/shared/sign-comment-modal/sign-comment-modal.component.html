@@ -47,7 +47,7 @@
         <span style="color: #6b7280; font-weight: normal;">({{ "common.optional" | translate }})</span>
       </label>
       <mat-form-field appearance="outline" class="form-field" style="width: 100%;">
-        <mat-label>{{ "documents.signAndComment.departmentsPlaceholder" | translate }}</mat-label>
+        
         <mat-select [formControl]="departments" multiple>
           @for (department of departmentsList; track department.id) {
           <mat-option [value]="department.id" style="padding: 8px 16px;">
