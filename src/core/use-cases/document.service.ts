@@ -400,6 +400,7 @@ export class DocumentService {
     comments_data: string;
     comments: string;
     is_approved?: boolean;
+    department_data?: string;
     department_list?: string[];
   }): Observable<Document> {
     return this.httpClient.post<DocumentApiResponse>(this.config.endpoints.documents.sign, data).pipe(

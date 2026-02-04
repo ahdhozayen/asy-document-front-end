@@ -32,6 +32,7 @@ import { LanguageService } from '../../../../core/use-cases/language.service';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { environment } from '@env/environment';
+import { DepartmentDataHandlerService } from './department-data-handler.service';
 
 interface Department {
   id: number;
@@ -82,7 +83,9 @@ export class SignCommentModalComponent implements OnInit {
   private toastService = inject(ToastService);
   private data = inject(MAT_DIALOG_DATA);
   private http = inject(HttpClient);
+  private departmentDataHandler = inject(DepartmentDataHandlerService);
   isApproved = new FormControl(false);
+  private initialComments = '';
 
   ngOnInit(): void {
     // Get attachment ID from dialog data
@@ -92,9 +95,12 @@ export class SignCommentModalComponent implements OnInit {
 
     // Pre-populate comments if this is a replacement
     if (this.data && this.data.existingComments) {
+      this.initialComments = (this.data.existingComments || '').trim();
       this.form.patchValue({
-        comments: this.data.existingComments
+        comments: this.data.existingComments,
       });
+    } else {
+      this.initialComments = '';
     }
 
     // Set replacement flag
@@ -277,6 +283,18 @@ export class SignCommentModalComponent implements OnInit {
   departments = new FormControl<number[]>([]);
   departmentsList: Department[] = [];
 
+  private hasAnyActionSelected(): boolean {
+    const comments: string = (this.form.value.comments || '').trim();
+    const existingComments: string = this.initialComments || '';
+    const commentsChanged = comments !== '' && comments !== existingComments;
+
+    const selectedDepartments = this.departments.value ?? [];
+    const hasDepartments = selectedDepartments.length > 0;
+
+    const hasApproval = this.isApproved.value === true;
+
+    return commentsChanged || hasDepartments || hasApproval;
+  }
 
   private createCommentsImageBase64(): string {
     if (!this.form.value.comments || this.form.value.comments.trim() === '') {
@@ -292,7 +310,7 @@ export class SignCommentModalComponent implements OnInit {
     const textAlign = isRTL ? 'right' : 'left'; // Right-align for RTL, left-align for LTR
 
     // FIXED WIDTH for comments image
-    const FIXED_WIDTH = 1200;  // Image width in pixels
+    const FIXED_WIDTH = 400;  // Image width in pixels
     const padding = 30;
     const MAX_TEXT_WIDTH = FIXED_WIDTH - (padding * 2); // Account for margins
     const lineHeight = 50;  // Increased from 40 to 50px
@@ -407,8 +425,14 @@ export class SignCommentModalComponent implements OnInit {
     return commentsBase64;
   }
 
-  onSave(): void {
+  async onSave(): Promise<void> {
     if (this.attachmentId) {
+      // If user did not approve, select departments, or change/add comments,
+      // do not call backend and keep document status unchanged.
+      if (!this.hasAnyActionSelected()) {
+        this.dialogRef.close();
+        return;
+      }
       this.isLoading = true;
       console.log(this.form.value);
 
@@ -423,12 +447,27 @@ export class SignCommentModalComponent implements OnInit {
         .filter((d) => selectedDepartmentIds.includes(d.id))
         .map((d) => this.getDepartmentName(d));
 
+      // Convert department list to Base64 image (transparent PNG)
+      let departmentDataBase64 = '';
+      // Only generate Base64 image if there is department data to convert
+      if (selectedDepartmentNames.length > 0) {
+        try {
+          departmentDataBase64 = await this.departmentDataHandler.processDepartments(
+            selectedDepartmentNames,
+            { isRTL: this.languageService.isRTL },
+          );
+        } catch {
+          departmentDataBase64 = '';
+        }
+      }
+
       this.documentService
         .signDocumentWithComment({
           attachment: this.attachmentId,
           comments: this.form.value.comments, // Plain text for Document.comments
           signature_data: signatureBase64,     // Signature drawing Base64
           comments_data: commentsBase64,       // Comments text as Base64 image
+          department_data: departmentDataBase64,
           is_approved: this.isApproved.value ?? false,
           department_list: selectedDepartmentNames,
         })

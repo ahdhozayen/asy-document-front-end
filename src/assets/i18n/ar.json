@@ -192,6 +192,7 @@
       "signatureLabel": "توقيعك",
       "signatureRequired": "التوقيع مطلوب",
       "commentsLabel": "التوجيه / التعليقات",
+      "commentsPlaceholder": "أدخل ملاحظاتك أو تعليقاتك هنا (اختياري)",
       "approvalHint": "عند الضغط علي اوافق سيتم وضع علامة صح علي المكاتبة",
       "departmentsHint": "برجاء اختيار القطاعات المراد توجيه المكاتبة لها",
       "commentsRequired": "التعليقات مطلوبة",
